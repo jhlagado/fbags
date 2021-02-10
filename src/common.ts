@@ -4,7 +4,7 @@ export enum Mode {
     destroy = 2,
 }
 
-export type CB = (mode: Mode, arg: any) => void;
+export type CB = (mode: Mode, arg?: any) => void;
 export type SinkFactory = (source: CB) => CB;
 
 export type Effect = (value: string) => void;
