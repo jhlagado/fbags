@@ -1,23 +1,26 @@
 import { Mode } from "./common";
+import { FromIteratorArgs, FromIteratorInstance, FromIteratorPrototype } from "./from-iterator-types";
 
 // binding simulates forth closure
 
-function loop(this: any) {
+function loop(this: FromIteratorInstance) {
     this.vars.inloop = true;
     while (this.vars.got1 && !this.vars.completed) {
         this.vars.got1 = false;
-        const res = this.iterator.next();
-        if (this.vars.done) {
+        const res = this.args.iterator.next();
+        if (res.done) {
             this.vars.done = true;
-            this.sink(Mode.destroy);
+            this.sink?.(Mode.destroy);
             break;
         }
-        else this.sink(1, res.value);
+        else {
+            this.sink?.(1, res.value);
+        }
     }
     this.vars.inloop = false;
 }
 
-function fromIteratorSinkCB(this: any, mode: Mode) {
+function fromIteratorSinkCB(this: FromIteratorInstance, mode: Mode) {
     if (this.vars.completed) return
     switch (mode) {
         case Mode.run:
@@ -30,9 +33,9 @@ function fromIteratorSinkCB(this: any, mode: Mode) {
     }
 }
 
-function fromIteratorCB(this: any, mode: Mode, sink: any) {
+function fromIteratorCB(this: FromIteratorPrototype, mode: Mode, sink: any) {
     if (mode !== Mode.init) return;
-    const state = {
+    const instance: FromIteratorInstance = {
         ...this,
         sink,
         vars: {
@@ -42,12 +45,11 @@ function fromIteratorCB(this: any, mode: Mode, sink: any) {
             done: false
         },
     }
-    sink(Mode.init, fromIteratorSinkCB.bind(state));
+    sink(Mode.init, fromIteratorSinkCB.bind(instance));
 }
 
-export function fromIterator(iterator: Iterator<number>) {
-    const args = { iterator };
-    const prototype = { args };
+export function fromIterator(args: FromIteratorArgs) {
+    const prototype: FromIteratorPrototype = { args };
     return fromIteratorCB.bind(prototype);
 }
 
