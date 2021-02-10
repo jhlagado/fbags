@@ -1,14 +1,14 @@
-import { CB, Mapper } from "./common";
+import { CB, CBArgs, CBPrototype, CBVars, Mapper } from "./common";
 
-export interface MapArgs {
+export interface MapArgs extends CBArgs  {
     mapper: Mapper;
 }
 
-export interface MapVars {
+export interface MapVars  extends CBVars {
     talkback?: CB;
 }
 
-export interface MapPrototype {
+export interface MapPrototype   extends CBPrototype {
     args: MapArgs;
     source?: CB;
 }

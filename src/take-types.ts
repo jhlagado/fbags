@@ -1,16 +1,16 @@
-import { CB } from "./common";
+import { CB, CBArgs, CBPrototype, CBVars } from "./common";
 
-export interface TakeArgs {
+export interface TakeArgs extends CBArgs {
     max: number;
 }
 
-export interface TakeVars {
+export interface TakeVars extends CBVars {
     taken: number;
     sourceTalkback?: CB;
     end: boolean;
 }
 
-export interface TakePrototype {
+export interface TakePrototype extends CBPrototype {
     args: TakeArgs;
     source?: CB;
 }

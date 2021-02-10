@@ -1,17 +1,17 @@
-import { CB } from "./common";
+import { CB, CBArgs, CBPrototype, CBVars } from "./common";
 
-export interface FromIteratorArgs {
+export interface FromIteratorArgs extends CBArgs {
     iterator: Iterator<number>
 }
 
-export interface FromIteratorVars {
+export interface FromIteratorVars  extends CBVars {
     inloop: boolean;
     got1: boolean;
     completed: boolean;
     done: boolean;
 }
 
-export interface FromIteratorPrototype {
+export interface FromIteratorPrototype  extends CBPrototype  {
     args: FromIteratorArgs;
     sink?: CB;
 }

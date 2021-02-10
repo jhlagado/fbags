@@ -5,7 +5,7 @@ import { map } from "./map";
 test('count up to 40 in 10s and compare each number', () => {
     const expected = [11, 21, 31, 41];
     const expectedLength = expected.length;
-    const printOp = jest.fn((value: string) => {
+    const crossCheck = jest.fn((value: string) => {
         console.log(value);
         expect(value).toBe(expected.shift());
     });
@@ -14,7 +14,7 @@ test('count up to 40 in 10s and compare each number', () => {
 
     const fi = fromIterator({ iterator });
     const m = map({ mapper: (value) => value + 1 })(fi);
-    forEach({ effect: printOp })(m);
+    forEach({ effect: crossCheck })(m);
 
-    expect(printOp).toHaveBeenCalledTimes(expectedLength);
+    expect(crossCheck).toHaveBeenCalledTimes(expectedLength);
 })

@@ -7,7 +7,7 @@ import { take } from "./take";
 test('make count up to 40 and print each number', () => {
     const expected = [11, 21];
     const expectedLength = expected.length;
-    const printOp = jest.fn((value: string) => {
+    const crossCheck = jest.fn((value: string) => {
         console.log(value);
         expect(value).toBe(expected.shift());
     });
@@ -18,7 +18,7 @@ test('make count up to 40 and print each number', () => {
         fromIterator({ iterator }),
         take({ max: 2 }),
         map({ mapper: (value) => value + 1 }),
-        forEach({ effect: printOp }),
+        forEach({ effect: crossCheck }),
     );
-    expect(printOp).toHaveBeenCalledTimes(expectedLength);
+    expect(crossCheck).toHaveBeenCalledTimes(expectedLength);
 })

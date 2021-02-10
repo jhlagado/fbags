@@ -5,7 +5,21 @@ export enum Mode {
 }
 
 export type CB = (mode: Mode, arg?: any) => void;
-export type SinkFactory = (source: CB) => CB;
+
+export interface CBArgs {
+}
+export interface CBVars {
+}
+export interface CBPrototype {
+    args: CBArgs;
+}
+
+export interface CBInstance extends CBPrototype {
+    vars: CBVars;
+}
+
+
+export type SinkFactory = (source: CB) => CB | void;
 
 export type Effect = (value: string) => void;
 export type Mapper = (value: any) => any;

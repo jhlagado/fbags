@@ -6,16 +6,16 @@ import { scan } from "./scan";
 test('accumulate the total', () => {
     const expected = [1, 3, 6, 10];
     const expectedLength = expected.length;
-    const printOp = jest.fn((value: string) => {
+    const crossCheck = jest.fn((value: string) => {
         console.log(value);
         expect(value).toBe(expected.shift());
     });
     const reducer = (acc: number, value: number) => acc + value;
     const iterator = [1, 2, 3, 4][Symbol.iterator]();
     pipe(
-        fromIterator({iterator}),
-        scan({reducer, seed:0}),
-        forEach({effect:printOp})
+        fromIterator({ iterator }),
+        scan({ reducer, seed: 0 }),
+        forEach({ effect: crossCheck })
     );
-    expect(printOp).toHaveBeenCalledTimes(expectedLength);
+    expect(crossCheck).toHaveBeenCalledTimes(expectedLength);
 })

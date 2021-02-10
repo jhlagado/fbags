@@ -1,14 +1,14 @@
-import { Effect, CB } from "./common";
+import { Effect, CB, CBPrototype, CBVars, CBArgs } from "./common";
 
-export interface ForEachArgs {
+export interface ForEachArgs extends CBArgs {
     effect: Effect
 }
 
-export interface ForEachVars {
+export interface ForEachVars  extends CBVars {
     talkback?: CB;
 }
 
-export interface ForEachPrototype {
+export interface ForEachPrototype  extends CBPrototype {
     args: ForEachArgs;
     source?: CB;
 }

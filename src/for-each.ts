@@ -15,7 +15,7 @@ function forEachTB(this: ForEachInstance, mode: Mode, d: any) {
     }
 }
 
-function forEachSinkFactory(this: ForEachPrototype, source: CB):CB {
+function forEachSinkFactory(this: ForEachPrototype, source: CB) {
     const instance = {
         ...this,
         source,
@@ -23,7 +23,6 @@ function forEachSinkFactory(this: ForEachPrototype, source: CB):CB {
     }
     const tb = forEachTB.bind(instance);
     instance.source?.(Mode.init, tb);
-    return tb;
 }
 
 export function forEach(args: ForEachArgs) {

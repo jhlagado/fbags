@@ -1,16 +1,16 @@
-import { CB, Reducer } from "./common";
+import { CB, CBArgs, CBPrototype, CBVars, Reducer } from "./common";
 
-export interface ScanArgs {
+export interface ScanArgs extends CBArgs {
     reducer: Reducer;
     seed: any
     hasAcc?: boolean;
 }
 
-export interface ScanVars {
+export interface ScanVars extends CBVars {
     acc: any;
 }
 
-export interface ScanPrototype {
+export interface ScanPrototype extends CBPrototype {
     args: ScanArgs;
     hasAcc: boolean;
     source?: CB;
