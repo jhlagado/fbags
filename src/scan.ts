@@ -1,4 +1,4 @@
-import { CB } from "./common";
+import { CB, closure } from "./common";
 import { ScanInstance, ScanPrototype, ScanArgs } from "./scan-types";
 import { Mode } from "./common";
 
@@ -20,7 +20,7 @@ function scanCB(this: ScanPrototype, mode: Mode, sink: any) {
             acc: this.args.seed
         }
     }
-    const tb = scanTB.bind(instance);
+    const tb = closure(instance, scanTB);
     instance.source?.(Mode.init, tb);
 }
 
@@ -29,13 +29,13 @@ function scanSinkFactory(this: ScanPrototype, source: CB) {
         ...this,
         source,
     }
-    return scanCB.bind(prototype);
+    return closure(prototype, scanCB);
 }
 
 export function scan(args: ScanArgs) {
     const hasAcc = arguments.length === 2;
     const prototype: ScanPrototype = { args, hasAcc };
-    return scanSinkFactory.bind(prototype);
+    return closure(prototype, scanSinkFactory);
 }
 
 

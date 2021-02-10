@@ -1,4 +1,4 @@
-import { CB } from "./common";
+import { CB, closure } from "./common";
 import { TakeInstance, TakePrototype, TakeArgs } from "./take-types";
 import { Mode } from "./common";
 
@@ -15,7 +15,7 @@ function takeSourceTB(this: TakeInstance, mode: Mode, d: any) {
     switch (mode) {
         case Mode.init:
             this.vars.sourceTalkback = d;
-            this.sink(0, talkback.bind(this));
+            this.sink(0, closure(this, talkback));
             break;
         case Mode.run:
             if (this.vars.taken < this.args.max) {
@@ -44,7 +44,7 @@ function takeCB(this: TakePrototype, mode: Mode, sink: any) {
             end: false,
         }
     }
-    const tb = takeSourceTB.bind(instance);
+    const tb = closure(instance, takeSourceTB);
     instance.source?.(Mode.init, tb);
 }
 
@@ -53,12 +53,12 @@ function takeSinkFactory(this: TakePrototype, source: CB) {
         ...this,
         source,
     }
-    return takeCB.bind(prototype);
+    return closure(prototype, takeCB);
 }
 
 export function take(args: TakeArgs) {
     const prototype: TakePrototype = { args };
-    return takeSinkFactory.bind(prototype);
+    return closure(prototype, takeSinkFactory);
 }
 
 // const take = max => source => (start, sink) => {

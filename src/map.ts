@@ -1,9 +1,9 @@
-import { CB } from "./common";
+import { CB, closure } from "./common";
 import { MapInstance, MapPrototype, MapArgs } from "./map-types";
 import { Mode } from "./common";
 
 function mapTB(this: MapInstance, mode: Mode, d: any) {
-    this.sink(mode, mode === Mode.run ? this.args.mapper(d): d)
+    this.sink(mode, mode === Mode.run ? this.args.mapper(d) : d)
 }
 
 function mapCB(this: MapPrototype, mode: Mode, sink: any) {
@@ -13,7 +13,7 @@ function mapCB(this: MapPrototype, mode: Mode, sink: any) {
         sink,
         vars: {}
     }
-    const tb = mapTB.bind(instance);
+    const tb = closure(instance, mapTB);
     instance.source?.(Mode.init, tb);
 }
 
@@ -22,12 +22,12 @@ function mapSinkFactory(this: MapPrototype, source: CB) {
         ...this,
         source,
     }
-    return mapCB.bind(prototype);
+    return closure(prototype, mapCB);
 }
 
 export function map(args: MapArgs) {
     const prototype: MapPrototype = { args };
-    return mapSinkFactory.bind(prototype);
+    return closure(prototype, mapSinkFactory);
 }
 
 

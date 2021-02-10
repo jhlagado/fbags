@@ -1,6 +1,5 @@
-import { CB } from "./common";
+import { CB, closure, Mode } from "./common";
 import { ForEachInstance, ForEachPrototype, ForEachArgs } from "./for-each-types";
-import { Mode } from "./common";
 
 function forEachTB(this: ForEachInstance, mode: Mode, d: any) {
     switch (mode) {
@@ -21,13 +20,13 @@ function forEachSinkFactory(this: ForEachPrototype, source: CB) {
         source,
         vars: {}
     }
-    const tb = forEachTB.bind(instance);
+    const tb = closure(instance, forEachTB);
     instance.source?.(Mode.init, tb);
 }
 
 export function forEach(args: ForEachArgs) {
     const prototype: ForEachPrototype = { args };
-    return forEachSinkFactory.bind(prototype);
+    return closure(prototype, forEachSinkFactory);
 }
 
 // const forEach = operation => source => {
