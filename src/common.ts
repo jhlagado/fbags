@@ -26,4 +26,4 @@ export type Effect = (value: string) => void;
 export type Mapper = (value: any) => any;
 export type Reducer = (acc: any, value: any) => any;
 
-export const closure = (state: any, cbf: any): any => cbf.bind(state) 
+export const closure = (state: any, cbf: any): any => cbf(state) 

@@ -2,31 +2,31 @@ import { CB, closure } from "./common";
 import { ScanInstance, ScanPrototype, ScanArgs } from "./scan-types";
 import { Mode } from "./common";
 
-function scanTB(this: ScanInstance, mode: Mode, d: any) {
+const scanTB = (state: ScanInstance) => (mode: Mode, d: any) =>{
     if (mode === Mode.run) {
-        this.vars.acc = this.args.hasAcc ? this.args.reducer(this.vars.acc, d) : ((this.args.hasAcc = true), d);
-        this.sink(Mode.run, this.vars.acc);
+        state.vars.acc = state.args.hasAcc ? state.args.reducer(state.vars.acc, d) : ((state.args.hasAcc = true), d);
+        state.sink(Mode.run, state.vars.acc);
     } else {
-        this.sink(mode, d);
+        state.sink(mode, d);
     }
 }
 
-function scanCB(this: ScanPrototype, mode: Mode, sink: any) {
+const scanCB = (state: ScanPrototype) => (mode: Mode, sink: any) => {
     if (mode !== Mode.init) return;
     const instance: ScanInstance = {
-        ...this,
+        ...state,
         sink,
         vars: {
-            acc: this.args.seed
+            acc: state.args.seed
         }
     }
     const tb = closure(instance, scanTB);
     instance.source?.(Mode.init, tb);
 }
 
-function scanSinkFactory(this: ScanPrototype, source: CB) {
+const scanSinkFactory = (state: ScanPrototype) => (source: CB) => {
     const prototype: ScanPrototype = {
-        ...this,
+        ...state,
         source,
     }
     return closure(prototype, scanCB);

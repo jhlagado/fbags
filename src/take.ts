@@ -2,42 +2,42 @@ import { CB, closure } from "./common";
 import { TakeInstance, TakePrototype, TakeArgs } from "./take-types";
 import { Mode } from "./common";
 
-function talkback(this: TakeInstance, mode: Mode, d: any) {
+const talkback = (state: TakeInstance) => (mode: Mode, d: any) => {
     if (mode === Mode.destroy) {
-        this.vars.end = true;
-        this.vars.sourceTalkback?.(mode, d);
-    } else if (this.vars.taken < this.args.max) {
-        this.vars.sourceTalkback?.(mode, d);
+        state.vars.end = true;
+        state.vars.sourceTalkback?.(mode, d);
+    } else if (state.vars.taken < state.args.max) {
+        state.vars.sourceTalkback?.(mode, d);
     }
 }
 
-function takeSourceTB(this: TakeInstance, mode: Mode, d: any) {
+const takeSourceTB = (state: TakeInstance) => (mode: Mode, d: any) => {
     switch (mode) {
         case Mode.init:
-            this.vars.sourceTalkback = d;
-            this.sink(0, closure(this, talkback));
+            state.vars.sourceTalkback = d;
+            state.sink(0, closure(state, talkback));
             break;
         case Mode.run:
-            if (this.vars.taken < this.args.max) {
-                this.vars.taken++;
-                this.sink(Mode.run, d);
-                if (this.vars.taken === this.args.max && !this.vars.end) {
-                    this.vars.end = true
-                    this.vars.sourceTalkback?.(Mode.destroy);
-                    this.sink?.(Mode.destroy);
+            if (state.vars.taken < state.args.max) {
+                state.vars.taken++;
+                state.sink(Mode.run, d);
+                if (state.vars.taken === state.args.max && !state.vars.end) {
+                    state.vars.end = true
+                    state.vars.sourceTalkback?.(Mode.destroy);
+                    state.sink?.(Mode.destroy);
                 }
             }
             break;
         case Mode.destroy:
-            this.sink(Mode.destroy, d);
+            state.sink(Mode.destroy, d);
             break;
     }
 }
 
-function takeCB(this: TakePrototype, mode: Mode, sink: any) {
+const takeCB = (state: TakePrototype) => (mode: Mode, sink: any) => {
     if (mode !== Mode.init) return;
     const instance: TakeInstance = {
-        ...this,
+        ...state,
         sink,
         vars: {
             taken: 0,
@@ -48,9 +48,9 @@ function takeCB(this: TakePrototype, mode: Mode, sink: any) {
     instance.source?.(Mode.init, tb);
 }
 
-function takeSinkFactory(this: TakePrototype, source: CB) {
+const takeSinkFactory = (state: TakePrototype) => (source: CB) => {
     const prototype: TakePrototype = {
-        ...this,
+        ...state,
         source,
     }
     return closure(prototype, takeCB);
