@@ -1,4 +1,4 @@
-import { CB, CBArgs, CBPrototype, CBVars } from "./common";
+import { CB, CBArgs, CBVars } from "./common";
 
 export interface FromConstantArgs extends CBArgs  {
     constant: any;
@@ -7,12 +7,9 @@ export interface FromConstantArgs extends CBArgs  {
 export interface FromConstantVars  extends CBVars {
 }
 
-export interface FromConstantPrototype   extends CBPrototype {
+export interface FromConstantInstance {
     args: FromConstantArgs;
-}
-
-export interface FromConstantInstance extends FromConstantPrototype {
-    sink: CB;
+    sink?: CB;
     vars: FromConstantVars;
 }
 

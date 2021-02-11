@@ -6,23 +6,23 @@ const mapTB = (state: MapInstance) => (mode: Mode, d: any)=> {
     state.sink(mode, mode === Mode.run ? state.args.mapper(d) : d)
 }
 
-const mapCB = (state: MapPrototype) => (mode: Mode, sink: any) => {
+const mapCB = (state: MapInstance) => (mode: Mode, sink: any) => {
     if (mode !== Mode.init) return;
     const instance: MapInstance = {
         ...state,
         sink,
-        vars: {}
     }
     const tb = closure(instance, mapTB);
     instance.source?.(Mode.init, tb);
 }
 
-const mapSinkFactory = (state: MapPrototype) => (source: CB) => {
-    const prototype: MapPrototype = {
+const mapSinkFactory = (state: MapInstance) => (source: CB) => {
+    const instance: MapInstance = {
         ...state,
         source,
+        vars: {}
     }
-    return closure(prototype, mapCB);
+    return closure(instance, mapCB);
 }
 
 export function map(args: MapArgs) {

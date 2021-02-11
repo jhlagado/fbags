@@ -1,4 +1,4 @@
-import { CB, CBArgs, CBPrototype, CBVars } from "./common";
+import { CB, CBArgs, CBVars } from "./common";
 
 export interface FromIntervalArgs extends CBArgs {
     period: number,
@@ -9,12 +9,9 @@ export interface FromIntervalVars extends CBVars {
     id?: any,
 }
 
-export interface FromIntervalPrototype extends CBPrototype {
+export interface FromIntervalInstance {
     args: FromIntervalArgs;
-}
-
-export interface FromIntervalInstance extends FromIntervalPrototype {
-    sink: CB;
+    sink?: CB;
     vars: FromIntervalVars;
 }
 

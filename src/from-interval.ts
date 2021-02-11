@@ -1,9 +1,9 @@
 import { closure } from "./common";
 import { Mode } from "./common";
-import { FromIntervalInstance, FromIntervalPrototype, FromIntervalArgs } from "./from-interval-types";
+import { FromIntervalInstance, FromIntervalArgs } from "./from-interval-types";
 
 const callback = (state: FromIntervalInstance) => () => {
-    state.sink(1, state.vars.i++);
+    state.sink?.(1, state.vars.i++);
 }
 
 const talkback = (state: FromIntervalInstance) => (mode: Mode) => {
@@ -17,9 +17,6 @@ const fromIntervalCB = (state: FromIntervalInstance) => (mode: Mode, sink: any) 
         const instance: FromIntervalInstance = {
             ...state,
             sink,
-            vars: {
-                i: 0,
-            }
         }
         instance.vars.id = setInterval(closure(instance, callback), state.args.period);
         const tb = closure(instance, talkback);
@@ -28,7 +25,7 @@ const fromIntervalCB = (state: FromIntervalInstance) => (mode: Mode, sink: any) 
 }
 
 export function fromInterval(args: FromIntervalArgs) {
-    const prototype: FromIntervalPrototype = { args };
+    const prototype: FromIntervalInstance = { args, vars: { i: 0 } };
     return closure(prototype, fromIntervalCB);
 }
 

@@ -4,32 +4,32 @@ import { Mode } from "./common";
 
 const scanTB = (state: ScanInstance) => (mode: Mode, d: any) =>{
     if (mode === Mode.run) {
-        state.vars.acc = state.args.hasAcc ? state.args.reducer(state.vars.acc, d) : ((state.args.hasAcc = true), d);
+        state.vars.acc = state.hasAcc ? state.args.reducer(state.vars.acc, d) : ((state.hasAcc = true), d);
         state.sink(Mode.run, state.vars.acc);
     } else {
         state.sink(mode, d);
     }
 }
 
-const scanCB = (state: ScanPrototype) => (mode: Mode, sink: any) => {
+const scanCB = (state: ScanInstance) => (mode: Mode, sink: any) => {
     if (mode !== Mode.init) return;
     const instance: ScanInstance = {
         ...state,
         sink,
-        vars: {
-            acc: state.args.seed
-        }
     }
     const tb = closure(instance, scanTB);
     instance.source?.(Mode.init, tb);
 }
 
-const scanSinkFactory = (state: ScanPrototype) => (source: CB) => {
-    const prototype: ScanPrototype = {
+const scanSinkFactory = (state: ScanInstance) => (source: CB) => {
+    const instance: ScanInstance = {
         ...state,
         source,
+        vars: {
+            acc: state.args.seed
+        }
     }
-    return closure(prototype, scanCB);
+    return closure(instance, scanCB);
 }
 
 export function scan(args: ScanArgs) {

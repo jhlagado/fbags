@@ -3,7 +3,6 @@ import { CB, CBArgs, CBPrototype, CBVars, Reducer } from "./common";
 export interface ScanArgs extends CBArgs {
     reducer: Reducer;
     seed: any
-    hasAcc?: boolean;
 }
 
 export interface ScanVars extends CBVars {
