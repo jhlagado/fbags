@@ -37,7 +37,7 @@ const sourceTBF: CBF<TakeState> = (state) => (mode, d) => {
 
 const cbf = cbFactory<TakeArgs, TakeVars>({ taken: 0, end: false }, sourceTBF);
 
-const sf = sinkFactory<TakeState>(cbf);
+const sf = sinkFactory<TakeArgs, TakeVars>(cbf);
 
 export const take = argsFactory<TakeArgs, TakeVars>(sf);
 

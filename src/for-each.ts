@@ -1,33 +1,24 @@
-import { CB, closure, Mode } from "./common";
-import { ForEachInstance, ForEachPrototype, ForEachArgs } from "./for-each-types";
+import { argsFactory, Mode, tbSinkFactory } from "./common";
+import { ForEachState, ForEachArgs, ForEachVars } from "./for-each-types";
 
-const forEachTB = (state: ForEachInstance) => (mode: Mode, d: any) => {
+const forEachTB = (state: ForEachState) => (mode: Mode, d: any) => {
+    const vars = state.vars!;
     switch (mode) {
         case Mode.init:
-            state.vars.talkback = d;
-            state.vars.talkback?.(Mode.run);
+            vars.talkback = d;
+            vars.talkback?.(Mode.run);
             break;
         case Mode.run:
             state.args.effect(d);
-            state.vars.talkback?.(Mode.run);
+            vars.talkback?.(Mode.run);
             break;
     }
 }
 
-const forEachSinkFactory = (state: ForEachPrototype) => (source: CB) => {
-    const instance = {
-        ...state,
-        source,
-        vars: {}
-    }
-    const tb = closure(instance, forEachTB);
-    instance.source?.(Mode.init, tb);
-}
+const sf = tbSinkFactory<ForEachArgs, ForEachVars>(forEachTB);
 
-export function forEach(args: ForEachArgs) {
-    const prototype: ForEachPrototype = { args };
-    return closure(prototype, forEachSinkFactory);
-}
+export const forEach = argsFactory<ForEachArgs, ForEachVars>(sf);
+
 
 // const forEach = operation => source => {
 //     let talkback;

@@ -1,43 +1,22 @@
-import { CB, closure } from "./common";
-import { ScanInstance, ScanPrototype, ScanArgs } from "./scan-types";
+import { argsFactory, cbFactory, sinkFactory } from "./common";
+import { ScanState, ScanArgs, ScanVars } from "./scan-types";
 import { Mode } from "./common";
 
-const scanTB = (state: ScanInstance) => (mode: Mode, d: any) =>{
+const scanTB = (state: ScanState) => (mode: Mode, d: any) =>{
+    const vars = state.vars!;
     if (mode === Mode.run) {
-        state.vars.acc = state.hasAcc ? state.args.reducer(state.vars.acc, d) : ((state.hasAcc = true), d);
-        state.sink(Mode.run, state.vars.acc);
+        vars.acc = state.args.reducer(vars.acc, d);
+        state.sink?.(Mode.run, vars.acc);
     } else {
-        state.sink(mode, d);
+        state.sink?.(mode, d);
     }
 }
 
-const scanCB = (state: ScanInstance) => (mode: Mode, sink: any) => {
-    if (mode !== Mode.init) return;
-    const instance: ScanInstance = {
-        ...state,
-        sink,
-    }
-    const tb = closure(instance, scanTB);
-    instance.source?.(Mode.init, tb);
-}
+const cbf = cbFactory<ScanArgs, ScanVars>((args)=>({ acc: args.seed }), scanTB);
 
-const scanSinkFactory = (state: ScanInstance) => (source: CB) => {
-    const instance: ScanInstance = {
-        ...state,
-        source,
-        vars: {
-            acc: state.args.seed
-        }
-    }
-    return closure(instance, scanCB);
-}
+const sf = sinkFactory<ScanArgs, ScanVars>(cbf);
 
-export function scan(args: ScanArgs) {
-    const hasAcc = arguments.length === 2;
-    const prototype: ScanPrototype = { args, hasAcc };
-    return closure(prototype, scanSinkFactory);
-}
-
+export const scan = argsFactory<ScanArgs, ScanVars>(sf);
 
 // function scan(reducer, seed) {
 //     let hasAcc = arguments.length === 2;

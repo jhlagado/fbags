@@ -1,14 +1,14 @@
 import { closure } from "./common";
-import { FromConstantInstance, FromConstantArgs } from "./from-constant-types";
+import { FromConstantState, FromConstantArgs } from "./from-constant-types";
 import { Mode } from "./common";
 
-const fromConstantTB = (state: FromConstantInstance) => (mode: Mode, d: any)=> {
+const fromConstantTB = (state: FromConstantState) => (mode: Mode, d: any)=> {
     state.sink?.(mode, mode === Mode.run ? state.args.constant : d)
 }
 
-const fromConstantCB = (state: FromConstantInstance) => (mode: Mode, sink: any) => {
+const fromConstantCB = (state: FromConstantState) => (mode: Mode, sink: any) => {
     if (mode !== Mode.init) return;
-    const instance: FromConstantInstance = {
+    const instance: FromConstantState = {
         ...state,
         sink,
         vars: {}
@@ -18,6 +18,6 @@ const fromConstantCB = (state: FromConstantInstance) => (mode: Mode, sink: any) 
 }
 
 export function fromConstant(args: FromConstantArgs) {
-    const instance: FromConstantInstance = { args, vars:{} };
+    const instance: FromConstantState = { args, vars:{} };
     return closure(instance, fromConstantCB);
 }

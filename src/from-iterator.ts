@@ -1,15 +1,16 @@
 import { closure, Mode } from "./common";
-import { FromIteratorArgs, FromIteratorInstance, FromIteratorPrototype } from "./from-iterator-types";
+import { FromIteratorArgs, FromIteratorState } from "./from-iterator-types";
 
 // binding simulates forth closure
 
-const loop = (state: FromIteratorInstance) => () => {
-    state.vars.inloop = true;
-    while (state.vars.got1 && !state.vars.completed) {
-        state.vars.got1 = false;
+const loop = (state: FromIteratorState) => () => {
+    const vars = state.vars!;
+    vars.inloop = true;
+    while (vars.got1 && !vars.completed) {
+        vars.got1 = false;
         const res = state.args.iterator.next();
         if (res.done) {
-            state.vars.done = true;
+            vars.done = true;
             state.sink?.(Mode.destroy);
             break;
         }
@@ -17,25 +18,26 @@ const loop = (state: FromIteratorInstance) => () => {
             state.sink?.(1, res.value);
         }
     }
-    state.vars.inloop = false;
+    vars.inloop = false;
 }
 
-const fromIteratorSinkCB = (state: FromIteratorInstance) => (mode: Mode) =>{
-    if (state.vars.completed) return
+const fromIteratorSinkCB = (state: FromIteratorState) => (mode: Mode) =>{
+    const vars = state.vars!;
+    if (vars.completed) return
     switch (mode) {
         case Mode.run:
-            state.vars.got1 = true;
-            if (!state.vars.inloop && !(state.vars.done)) closure(state, loop)();
+            vars.got1 = true;
+            if (!vars.inloop && !(vars.done)) closure(state, loop)();
             break;
         case Mode.destroy:
-            state.vars.completed = true;
+            vars.completed = true;
             break;
     }
 }
 
-const fromIteratorCB = (state: FromIteratorPrototype) => (mode: Mode, sink: any) => {
+const fromIteratorCB = (state: FromIteratorState) => (mode: Mode, sink: any) => {
     if (mode !== Mode.init) return;
-    const instance: FromIteratorInstance = {
+    const instance: FromIteratorState = {
         ...state,
         sink,
         vars: {
@@ -49,7 +51,7 @@ const fromIteratorCB = (state: FromIteratorPrototype) => (mode: Mode, sink: any)
 }
 
 export function fromIterator(args: FromIteratorArgs) {
-    const prototype: FromIteratorPrototype = { args };
+    const prototype: FromIteratorState = { args };
     return closure(prototype, fromIteratorCB);
 }
 

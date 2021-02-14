@@ -1,19 +1,11 @@
-import { CB, CBArgs, CBPrototype, CBVars, Mapper } from "./common";
+import { State, Mapper } from "./common";
 
-export interface MapArgs extends CBArgs  {
+export interface MapArgs {
     mapper: Mapper;
 }
 
-export interface MapVars  extends CBVars {
+export interface MapVars {
 }
 
-export interface MapPrototype   extends CBPrototype {
-    args: MapArgs;
-    source?: CB;
-}
-
-export interface MapInstance extends MapPrototype {
-    sink: CB;
-    vars: MapVars;
-}
+export type MapState = State<MapArgs, MapVars>
 

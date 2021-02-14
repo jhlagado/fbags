@@ -1,22 +1,13 @@
-import { CB, CBArgs, CBPrototype, CBVars, Reducer } from "./common";
+import { Reducer, State } from "./common";
 
-export interface ScanArgs extends CBArgs {
+export interface ScanArgs {
     reducer: Reducer;
     seed: any
 }
 
-export interface ScanVars extends CBVars {
+export interface ScanVars {
     acc: any;
 }
 
-export interface ScanPrototype extends CBPrototype {
-    args: ScanArgs;
-    hasAcc: boolean;
-    source?: CB;
-}
-
-export interface ScanInstance extends ScanPrototype {
-    sink: CB;
-    vars: ScanVars;
-}
+export type ScanState = State<ScanArgs, ScanVars>;
 

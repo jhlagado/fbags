@@ -1,22 +1,15 @@
-import { CB, CBArgs, CBPrototype, CBVars } from "./common";
+import { State } from "./common";
 
-export interface FromIteratorArgs extends CBArgs {
+export interface FromIteratorArgs  {
     iterator: Iterator<number>
 }
 
-export interface FromIteratorVars  extends CBVars {
+export interface FromIteratorVars   {
     inloop: boolean;
     got1: boolean;
     completed: boolean;
     done: boolean;
 }
 
-export interface FromIteratorPrototype  extends CBPrototype  {
-    args: FromIteratorArgs;
-    sink?: CB;
-}
-
-export interface FromIteratorInstance extends FromIteratorPrototype {
-    vars: FromIteratorVars;
-}
+export type FromIteratorState = State<FromIteratorArgs, FromIteratorVars>
 

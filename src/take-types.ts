@@ -1,12 +1,11 @@
-import { CB, CBArgs, CBVars, State } from "./common";
+import { State } from "./common";
 
-export interface TakeArgs extends CBArgs {
+export interface TakeArgs {
     max: number;
 }
 
-export interface TakeVars extends CBVars {
+export interface TakeVars {
     taken: number;
-    sourceTalkback?: CB;
     end: boolean;
 }
 

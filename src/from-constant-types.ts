@@ -1,15 +1,11 @@
-import { CB, CBArgs, CBVars } from "./common";
+import { State } from "./common";
 
-export interface FromConstantArgs extends CBArgs  {
+export interface FromConstantArgs   {
     constant: any;
 }
 
-export interface FromConstantVars  extends CBVars {
+export interface FromConstantVars   {
 }
 
-export interface FromConstantInstance {
-    args: FromConstantArgs;
-    sink?: CB;
-    vars: FromConstantVars;
-}
+export type FromConstantState = State<FromConstantArgs, FromConstantVars>
 

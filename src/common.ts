@@ -27,6 +27,9 @@ export interface State<A, V> {
     vars?: V,
 }
 
+type VarsFunction<A, V> = (args: A) => V;
+type Vars<A, V> = V | VarsFunction<A, V>;
+
 export type SinkFactory = (source: CB) => CB | void;
 
 export type Effect = (value: string) => void;
@@ -40,20 +43,39 @@ export const argsFactory = <A, V>(cbf: CBF<State<A, V>> | CBSF<State<A, V>>) => 
     return closure(instance, cbf);
 }
 
-export const sinkFactory = <P>(cbf: CBF<P>): CBSF<P> => (state) => (source) => {
-    const instance: P = {
+// export const sinkFactory = <P>(cbf: CBF<P>): CBSF<P> => (state) => (source) => {
+//     const instance: P = {
+//         ...state,
+//         source,
+//     }
+//     return closure(instance, cbf);
+// }
+
+export const sinkFactory = <A,V>(cbf: CBF<State<A,V>>): CBSF<State<A,V>> => (state) => (source) => {
+    const instance: State<A,V> = {
         ...state,
         source,
+        vars: <V>{},
     }
     return closure(instance, cbf);
 }
 
-export const cbFactory = <A, V>(vars: V, tbf: CBF<State<A, V>>): CBF<State<A, V>> => (state) => (mode, sink) => {
+export const tbSinkFactory = <A,V>(cbf: CBF<State<A,V>>): CBSF<State<A,V>> => (state) => (source) => {
+    const tb = sinkFactory<A,V>(cbf)(state)(source);
+    source?.(Mode.init, tb);
+    return tb;
+}
+
+export const isVarsFunction = <A, V>(x: any): x is VarsFunction<A, V> => {
+    return (typeof x === 'function') && (x.length === 1); // or whatever test
+}
+
+export const cbFactory = <A, V>(vars: Vars<A, V>, tbf: CBF<State<A, V>>): CBF<State<A, V>> => (state) => (mode, sink) => {
     if (mode !== Mode.init) return;
     const instance: State<A, V> = {
         ...state,
         sink,
-        vars,
+        vars: isVarsFunction<A, V>(vars) ? vars(state.args) : vars as V,
     }
     const tb = closure(instance, tbf);
     instance.source?.(Mode.init, tb);

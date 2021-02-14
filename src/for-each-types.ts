@@ -1,19 +1,12 @@
-import { Effect, CB, CBPrototype, CBVars, CBArgs } from "./common";
+import { Effect, CB, State } from "./common";
 
-export interface ForEachArgs extends CBArgs {
+export interface ForEachArgs {
     effect: Effect
 }
 
-export interface ForEachVars  extends CBVars {
+export interface ForEachVars {
     talkback?: CB;
 }
 
-export interface ForEachPrototype  extends CBPrototype {
-    args: ForEachArgs;
-    source?: CB;
-}
-
-export interface ForEachInstance extends ForEachPrototype {
-    vars: ForEachVars;
-}
+export type ForEachState = State<ForEachArgs, ForEachVars>
 

@@ -1,17 +1,13 @@
-import { CB, CBArgs, CBVars } from "./common";
+import { State } from "./common";
 
-export interface FromIntervalArgs extends CBArgs {
+export interface FromIntervalArgs {
     period: number,
 }
 
-export interface FromIntervalVars extends CBVars {
+export interface FromIntervalVars {
     i: number,
     id?: any,
 }
 
-export interface FromIntervalInstance {
-    args: FromIntervalArgs;
-    sink?: CB;
-    vars: FromIntervalVars;
-}
+export type FromIntervalState = State<FromIntervalArgs, FromIntervalVars>
 
