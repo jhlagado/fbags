@@ -5,7 +5,6 @@ export interface MapArgs extends CBArgs  {
 }
 
 export interface MapVars  extends CBVars {
-    talkback?: CB;
 }
 
 export interface MapPrototype   extends CBPrototype {
