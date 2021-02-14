@@ -1,5 +1,5 @@
-import { closure, Mode } from "./common";
-import { FromIteratorArgs, FromIteratorState } from "./from-iterator-types";
+import { argsFactory, cbFactory, closure, Role, Mode } from "./common";
+import { FromIteratorArgs, FromIteratorState, FromIteratorVars } from "./from-iterator-types";
 
 // binding simulates forth closure
 
@@ -21,7 +21,7 @@ const loop = (state: FromIteratorState) => () => {
     vars.inloop = false;
 }
 
-const fromIteratorSinkCB = (state: FromIteratorState) => (mode: Mode) =>{
+const fromIteratorSinkCB = (state: FromIteratorState) => (mode: Mode) => {
     const vars = state.vars!;
     if (vars.completed) return
     switch (mode) {
@@ -35,25 +35,14 @@ const fromIteratorSinkCB = (state: FromIteratorState) => (mode: Mode) =>{
     }
 }
 
-const fromIteratorCB = (state: FromIteratorState) => (mode: Mode, sink: any) => {
-    if (mode !== Mode.init) return;
-    const instance: FromIteratorState = {
-        ...state,
-        sink,
-        vars: {
-            inloop: false,
-            got1: false,
-            completed: false,
-            done: false
-        },
-    }
-    sink(Mode.init, closure(instance, fromIteratorSinkCB));
-}
+const sf = cbFactory({
+    inloop: false,
+    got1: false,
+    completed: false,
+    done: false
+}, fromIteratorSinkCB, Role.source);
 
-export function fromIterator(args: FromIteratorArgs) {
-    const prototype: FromIteratorState = { args };
-    return closure(prototype, fromIteratorCB);
-}
+export const fromIterator = argsFactory<FromIteratorArgs, FromIteratorVars>(sf);
 
 // const fromIter = iter => (start, sink) => {
 //     if (start !== 0) return;

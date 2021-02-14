@@ -1,4 +1,4 @@
-import { argsFactory, cbFactory, sinkFactory } from "./common";
+import { argsFactory, cbFactory, Role, sinkFactory } from "./common";
 import { ScanState, ScanArgs, ScanVars } from "./scan-types";
 import { Mode } from "./common";
 
@@ -12,9 +12,9 @@ const scanTB = (state: ScanState) => (mode: Mode, d: any) =>{
     }
 }
 
-const cbf = cbFactory<ScanArgs, ScanVars>((args)=>({ acc: args.seed }), scanTB);
+const cbf = cbFactory<ScanArgs, ScanVars>((args)=>({ acc: args.seed }), scanTB,  Role.sink);
 
-const sf = sinkFactory<ScanArgs, ScanVars>(cbf);
+const sf = sinkFactory<ScanArgs, ScanVars>(cbf, Role.none);
 
 export const scan = argsFactory<ScanArgs, ScanVars>(sf);
 

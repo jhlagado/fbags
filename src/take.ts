@@ -1,7 +1,7 @@
-import { argsFactory, CBF, cbFactory, closure, Mode, sinkFactory } from "./common";
-import { TakeState, TakeArgs, TakeVars } from "./take-types";
+import { argsFactory, CBF, cbFactory, closure, Role, Mode, sinkFactory } from "./common";
+import { TakeArgs, TakeVars } from "./take-types";
 
-const tbf: CBF<TakeState> = (state) => (mode, d) => {
+const tbf: CBF<TakeArgs,TakeVars> = (state) => (mode, d) => {
     if (mode === Mode.destroy) {
         state.vars!.end = true;
         state.source?.(mode, d);
@@ -10,7 +10,7 @@ const tbf: CBF<TakeState> = (state) => (mode, d) => {
     }
 }
 
-const sourceTBF: CBF<TakeState> = (state) => (mode, d) => {
+const sourceTBF: CBF<TakeArgs,TakeVars> = (state) => (mode, d) => {
     const vars = state.vars!;
     switch (mode) {
         case Mode.init:
@@ -35,9 +35,9 @@ const sourceTBF: CBF<TakeState> = (state) => (mode, d) => {
     }
 }
 
-const cbf = cbFactory<TakeArgs, TakeVars>({ taken: 0, end: false }, sourceTBF);
+const cbf = cbFactory<TakeArgs, TakeVars>({ taken: 0, end: false }, sourceTBF, Role.sink);
 
-const sf = sinkFactory<TakeArgs, TakeVars>(cbf);
+const sf = sinkFactory<TakeArgs, TakeVars>(cbf, Role.none);
 
 export const take = argsFactory<TakeArgs, TakeVars>(sf);
 
