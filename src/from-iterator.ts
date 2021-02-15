@@ -1,5 +1,6 @@
-import { argsFactory, cbFactory, closure, Role, Mode } from "./common";
-import { FromIteratorArgs, FromIteratorState, FromIteratorVars } from "./from-iterator-types";
+import { Role, Mode } from "./types/common";
+import { FromIteratorArgs, FromIteratorState, FromIteratorVars } from "./types/from-iterator-types";
+import { closure, cbFactory, argsFactory } from "./utils";
 
 // binding simulates forth closure
 

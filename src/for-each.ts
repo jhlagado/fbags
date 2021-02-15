@@ -1,5 +1,6 @@
-import { argsFactory, Role, Mode, sinkFactory } from "./common";
-import { ForEachState, ForEachArgs, ForEachVars } from "./for-each-types";
+import {  Role, Mode } from "./types/common";
+import { ForEachState, ForEachArgs, ForEachVars } from "./types/for-each-types";
+import { sinkFactory, argsFactory } from "./utils";
 
 const forEachTB = (state: ForEachState) => (mode: Mode, d: any) => {
     const vars = state.vars!;

@@ -1,6 +1,7 @@
-import { argsFactory, cbFactory, Role } from "./common";
-import { FromConstantState, FromConstantArgs, FromConstantVars } from "./from-constant-types";
-import { Mode } from "./common";
+import { Role } from "./types/common";
+import { FromConstantState, FromConstantArgs, FromConstantVars } from "./types/from-constant-types";
+import { Mode } from "./types/common";
+import { argsFactory, cbFactory } from "./utils";
 
 const fromConstantTB = (state: FromConstantState) => (mode: Mode, d: any)=> {
     state.sink?.(mode, mode === Mode.run ? state.args.constant : d)

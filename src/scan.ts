@@ -1,6 +1,7 @@
-import { argsFactory, cbFactory, Role, sinkFactory } from "./common";
-import { ScanState, ScanArgs, ScanVars } from "./scan-types";
-import { Mode } from "./common";
+import { Role } from "./types/common";
+import { ScanState, ScanArgs, ScanVars } from "./types/scan-types";
+import { Mode } from "./types/common";
+import { argsFactory, cbFactory, sinkFactory } from "./utils";
 
 const scanTB = (state: ScanState) => (mode: Mode, d: any) =>{
     const vars = state.vars!;

@@ -1,5 +1,6 @@
-import { MapState, MapArgs, MapVars } from "./map-types";
-import { argsFactory, cbFactory, Role, Mode, sinkFactory } from "./common";
+import { MapState, MapArgs, MapVars } from "./types/map-types";
+import { Role, Mode, } from "./types/common";
+import { argsFactory, cbFactory, sinkFactory } from "./utils";
 
 const mapTB = (state: MapState) => (mode: Mode, d: any) => {
     state.sink?.(mode, mode === Mode.run ? state.args.mapper(d) : d)

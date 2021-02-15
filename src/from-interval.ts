@@ -1,6 +1,6 @@
-import { argsFactory, closure } from "./common";
-import { Mode } from "./common";
-import { FromIntervalState, FromIntervalArgs, FromIntervalVars } from "./from-interval-types";
+import { Mode } from "./types/common";
+import { FromIntervalState, FromIntervalArgs, FromIntervalVars } from "./types/from-interval-types";
+import { closure, argsFactory } from "./utils";
 
 const callback = (state: FromIntervalState) => () => {
     state.sink?.(1, state.vars!.i++);

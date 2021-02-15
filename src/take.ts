@@ -1,7 +1,8 @@
-import { argsFactory, CBF, cbFactory, closure, Role, Mode, sinkFactory } from "./common";
-import { TakeArgs, TakeVars } from "./take-types";
+import { CBF, Role, Mode } from "./types/common";
+import { TakeArgs, TakeVars } from "./types/take-types";
+import { closure, cbFactory, sinkFactory, argsFactory } from "./utils";
 
-const tbf: CBF<TakeArgs,TakeVars> = (state) => (mode, d) => {
+const tbf: CBF<TakeArgs, TakeVars> = (state) => (mode, d) => {
     if (mode === Mode.stop) {
         state.vars!.end = true;
         state.source?.(mode, d);
@@ -10,7 +11,7 @@ const tbf: CBF<TakeArgs,TakeVars> = (state) => (mode, d) => {
     }
 }
 
-const sourceTBF: CBF<TakeArgs,TakeVars> = (state) => (mode, d) => {
+const sourceTBF: CBF<TakeArgs, TakeVars> = (state) => (mode, d) => {
     const vars = state.vars!;
     switch (mode) {
         case Mode.start:
