@@ -16,22 +16,22 @@ const sourceTBF: CBF<TakeArgs, TakeVars> = (state) => (mode, d) => {
     switch (mode) {
         case Mode.start:
             state.source = d;
-            state.sink?.(0, closure(state, tbf));
+            vars?.sink?.(0, closure(state, tbf));
             break;
         case Mode.run:
             if (vars.taken < state.args.max) {
                 vars.taken++;
-                state.sink?.(Mode.run, d);
+                vars?.sink?.(Mode.run, d);
                 if (vars.taken === state.args.max && !vars.end) {
                     vars.end = true
                     state.source?.(Mode.stop);
-                    state.sink?.(Mode.stop);
+                    vars?.sink?.(Mode.stop);
                 }
             }
 
             break;
         case Mode.stop:
-            state.sink?.(Mode.stop, d);
+            vars?.sink?.(Mode.stop, d);
             break;
     }
 }

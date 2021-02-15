@@ -16,9 +16,9 @@ export const cbFactory = <A, V>(vars: Vars<A, V>, tbf: CBF<A, V>, role: Role): C
         if (mode !== Mode.start) return;
         const instance: State<A, V> = {
             ...state,
-            sink,
             vars: isVarsFunction<A, V>(vars) ? vars(state.args) : vars as V,
-        }
+        };
+        instance.vars!.sink = sink;
         const tb = closure(instance, tbf);
         switch (role) {
             case Role.source:
@@ -41,7 +41,7 @@ export const sinkFactory = <A, V>(cbf: CBF<A, V>, role: Role): CBSF<A, V> =>
         const tb = closure(instance, cbf);
         switch (role) {
             case Role.sink:
-                instance.source?.(Mode.start, tb);
+                source(Mode.start, tb);
                 break;
         }
         return tb;

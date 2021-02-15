@@ -4,7 +4,7 @@ import { Mode } from "./types/common";
 import { argsFactory, cbFactory } from "./utils";
 
 const fromConstantTB = (state: FromConstantState) => (mode: Mode, d: any)=> {
-    state.sink?.(mode, mode === Mode.run ? state.args.constant : d)
+    state.vars?.sink?.(mode, mode === Mode.run ? state.args.constant : d)
 }
 
 const sf = cbFactory({}, fromConstantTB, Role.source);

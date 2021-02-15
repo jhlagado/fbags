@@ -3,7 +3,7 @@ import { Role, Mode, } from "./types/common";
 import { argsFactory, cbFactory, sinkFactory } from "./utils";
 
 const mapTB = (state: MapState) => (mode: Mode, d: any) => {
-    state.sink?.(mode, mode === Mode.run ? state.args.mapper(d) : d)
+    state.vars?.sink?.(mode, mode === Mode.run ? state.args.mapper(d) : d)
 }
 
 const cbf = cbFactory<MapArgs, MapVars>({}, mapTB, Role.sink);

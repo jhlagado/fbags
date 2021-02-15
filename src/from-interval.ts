@@ -3,7 +3,7 @@ import { FromIntervalState, FromIntervalArgs, FromIntervalVars } from "./types/f
 import { closure, argsFactory } from "./utils";
 
 const callback = (state: FromIntervalState) => () => {
-    state.sink?.(1, state.vars!.i++);
+    state.vars?.sink?.(1, state.vars!.i++);
 }
 
 const talkback = (state: FromIntervalState) => (mode: Mode) => {
@@ -16,8 +16,8 @@ const sf = (state: FromIntervalState) => (mode: Mode, sink: any) => {
     if (mode !== Mode.start) return;
     const instance: FromIntervalState = {
         ...state,
-        sink,
         vars:{
+            sink,
             i:0,
         },
     }
