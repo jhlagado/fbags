@@ -7,9 +7,9 @@ const scanTB = (state: ScanState) => (mode: Mode, d: any) =>{
     const vars = state.vars!;
     if (mode === Mode.run) {
         vars.acc = state.args.reducer(vars.acc, d);
-        state.vars?.sink?.(Mode.run, vars.acc);
+        vars.sink?.(Mode.run, vars.acc);
     } else {
-        state.vars?.sink?.(mode, d);
+        vars.sink?.(mode, d);
     }
 }
 

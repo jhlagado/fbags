@@ -12,11 +12,11 @@ const loop = (state: FromIteratorState) => () => {
         const res = state.args.iterator.next();
         if (res.done) {
             vars.done = true;
-            vars?.sink?.(Mode.stop);
+            vars.sink?.(Mode.stop);
             break;
         }
         else {
-            vars?.sink?.(1, res.value);
+            vars.sink?.(1, res.value);
         }
     }
     vars.inloop = false;
