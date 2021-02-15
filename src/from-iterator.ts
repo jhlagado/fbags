@@ -11,7 +11,7 @@ const loop = (state: FromIteratorState) => () => {
         const res = state.args.iterator.next();
         if (res.done) {
             vars.done = true;
-            state.sink?.(Mode.destroy);
+            state.sink?.(Mode.stop);
             break;
         }
         else {
@@ -29,7 +29,7 @@ const fromIteratorSinkCB = (state: FromIteratorState) => (mode: Mode) => {
             vars.got1 = true;
             if (!vars.inloop && !(vars.done)) closure(state, loop)();
             break;
-        case Mode.destroy:
+        case Mode.stop:
             vars.completed = true;
             break;
     }

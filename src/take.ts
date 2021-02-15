@@ -2,7 +2,7 @@ import { argsFactory, CBF, cbFactory, closure, Role, Mode, sinkFactory } from ".
 import { TakeArgs, TakeVars } from "./take-types";
 
 const tbf: CBF<TakeArgs,TakeVars> = (state) => (mode, d) => {
-    if (mode === Mode.destroy) {
+    if (mode === Mode.stop) {
         state.vars!.end = true;
         state.source?.(mode, d);
     } else if (state.vars!.taken < state.args.max) {
@@ -13,7 +13,7 @@ const tbf: CBF<TakeArgs,TakeVars> = (state) => (mode, d) => {
 const sourceTBF: CBF<TakeArgs,TakeVars> = (state) => (mode, d) => {
     const vars = state.vars!;
     switch (mode) {
-        case Mode.init:
+        case Mode.start:
             state.source = d;
             state.sink?.(0, closure(state, tbf));
             break;
@@ -23,14 +23,14 @@ const sourceTBF: CBF<TakeArgs,TakeVars> = (state) => (mode, d) => {
                 state.sink?.(Mode.run, d);
                 if (vars.taken === state.args.max && !vars.end) {
                     vars.end = true
-                    state.source?.(Mode.destroy);
-                    state.sink?.(Mode.destroy);
+                    state.source?.(Mode.stop);
+                    state.sink?.(Mode.stop);
                 }
             }
 
             break;
-        case Mode.destroy:
-            state.sink?.(Mode.destroy, d);
+        case Mode.stop:
+            state.sink?.(Mode.stop, d);
             break;
     }
 }

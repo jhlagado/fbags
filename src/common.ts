@@ -1,7 +1,7 @@
 export enum Mode {
-    init = 0,
+    start = 0,
     run = 1,
-    destroy = 2,
+    stop = 2,
 }
 
 export enum Role {
@@ -42,7 +42,7 @@ export const isVarsFunction = <A, V>(x: any): x is VarsFunction<A, V> => {
 
 export const cbFactory = <A, V>(vars: Vars<A, V>, tbf: CBF<A, V>, role: Role): CBF<A, V> =>
     (state) => (mode, sink) => {
-        if (mode !== Mode.init) return;
+        if (mode !== Mode.start) return;
         const instance: State<A, V> = {
             ...state,
             sink,
@@ -51,10 +51,10 @@ export const cbFactory = <A, V>(vars: Vars<A, V>, tbf: CBF<A, V>, role: Role): C
         const tb = closure(instance, tbf);
         switch (role) {
             case Role.source:
-                sink(Mode.init, tb)
+                sink(Mode.start, tb)
                 break;
             case Role.sink:
-                instance.source?.(Mode.init, tb);
+                instance.source?.(Mode.start, tb);
                 break;
         }
         return tb;
@@ -70,7 +70,7 @@ export const sinkFactory = <A, V>(cbf: CBF<A, V>, role: Role): CBSF<A, V> =>
         const tb = closure(instance, cbf);
         switch (role) {
             case Role.sink:
-                instance.source?.(Mode.init, tb);
+                instance.source?.(Mode.start, tb);
                 break;
         }
         return tb;

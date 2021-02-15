@@ -7,13 +7,13 @@ const callback = (state: FromIntervalState) => () => {
 }
 
 const talkback = (state: FromIntervalState) => (mode: Mode) => {
-    if (mode === Mode.destroy) {
+    if (mode === Mode.stop) {
         clearInterval(state.vars!.id);
     }
 }
 
 const sf = (state: FromIntervalState) => (mode: Mode, sink: any) => {
-    if (mode !== Mode.init) return;
+    if (mode !== Mode.start) return;
     const instance: FromIntervalState = {
         ...state,
         sink,
@@ -23,7 +23,7 @@ const sf = (state: FromIntervalState) => (mode: Mode, sink: any) => {
     }
     instance.vars!.id = setInterval(closure(instance, callback), state.args.period);
     const tb = closure(instance, talkback);
-    sink(Mode.init, tb);
+    sink(Mode.start, tb);
 }
 
 export const fromInterval = argsFactory<FromIntervalArgs, FromIntervalVars>(sf);

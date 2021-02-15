@@ -4,7 +4,7 @@ import { ForEachState, ForEachArgs, ForEachVars } from "./for-each-types";
 const forEachTB = (state: ForEachState) => (mode: Mode, d: any) => {
     const vars = state.vars!;
     switch (mode) {
-        case Mode.init:
+        case Mode.start:
             vars.talkback = d;
             vars.talkback?.(Mode.run);
             break;
