@@ -1,9 +1,9 @@
 import { Role, Mode, CB } from "./common";
-import { closure, cbFactory, argsFactory, cbExec } from "./utils";
+import { cbFactory, argsFactory, cbExec } from "./utils";
 
 // binding simulates forth closure
 
-const loop = (state: CB) => (_arg:any) => {
+const loop = (state: CB) => {
     const vars = state.vars!;
     vars.inloop = true;
     while (vars.got1 && !vars.completed) {
@@ -27,7 +27,7 @@ const fromIteratorSinkCB = (state: CB) => (mode: Mode) => {
     switch (mode) {
         case Mode.run:
             vars.got1 = true;
-            if (!vars.inloop && !(vars.done)) cbExec(closure(state, loop))(0);
+            if (!vars.inloop && !(vars.done)) loop(state);
             break;
         case Mode.stop:
             vars.completed = true;
@@ -35,12 +35,12 @@ const fromIteratorSinkCB = (state: CB) => (mode: Mode) => {
     }
 }
 
-const sf = cbFactory({
+const sf = cbFactory(fromIteratorSinkCB, Role.source, {
     inloop: false,
     got1: false,
     completed: false,
     done: false
-}, fromIteratorSinkCB, Role.source);
+});
 
 export const fromIterator = argsFactory(sf);
 

@@ -20,7 +20,7 @@ const sf = (state: CB) => (mode: Mode, sink: any) => {
             i: 0,
         },
     }
-    instance.vars!.id = setInterval(cbExec(closure(instance, callback)), state.args.period);
+    instance.vars!.id = setInterval(callback(instance), state.args.period);
     const tb = closure(instance, talkback);
     cbExec(sink)(Mode.start, tb);
 }

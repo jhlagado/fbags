@@ -5,7 +5,7 @@ const mapTB = (state: CB) => (mode: Mode, d: any) => {
     cbExec(state.vars?.sink)(mode, mode === Mode.run ? state.args.mapper(d) : d)
 }
 
-const cbf = cbFactory({}, mapTB, Role.sink);
+const cbf = cbFactory(mapTB, Role.sink, {});
 
 const sf = sinkFactory(cbf, Role.none);
 

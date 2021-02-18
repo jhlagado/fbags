@@ -12,7 +12,7 @@ const scanTB = (state: CB) => (mode: Mode, d: any) =>{
     }
 }
 
-const cbf = cbFactory((args)=>({ acc: args.seed }), scanTB,  Role.sink);
+const cbf = cbFactory(scanTB,  Role.sink, (args)=>({ acc: args.seed }), );
 
 const sf = sinkFactory(cbf, Role.none);
 

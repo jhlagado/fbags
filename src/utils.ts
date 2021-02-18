@@ -22,7 +22,6 @@ export const sinkFactory = (cbf: CBProc, role: Role): CBSProc =>
         const instance: Closure = {
             ...state,
             source,
-            vars: {},
         }
         const tb = closure(instance, cbf);
         switch (role) {
@@ -33,7 +32,7 @@ export const sinkFactory = (cbf: CBProc, role: Role): CBSProc =>
         return tb;
     }
 
-export const cbFactory = (vars: Vars, tbf: CBProc, role: Role): CBProc =>
+export const cbFactory = (tbf: CBProc, role: Role, vars?: Vars): CBProc =>
     (state) => (mode, sink: CB) => {
         if (mode !== Mode.start) return;
         const instance: Closure = {

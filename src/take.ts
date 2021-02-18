@@ -37,7 +37,7 @@ const sourceTBF: CBProc = (state) => (mode, d) => {
     }
 }
 
-const cbf = cbFactory({ taken: 0, end: false }, sourceTBF, Role.sink);
+const cbf = cbFactory(sourceTBF, Role.sink, { taken: 0, end: false });
 
 const sf = sinkFactory(cbf, Role.none);
 
