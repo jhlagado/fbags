@@ -1,16 +1,15 @@
-import { MapState, MapArgs, MapVars } from "./types/map-types";
-import { Role, Mode, } from "./types/common";
-import { argsFactory, cbFactory, sinkFactory } from "./utils";
+import { Role, Mode, CB, } from "./common";
+import { argsFactory, cbExec, cbFactory, sinkFactory } from "./utils";
 
-const mapTB = (state: MapState) => (mode: Mode, d: any) => {
-    state.vars?.sink?.(mode, mode === Mode.run ? state.args.mapper(d) : d)
+const mapTB = (state: CB) => (mode: Mode, d: any) => {
+    cbExec(state.vars?.sink)(mode, mode === Mode.run ? state.args.mapper(d) : d)
 }
 
-const cbf = cbFactory<MapArgs, MapVars>({}, mapTB, Role.sink);
+const cbf = cbFactory({}, mapTB, Role.sink);
 
-const sf = sinkFactory<MapArgs, MapVars>(cbf, Role.none);
+const sf = sinkFactory(cbf, Role.none);
 
-export const map = argsFactory<MapArgs, MapVars>(sf);
+export const map = argsFactory(sf);
 
 // const map = f => source => (start, sink) => {
 //     if (start !== 0) return;

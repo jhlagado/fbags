@@ -1,23 +1,22 @@
-import { Role } from "./types/common";
-import { ScanState, ScanArgs, ScanVars } from "./types/scan-types";
-import { Mode } from "./types/common";
-import { argsFactory, cbFactory, sinkFactory } from "./utils";
+import { CB, Role } from "./common";
+import { Mode } from "./common";
+import { argsFactory, cbExec, cbFactory, sinkFactory } from "./utils";
 
-const scanTB = (state: ScanState) => (mode: Mode, d: any) =>{
+const scanTB = (state: CB) => (mode: Mode, d: any) =>{
     const vars = state.vars!;
     if (mode === Mode.run) {
         vars.acc = state.args.reducer(vars.acc, d);
-        vars.sink?.(Mode.run, vars.acc);
+        cbExec(vars.sink)(Mode.run, vars.acc);
     } else {
-        vars.sink?.(mode, d);
+        cbExec(vars.sink)(mode, d);
     }
 }
 
-const cbf = cbFactory<ScanArgs, ScanVars>((args)=>({ acc: args.seed }), scanTB,  Role.sink);
+const cbf = cbFactory((args)=>({ acc: args.seed }), scanTB,  Role.sink);
 
-const sf = sinkFactory<ScanArgs, ScanVars>(cbf, Role.none);
+const sf = sinkFactory(cbf, Role.none);
 
-export const scan = argsFactory<ScanArgs, ScanVars>(sf);
+export const scan = argsFactory(sf);
 
 // function scan(reducer, seed) {
 //     let hasAcc = arguments.length === 2;

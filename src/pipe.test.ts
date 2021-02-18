@@ -15,7 +15,7 @@ test('make count up to 40 and print each number', () => {
 
     pipe(
         fromIterator({ iterator }),
-        map({ mapper: (value) => value + 1 }),
+        map({ mapper: (value: number) => value + 1 }),
         forEach({ effect: crossCheck }),
     );
     expect(crossCheck).toHaveBeenCalledTimes(expectedLength);

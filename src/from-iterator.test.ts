@@ -1,5 +1,6 @@
 import { forEach } from "./for-each";
 import { fromIterator } from "./from-iterator";
+import { pipe } from "./pipe";
 
 test('count up to 40 in 10s and compare each number', () => {
     const expected = [10, 20, 30, 40];
@@ -11,7 +12,10 @@ test('count up to 40 in 10s and compare each number', () => {
 
     const iterator = [10, 20, 30, 40][Symbol.iterator]();
 
-    forEach({ effect: crossCheck })(fromIterator({ iterator }));
+    pipe(
+        fromIterator({ iterator }),
+        forEach({ effect: crossCheck })
+    );
 
     expect(crossCheck).toHaveBeenCalledTimes(expectedLength);
 })

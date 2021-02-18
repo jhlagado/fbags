@@ -1,47 +1,53 @@
-import { CBF, CBSF, Role, Mode, State, Vars, VarsFunction } from "./types/common";
+import { CBProc, Role, Mode, Vars, VarsFunction, Closure, CBSProc, CBArgs, CB } from "./common";
 
-export const closure = (state: any, cbf: any): any => cbf(state)
+export const closure = (state: any, cbf: CBProc | CBSProc): Closure => ({ ...state, proc: cbf })
 
-export const argsFactory = <A, V>(cbf: CBF<A, V> | CBSF<A, V>) => (args: A) => {
+export const isVarsFunction = (x: any): x is VarsFunction => {
+    return (typeof x === 'function') && (x.length === 1);
+}
+
+export const cbExec = (closure?: Closure) => {
+    if (!closure) return (..._args: any) => { }
+    const proc = closure.proc as CBProc;
+    return proc(closure);
+}
+
+export const argsFactory = (cbf: CBProc | CBSProc) => (args: CBArgs) => {
     const instance = { args };
     return closure(instance, cbf);
 }
 
-export const isVarsFunction = <A, V>(x: any): x is VarsFunction<A, V> => {
-    return (typeof x === 'function') && (x.length === 1); // or whatever test
-}
-
-export const cbFactory = <A, V>(vars: Vars<A, V>, tbf: CBF<A, V>, role: Role): CBF<A, V> =>
-    (state) => (mode, sink) => {
-        if (mode !== Mode.start) return;
-        const instance: State<A, V> = {
+export const sinkFactory = (cbf: CBProc, role: Role): CBSProc =>
+    (state) => (source) => {
+        const instance: Closure = {
             ...state,
-            vars: isVarsFunction<A, V>(vars) ? vars(state.args) : vars as V,
-        };
-        instance.vars!.sink = sink;
-        const tb = closure(instance, tbf);
+            source,
+            vars: {},
+        }
+        const tb = closure(instance, cbf);
         switch (role) {
-            case Role.source:
-                sink(Mode.start, tb)
-                break;
             case Role.sink:
-                instance.source?.(Mode.start, tb);
+                (cbExec(source))(Mode.start, tb);
                 break;
         }
         return tb;
     }
 
-export const sinkFactory = <A, V>(cbf: CBF<A, V>, role: Role): CBSF<A, V> =>
-    (state) => (source) => {
-        const instance: State<A, V> = {
+export const cbFactory = (vars: Vars, tbf: CBProc, role: Role): CBProc =>
+    (state) => (mode, sink: CB) => {
+        if (mode !== Mode.start) return;
+        const instance: Closure = {
             ...state,
-            source,
-            vars: <V>{},
-        }
-        const tb = closure(instance, cbf);
+            vars: isVarsFunction(vars) ? vars(state.args) : vars,
+        };
+        instance.vars!.sink = sink;
+        const tb = closure(instance, tbf);
         switch (role) {
+            case Role.source:
+                (cbExec(sink))(Mode.start, tb)
+                break;
             case Role.sink:
-                source(Mode.start, tb);
+                (cbExec(instance.source!))(Mode.start, tb);
                 break;
         }
         return tb;

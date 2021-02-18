@@ -1,46 +1,47 @@
-import { CBF, Role, Mode } from "./types/common";
-import { TakeArgs, TakeVars } from "./types/take-types";
-import { closure, cbFactory, sinkFactory, argsFactory } from "./utils";
+import { CBProc, Role, Mode } from "./common";
+import { closure, cbFactory, sinkFactory, argsFactory, cbExec } from "./utils";
 
-const tbf: CBF<TakeArgs, TakeVars> = (state) => (mode, d) => {
+const tbf: CBProc = (state) => (mode, d) => {
+    const source = state.source!;
     if (mode === Mode.stop) {
         state.vars!.end = true;
-        state.source?.(mode, d);
+        cbExec(source)(mode, d);
     } else if (state.vars!.taken < state.args.max) {
-        state.source?.(mode, d);
+        cbExec(source)(mode, d);
     }
 }
 
-const sourceTBF: CBF<TakeArgs, TakeVars> = (state) => (mode, d) => {
+const sourceTBF: CBProc = (state) => (mode, d) => {
     const vars = state.vars!;
+    const sink = vars.sink!;
     switch (mode) {
         case Mode.start:
             state.source = d;
-            vars.sink?.(0, closure(state, tbf));
+            cbExec(sink)(0, closure(state, tbf));
             break;
         case Mode.run:
             if (vars.taken < state.args.max) {
                 vars.taken++;
-                vars.sink?.(Mode.run, d);
+                cbExec(sink)(Mode.run, d);
                 if (vars.taken === state.args.max && !vars.end) {
                     vars.end = true
-                    state.source?.(Mode.stop);
-                    vars.sink?.(Mode.stop);
+                    if (state.source) cbExec(state.source)(Mode.stop);
+                    cbExec(sink)(Mode.stop);
                 }
             }
 
             break;
         case Mode.stop:
-            vars.sink?.(Mode.stop, d);
+            cbExec(sink)(Mode.stop, d);
             break;
     }
 }
 
-const cbf = cbFactory<TakeArgs, TakeVars>({ taken: 0, end: false }, sourceTBF, Role.sink);
+const cbf = cbFactory({ taken: 0, end: false }, sourceTBF, Role.sink);
 
-const sf = sinkFactory<TakeArgs, TakeVars>(cbf, Role.none);
+const sf = sinkFactory(cbf, Role.none);
 
-export const take = argsFactory<TakeArgs, TakeVars>(sf);
+export const take = argsFactory(sf);
 
 // const take = max => source => (start, sink) => {
 //     if (start !== 0) return;

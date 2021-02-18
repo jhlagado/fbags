@@ -1,6 +1,7 @@
 import { forEach } from "./for-each";
 import { fromIterator } from "./from-iterator";
 import { map } from "./map";
+import { pipe } from "./pipe";
 
 test('count up to 40 in 10s and compare each number', () => {
     const expected = [11, 21, 31, 41];
@@ -12,9 +13,12 @@ test('count up to 40 in 10s and compare each number', () => {
 
     const iterator = [10, 20, 30, 40][Symbol.iterator]();
 
-    const fi = fromIterator({ iterator });
-    const m = map({ mapper: (value) => value + 1 })(fi);
-    forEach({ effect: crossCheck })(m);
+    pipe(
+        fromIterator({ iterator }),
+        map({ mapper: (value: number) => value + 1 }),
+        forEach({ effect: crossCheck })
+    );
+
 
     expect(crossCheck).toHaveBeenCalledTimes(expectedLength);
 })

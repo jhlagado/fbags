@@ -1,32 +1,31 @@
-import { Mode } from "./types/common";
-import { FromIntervalState, FromIntervalArgs, FromIntervalVars } from "./types/from-interval-types";
-import { closure, argsFactory } from "./utils";
+import { CB, Mode } from "./common";
+import { closure, argsFactory, cbExec } from "./utils";
 
-const callback = (state: FromIntervalState) => () => {
-    state.vars?.sink?.(1, state.vars!.i++);
+const callback = (state: CB) => () => {
+    cbExec(state.vars?.sink)(1, state.vars!.i++);
 }
 
-const talkback = (state: FromIntervalState) => (mode: Mode) => {
+const talkback = (state: CB) => (mode: Mode) => {
     if (mode === Mode.stop) {
         clearInterval(state.vars!.id);
     }
 }
 
-const sf = (state: FromIntervalState) => (mode: Mode, sink: any) => {
+const sf = (state: CB) => (mode: Mode, sink: any) => {
     if (mode !== Mode.start) return;
-    const instance: FromIntervalState = {
+    const instance: CB = {
         ...state,
-        vars:{
+        vars: {
             sink,
-            i:0,
+            i: 0,
         },
     }
-    instance.vars!.id = setInterval(closure(instance, callback), state.args.period);
+    instance.vars!.id = setInterval(cbExec(closure(instance, callback)), state.args.period);
     const tb = closure(instance, talkback);
-    sink(Mode.start, tb);
+    cbExec(sink)(Mode.start, tb);
 }
 
-export const fromInterval = argsFactory<FromIntervalArgs, FromIntervalVars>(sf);
+export const fromInterval = argsFactory(sf);
 
 
 

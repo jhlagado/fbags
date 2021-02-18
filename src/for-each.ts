@@ -1,24 +1,23 @@
-import {  Role, Mode } from "./types/common";
-import { ForEachState, ForEachArgs, ForEachVars } from "./types/for-each-types";
-import { sinkFactory, argsFactory } from "./utils";
+import {  Role, Mode, CB } from "./common";
+import { sinkFactory, argsFactory, cbExec } from "./utils";
 
-const forEachTB = (state: ForEachState) => (mode: Mode, d: any) => {
+const forEachTB = (state: CB) => (mode: Mode, d: any) => {
     const vars = state.vars!;
     switch (mode) {
         case Mode.start:
             vars.talkback = d;
-            vars.talkback?.(Mode.run);
+            cbExec(d)(Mode.run);
             break;
         case Mode.run:
             state.args.effect(d);
-            vars.talkback?.(Mode.run);
+            cbExec(vars.talkback)(Mode.run);
             break;
     }
 }
 
-const sf = sinkFactory<ForEachArgs, ForEachVars>(forEachTB, Role.sink);
+const sf = sinkFactory(forEachTB, Role.sink);
 
-export const forEach = argsFactory<ForEachArgs, ForEachVars>(sf);
+export const forEach = argsFactory(sf);
 
 
 // const forEach = operation => source => {
