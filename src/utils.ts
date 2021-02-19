@@ -1,7 +1,4 @@
-import { CBProc, Role, Mode, Vars, VarsFunction, CBSProc, CBArgs, CB, Tuple, Dict } from "./common";
-
-export const isDict = (x: any): x is Dict => Object.prototype.toString.call(x) === '[object Object]';
-export const isTuple = (x: any): x is Tuple => Array.isArray(x) && x.length === 4;
+import { CBProc, Role, Mode, Vars, VarsFunction, CBSProc, CBArgs, CB, Dict } from "./common";
 
 export const closure = (state: any, cbf: CBProc | CBSProc): CB => ({ ...state, proc: cbf })
 
@@ -42,7 +39,7 @@ export const cbFactory = (tbf: CBProc, role: Role, vars?: Vars): CBProc =>
             ...state,
             vars: isVarsFunction(vars) ? vars(state.args) : vars,
         };
-        if (isDict(instance.vars)) instance.vars!.sink = sink;
+        (instance.vars as Dict).sink = sink;
         const tb = closure(instance, tbf);
         switch (role) {
             case Role.source:

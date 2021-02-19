@@ -37,4 +37,11 @@ export type Effect = (value: string) => void;
 export type Mapper = (value: any) => any;
 export type Reducer = (acc: any, value: any) => any;
 
-export type Tuple = [CBArgs, CBVars, CB, CBProc | CBSProc];
+export type ClosureTuple = [CBArgs, CBVars, CB, CBProc | CBSProc];
+
+export enum ClosureField {
+    args = 0,
+    vars = 1,
+    source = 2,
+    proc = 3,
+} 
