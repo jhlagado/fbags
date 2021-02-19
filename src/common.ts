@@ -14,10 +14,14 @@ export type Dict = {
     [key: string]: any;
 };
 
+export type Scalar = number;
+export type Tuple = [];
+export type Elem = Scalar | Tuple | CB | Function | Dict;
+
 export type CBArgs = any;
 export type CBVars = any;
 
-export type CB = [CBArgs, CBVars, CB?, (CBProc | CBSProc)?];
+export type CB = [Elem?, Elem?, Elem?, Function?];
 
 export enum CBI {
     args = 0,

@@ -1,4 +1,4 @@
-import { CBProc, Role, Mode, Dict, CBI } from "./common";
+import { CBProc, Role, Mode, Dict, CBI, CB } from "./common";
 import { closure, cbFactory, sinkFactory, argsFactory, cbExec } from "./utils";
 
 const tbf: CBProc = (state) => (mode, d) => {
@@ -7,9 +7,9 @@ const tbf: CBProc = (state) => (mode, d) => {
     const source = state[CBI.source];
     if (mode === Mode.stop) {
         vars.end = true;
-        cbExec(source)(mode, d);
+        cbExec(source as CB)(mode, d);
     } else if (vars.taken < max) {
-        cbExec(source)(mode, d);
+        cbExec(source as CB)(mode, d);
     }
 }
 
@@ -28,7 +28,7 @@ const sourceTBF: CBProc = (state) => (mode, d) => {
                 cbExec(sink)(Mode.run, d);
                 if (vars.taken === max && !vars.end) {
                     vars.end = true
-                    if (state[CBI.source]) cbExec(state[CBI.source])(Mode.stop);
+                    if (state[CBI.source]) cbExec(state[CBI.source] as CB)(Mode.stop);
                     cbExec(sink)(Mode.stop);
                 }
             }

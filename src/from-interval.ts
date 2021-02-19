@@ -21,7 +21,7 @@ const sf = (state: CB) => (mode: Mode, sink: any) => {
         sink,
         i: 0,
     } as Dict;
-    instance[CBI.vars].id = setInterval(callback(instance), period);
+    (instance[CBI.vars] as Dict).id = setInterval(callback(instance), period);
     const tb = closure(instance, talkback);
     cbExec(sink)(Mode.start, tb);
 }

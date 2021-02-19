@@ -1,4 +1,4 @@
-import { CBProc, Role, Mode, Vars, VarsFunction, CBSProc, CBArgs, CB, Dict, CBI } from "./common";
+import { CBProc, Role, Mode, Vars, VarsFunction, CBSProc, CBArgs, CB, Dict, CBI, Tuple } from "./common";
 
 export const closure = (state: CB, cbf: CBProc | CBSProc): CB => {
     const instance: CB = [...state];
@@ -10,10 +10,10 @@ export const isVarsFunction = (x: any): x is VarsFunction => {
     return (typeof x === 'function') && (x.length === 1);
 }
 
-export const cbExec = (closure?: CB) => {
-    if (!closure) return (..._args: any) => { }
-    const proc = closure[CBI.proc] as CBProc;
-    return proc(closure);
+export const cbExec = (cb?: CB) => {
+    if (!cb) return (..._args: any) => { }
+    const proc = cb[CBI.proc] as CBProc;
+    return proc(cb);
 }
 
 export const argsFactory = (cbf: CBProc | CBSProc) => (args: CBArgs) => {
@@ -47,7 +47,7 @@ export const cbFactory = (tbf: CBProc, role: Role, vars: Vars): CBProc =>
                 (cbExec(sink))(Mode.start, tb)
                 break;
             case Role.sink:
-                (cbExec(instance[CBI.source]))(Mode.start, tb);
+                (cbExec(instance[CBI.source] as CB))(Mode.start, tb);
                 break;
         }
         return tb;

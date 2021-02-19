@@ -13,7 +13,7 @@ const forEachTB = (state: CB) => (mode: Mode, d: any) => {
             break;
         case Mode.run:
             effect(d);
-            cbExec(state[CBI.source])(Mode.run);
+            cbExec(state[CBI.source] as CB)(Mode.run);
             break;
     }
 }
