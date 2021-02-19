@@ -1,31 +1,31 @@
-import { ARGS, CB, Role, VARS } from "./common";
+import { ARGS, Closure, Role, VARS } from "./common";
 import { Mode } from "./common";
-import { argsFactory, cbExec, cbFactory, sinkFactory } from "./utils";
+import { argsFactory, execClosure, closureFactory, sinkFactory } from "./utils";
 
 type ArgsTuple = [Function, number, undefined, undefined]
 const REDUCER = 0;
 const SEED = 1;
 
-type VarsTuple = [CB, any, undefined, undefined]
+type VarsTuple = [Closure, any, undefined, undefined]
 const SINK = 0;
 const ACC = 1;
 
-const scanTB = (state: CB) => (mode: Mode, d: any) => {
+const scanTB = (state: Closure) => (mode: Mode, d: any) => {
     const args = state[ARGS] as ArgsTuple;
     const vars = state[VARS] as VarsTuple;
     if (mode === Mode.run) {
         vars[ACC] = args[REDUCER](vars[ACC], d);
-        cbExec(vars[SINK])(Mode.run, vars[ACC]);
+        execClosure(vars[SINK])(Mode.run, vars[ACC]);
     } else {
-        cbExec(vars[SINK])(mode, d);
+        execClosure(vars[SINK])(mode, d);
     }
 }
 
-const cbf = cbFactory(scanTB, Role.sink, (args: ArgsTuple) => {
+const cproc = closureFactory(scanTB, Role.sink, (args: ArgsTuple) => {
     return [undefined, args[SEED]]
 });
 
-const sf = sinkFactory(cbf, Role.none);
+const sf = sinkFactory(cproc, Role.none);
 
 export const scan = argsFactory(sf);
 

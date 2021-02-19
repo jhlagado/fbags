@@ -1,53 +1,53 @@
-import { CBProc, Role, Mode, CB, ARGS, SOURCE, VARS } from "./common";
-import { closure, cbFactory, sinkFactory, argsFactory, cbExec } from "./utils";
+import { CProc, Role, Mode, Closure, ARGS, SOURCE, VARS } from "./common";
+import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "./utils";
 
-type VarsTuple = [CB, number, boolean, undefined]
+type VarsTuple = [Closure, number, boolean, undefined]
 const SINK = 0;
 const TAKEN = 1;
 const END = 2;
 
-const tbf: CBProc = (state) => (mode, d) => {
+const tbf: CProc = (state) => (mode, d) => {
     const max = state[ARGS] as number;
     const vars = state[VARS] as VarsTuple;
     const source = state[SOURCE];
     if (mode === Mode.stop) {
         vars[END] = true;
-        cbExec(source as CB)(mode, d);
+        execClosure(source as Closure)(mode, d);
     } else if (vars[TAKEN] < max) {
-        cbExec(source as CB)(mode, d);
+        execClosure(source as Closure)(mode, d);
     }
 }
 
-const sourceTBF: CBProc = (state) => (mode, d) => {
+const sourceTBF: CProc = (state) => (mode, d) => {
     const max = state[ARGS] as number;
     const vars = state[VARS] as VarsTuple;
-    const sink = vars[SINK] as CB;
+    const sink = vars[SINK] as Closure;
     switch (mode) {
         case Mode.start:
             state[SOURCE] = d;
-            cbExec(sink)(0, closure(state, tbf));
+            execClosure(sink)(0, closure(state, tbf));
             break;
         case Mode.run:
             if (vars[TAKEN] < max) {
                 vars[TAKEN]++;
-                cbExec(sink)(Mode.run, d);
+                execClosure(sink)(Mode.run, d);
                 if (vars[TAKEN] === max && !vars[END]) {
                     vars[END] = true
-                    if (state[SOURCE]) cbExec(state[SOURCE] as CB)(Mode.stop);
-                    cbExec(sink)(Mode.stop);
+                    if (state[SOURCE]) execClosure(state[SOURCE] as Closure)(Mode.stop);
+                    execClosure(sink)(Mode.stop);
                 }
             }
 
             break;
         case Mode.stop:
-            cbExec(sink)(Mode.stop, d);
+            execClosure(sink)(Mode.stop, d);
             break;
     }
 }
 
-const cbf = cbFactory(sourceTBF, Role.sink, [undefined, 0, false]);
+const cproc = closureFactory(sourceTBF, Role.sink, [undefined, 0, false]);
 
-const sf = sinkFactory(cbf, Role.none);
+const sf = sinkFactory(cproc, Role.none);
 
 export const take = argsFactory(sf);
 

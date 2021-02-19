@@ -1,11 +1,11 @@
-import { CB, CBSProc, PROC } from "./common";
+import { Closure, CSProc, PROC } from "./common";
 
-export const pipe = (source: CB, ...sfs: CB[]) => {
-    let res: CB | void = source;
-    for (let i = 0, n = sfs.length; i < n; i++) {
-        const cbs = sfs[i];
-        const proc = cbs[PROC] as CBSProc;
-        res = res ? (proc(cbs))(res) : res;
+export const pipe = (source: Closure, ...sinks: Closure[]) => {
+    let res: Closure | void = source;
+    for (let i = 0, n = sinks.length; i < n; i++) {
+        const closure = sinks[i];
+        const proc = closure[PROC] as CSProc;
+        res = res ? (proc(closure))(res) : res;
     }
     return res;
 }

@@ -1,14 +1,14 @@
 import {
-    CBProc, Role, Mode, Vars, VarsFunction, CBSProc, CB, Elem,
+    CProc, Role, Mode, Vars, VarsFunction, CSProc, Closure, Elem,
     EMPTY_TUPLE, Tuple, VARS, ARGS, PROC, SOURCE
 } from "./common";
 
-type VarsTuple = [CB, undefined, undefined, undefined]
+type VarsTuple = [Closure, undefined, undefined, undefined]
 const SINK = 0;
 
-export const closure = (state: CB, cbf: CBProc | CBSProc): CB => {
-    const instance: CB = [...state];
-    instance[PROC] = cbf;
+export const closure = (state: Closure, cproc: CProc | CSProc): Closure => {
+    const instance: Closure = [...state];
+    instance[PROC] = cproc;
     return instance;
 }
 
@@ -16,44 +16,44 @@ export const isVarsFunction = (x: any): x is VarsFunction => {
     return (typeof x === 'function') && (x.length === 1);
 }
 
-export const cbExec = (cb?: CB) => {
-    if (!cb) return (..._args: any) => { }
-    const proc = cb[PROC] as CBProc;
-    return proc(cb);
+export const execClosure = (closure?: Closure) => {
+    if (!closure) return (..._args: any) => { }
+    const proc = closure[PROC] as CProc;
+    return proc(closure);
 }
 
-export const argsFactory = (cbf: CBProc | CBSProc) => (args: Elem) => {
-    const instance = [...EMPTY_TUPLE] as CB;
+export const argsFactory = (cproc: CProc | CSProc) => (args: Elem) => {
+    const instance = [...EMPTY_TUPLE] as Closure;
     instance[ARGS] = args;
-    return closure(instance, cbf);
+    return closure(instance, cproc);
 }
 
-export const sinkFactory = (cbf: CBProc, role: Role): CBSProc =>
+export const sinkFactory = (cproc: CProc, role: Role): CSProc =>
     (state) => (source) => {
-        const instance: CB = [...state]
+        const instance: Closure = [...state]
         instance[SOURCE] = source;
-        const tb = closure(instance, cbf);
+        const tb = closure(instance, cproc);
         switch (role) {
             case Role.sink:
-                (cbExec(source))(Mode.start, tb);
+                (execClosure(source))(Mode.start, tb);
                 break;
         }
         return tb;
     }
 
-export const cbFactory = (tbf: CBProc, role: Role, vars: Vars = [...EMPTY_TUPLE] as Tuple): CBProc =>
-    (state) => (mode, sink: CB) => {
+export const closureFactory = (cproc: CProc, role: Role, vars: Vars = [...EMPTY_TUPLE] as Tuple): CProc =>
+    (state) => (mode, sink: Closure) => {
         if (mode !== Mode.start) return;
-        const instance: CB = [...state];
+        const instance: Closure = [...state];
         instance[VARS] = isVarsFunction(vars) ? vars(state[ARGS]) : vars;
         (instance[VARS] as VarsTuple)[SINK] = sink;
-        const tb = closure(instance, tbf);
+        const tb = closure(instance, cproc);
         switch (role) {
             case Role.source:
-                (cbExec(sink))(Mode.start, tb)
+                (execClosure(sink))(Mode.start, tb)
                 break;
             case Role.sink:
-                (cbExec(instance[SOURCE] as CB))(Mode.start, tb);
+                (execClosure(instance[SOURCE] as Closure))(Mode.start, tb);
                 break;
         }
         return tb;

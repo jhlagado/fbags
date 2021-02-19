@@ -1,20 +1,20 @@
-import { Role, Mode, CB, ARGS, SOURCE } from "./common";
-import { sinkFactory, argsFactory, cbExec } from "./utils";
+import { Role, Mode, Closure, ARGS, SOURCE } from "./common";
+import { sinkFactory, argsFactory, execClosure } from "./utils";
 
 // for the sake of simplicity this closure 
 // does not allocate a vars object instead it mutates 
 // the (normally immutable) source field instead
-const forEachTB = (state: CB) => (mode: Mode, d: any) => {
+const forEachTB = (state: Closure) => (mode: Mode, d: any) => {
     const effect = state[ARGS] as Function;
     switch (mode) {
         case Mode.start:
             state[SOURCE] = d;
-            cbExec(d)(Mode.run, true);  // first = true is needed for soures that need initialisation
+            execClosure(d)(Mode.run, true);  // first = true is needed for soures that need initialisation
             // see fromIterator 
             break;
         case Mode.run:
             effect(d);
-            cbExec(state[SOURCE] as CB)(Mode.run, false);
+            execClosure(state[SOURCE] as Closure)(Mode.run, false);
             break;
     }
 }

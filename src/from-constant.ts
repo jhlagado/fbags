@@ -1,16 +1,16 @@
-import { CB, Role, Mode, ARGS, VARS } from "./common";
-import { argsFactory, cbExec, cbFactory } from "./utils";
+import { Closure, Role, Mode, ARGS, VARS } from "./common";
+import { argsFactory, execClosure, closureFactory } from "./utils";
 
-type VarsTuple = [CB, undefined, undefined, undefined]
+type VarsTuple = [Closure, undefined, undefined, undefined]
 const SINK = 0;
 
-const fromConstantTB = (state: CB) => (mode: Mode, d: any) => {
+const fromConstantTB = (state: Closure) => (mode: Mode, d: any) => {
     const constant = state[ARGS] as number;
     const vars = state[VARS] as VarsTuple;
-    cbExec(vars[SINK])(mode, mode === Mode.run ? constant : d)
+    execClosure(vars[SINK])(mode, mode === Mode.run ? constant : d)
 }
 
-const sf = cbFactory(fromConstantTB, Role.source, undefined);
+const sf = closureFactory(fromConstantTB, Role.source, undefined);
 
 export const fromConstant = argsFactory(sf);
 

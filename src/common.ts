@@ -12,17 +12,17 @@ export enum Role {
 
 export type Scalar = number | boolean;
 export type Tuple = [Elem, Elem, Elem, Elem];
-export type Elem = Scalar | Tuple | CB | Function | Iterator<any> | undefined;
+export type Elem = Scalar | Tuple | Closure | Function | Iterator<any> | undefined;
 
-export type CB = [Elem, Elem, Elem, Function?];
+export type Closure = [Elem, Elem, Elem, Function?];
 export const ARGS = 0;
 export const VARS = 1;
 export const SOURCE = 2;
 export const SINK2 = 2;
 export const PROC = 3;
 
-export type CBProc = (state: CB) => (mode: Mode, d?: any) => CB | void;
-export type CBSProc = (state: CB) => (source: CB) => CB;
+export type CProc = (state: Closure) => (mode: Mode, d?: any) => Closure | void;
+export type CSProc = (state: Closure) => (source: Closure) => Closure;
 
 export type VarsFunction = (args: Elem) => Elem;
 export type Vars = Elem | VarsFunction;

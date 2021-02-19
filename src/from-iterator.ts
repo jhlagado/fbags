@@ -1,14 +1,14 @@
-import { Role, Mode, CB, ARGS, VARS, SINK2 } from "./common";
-import { cbFactory, argsFactory, cbExec } from "./utils";
+import { Role, Mode, Closure, ARGS, VARS, SINK2 } from "./common";
+import { closureFactory, argsFactory, execClosure } from "./utils";
 
-type VarsTuple = [CB | boolean, boolean, boolean, boolean]
+type VarsTuple = [Closure | boolean, boolean, boolean, boolean]
 const SINK = 0;
 const INLOOP = 0;
 const GOT1 = 1;
 const COMPLETED = 2;
 const DONE = 3;
 
-const loop = (state: CB) => {
+const loop = (state: Closure) => {
     const iterator = state[ARGS] as any;
     const vars = state[VARS] as VarsTuple;
     vars[INLOOP] = true;
@@ -17,17 +17,17 @@ const loop = (state: CB) => {
         const res = iterator.next();
         if (res.done) {
             vars[DONE] = true;
-            cbExec(state[SINK2] as CB)(Mode.stop);
+            execClosure(state[SINK2] as Closure)(Mode.stop);
             break;
         }
         else {
-            cbExec(state[SINK2] as CB)(1, res.value);
+            execClosure(state[SINK2] as Closure)(1, res.value);
         }
     }
     vars[INLOOP] = false;
 }
 
-const fromIteratorSinkCB = (state: CB) => (mode: Mode, first: boolean) => {
+const fromIteratorSinkCB = (state: Closure) => (mode: Mode, first: boolean) => {
     const vars = state[VARS] as VarsTuple;
     if (vars[COMPLETED]) return
     switch (mode) {
@@ -52,7 +52,7 @@ const fromIteratorSinkCB = (state: CB) => (mode: Mode, first: boolean) => {
     }
 }
 
-const sf = cbFactory(fromIteratorSinkCB, Role.source, undefined);
+const sf = closureFactory(fromIteratorSinkCB, Role.source, undefined);
 
 export const fromIterator = argsFactory(sf);
 

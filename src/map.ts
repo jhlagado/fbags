@@ -1,18 +1,18 @@
-import { Role, Mode, CB, ARGS, VARS, } from "./common";
-import { argsFactory, cbExec, cbFactory, sinkFactory } from "./utils";
+import { Role, Mode, Closure, ARGS, VARS, } from "./common";
+import { argsFactory, execClosure, closureFactory, sinkFactory } from "./utils";
 
-type VarsTuple = [CB, undefined, undefined, undefined]
+type VarsTuple = [Closure, undefined, undefined, undefined]
 const SINK = 0;
 
-const mapTB = (state: CB) => (mode: Mode, d: any) => {
+const mapTB = (state: Closure) => (mode: Mode, d: any) => {
     const mapper = state[ARGS] as Function;
     const vars = state[VARS] as VarsTuple;
-    cbExec(vars[SINK])(mode, mode === Mode.run ? mapper(d) : d)
+    execClosure(vars[SINK])(mode, mode === Mode.run ? mapper(d) : d)
 }
 
-const cbf = cbFactory(mapTB, Role.sink, undefined);
+const cproc = closureFactory(mapTB, Role.sink, undefined);
 
-const sf = sinkFactory(cbf, Role.none);
+const sf = sinkFactory(cproc, Role.none);
 
 export const map = argsFactory(sf);
 
