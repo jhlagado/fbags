@@ -15,10 +15,10 @@ test('make count up to 40 and print each number', () => {
     const iterator = [10, 20, 30, 40][Symbol.iterator]();
 
     pipe(
-        fromIterator({ iterator }),
-        take({ max: 2 }),
-        map({ mapper: (value: any) => value + 1 }),
-        forEach({ effect: crossCheck }),
+        fromIterator(iterator),
+        take(2),
+        map((value: any) => value + 1),
+        forEach(crossCheck),
     );
     expect(crossCheck).toHaveBeenCalledTimes(expectedLength);
 })

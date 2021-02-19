@@ -13,8 +13,8 @@ test('count up to 40 in 10s and compare each number', () => {
     const iterator = [10, 20, 30, 40][Symbol.iterator]();
 
     pipe(
-        fromIterator({ iterator }),
-        forEach({ effect: crossCheck })
+        fromIterator(iterator),
+        forEach(crossCheck)
     );
 
     expect(crossCheck).toHaveBeenCalledTimes(expectedLength);

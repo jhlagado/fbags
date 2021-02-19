@@ -1,18 +1,18 @@
-import {  Role, Mode, CB, Dict } from "./common";
+import {  Role, Mode, CB } from "./common";
 import { sinkFactory, argsFactory, cbExec } from "./utils";
 
 // for the sake of simplicity this closure 
 // does not allocate a vars object instead it mutates 
 // the (normally immutable) source field instead
 const forEachTB = (state: CB) => (mode: Mode, d: any) => {
-    const args = state.args as Dict;
+    const effect = state.args as Function;
     switch (mode) {
         case Mode.start:
             state.source = d;
             cbExec(d)(Mode.run);
             break;
         case Mode.run:
-            args.effect(d);
+            effect(d);
             cbExec(state.source)(Mode.run);
             break;
     }

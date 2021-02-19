@@ -10,13 +10,6 @@ export enum Role {
     sink = 2,
 }
 
-export interface CB {
-    args: CBArgs,
-    vars?: CBVars,
-    source?: CB,
-    proc: CBProc | CBSProc;
-}
-
 export type Dict = {
     [key: string]: any;
 };
@@ -26,6 +19,13 @@ export type CBArgs = Dict | number;
 export type CBVars = Dict & {
     sink?: CB;
 } | number;
+
+export interface CB {
+    args: CBArgs,
+    vars?: CBVars,
+    source?: CB,
+    proc: CBProc | CBSProc;
+}
 
 export type CBProc = (state: CB) => (mode: Mode, d?: any) => CB | void;
 export type CBSProc = (state: CB) => (source: CB) => CB;

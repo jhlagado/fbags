@@ -14,7 +14,7 @@ const talkback = (state: CB) => (mode: Mode) => {
 }
 
 const sf = (state: CB) => (mode: Mode, sink: any) => {
-    const args = state.args as Dict;
+    const period = state.args as number;
     if (mode !== Mode.start) return;
     const instance: Dict = {
         ...state,
@@ -23,7 +23,7 @@ const sf = (state: CB) => (mode: Mode, sink: any) => {
             i: 0,
         },
     }
-    instance.vars.id = setInterval(callback(instance), args.period);
+    instance.vars.id = setInterval(callback(instance), period);
     const tb = closure(instance, talkback);
     cbExec(sink)(Mode.start, tb);
 }

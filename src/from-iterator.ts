@@ -2,12 +2,12 @@ import { Role, Mode, CB, Dict } from "./common";
 import { cbFactory, argsFactory, cbExec } from "./utils";
 
 const loop = (state: CB) => {
-    const args = state.args as Dict;
+    const iterator = state.args as Iterator<any>;
     const vars = state.vars as Dict;
     vars.inloop = true;
     while (vars.got1 && !vars.completed) {
         vars.got1 = false;
-        const res = args.iterator.next();
+        const res = iterator.next();
         if (res.done) {
             vars.done = true;
             cbExec(vars.sink)(Mode.stop);

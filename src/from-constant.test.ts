@@ -13,9 +13,9 @@ test('emit 3 numbers', () => {
     });
 
     pipe(
-        fromConstant({ constant: 1000 }),
-        take({ max: times }),
-        forEach({ effect: printOp })
+        fromConstant(1000),
+        take(times),
+        forEach(printOp)
     );
     expect(printOp).toHaveBeenCalledTimes(expectedLength);
 })

@@ -6,7 +6,7 @@ import { take } from "./take";
 test('interval(100) sends 5 times then we dispose it', (done) => {
     const expected = [0, 1, 2, 3, 4];
 
-    const fi = fromInterval({ period: 100 });
+    const fi = fromInterval(100);
 
     const printOp = ((value: string) => {
         console.log(value);
@@ -16,8 +16,8 @@ test('interval(100) sends 5 times then we dispose it', (done) => {
 
     pipe(
         fi,
-        take({ max: 5 }),
-        forEach({ effect: printOp })
+        take(5),
+        forEach(printOp)
     );
 
 })
