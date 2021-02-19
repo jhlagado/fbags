@@ -1,27 +1,30 @@
-import { CB, CBI, Dict, Mode } from "./common";
+import { CB, CBI, Mode } from "./common";
 import { closure, argsFactory, cbExec } from "./utils";
 
-const callback = (state: Dict) => () => {
-    const vars = state[CBI.vars] as Dict;
-    cbExec(vars.sink)(1, vars.i++);
+type VarsTuple = [CB, number, any, undefined]
+const SINK = 0;
+const I = 1;
+const ID = 2;
+
+const callback = (state: CB) => () => {
+    const vars = state[CBI.vars] as VarsTuple;
+    cbExec(vars[SINK])(1, vars[I]!++);
 }
 
 const talkback = (state: CB) => (mode: Mode) => {
-    const vars = state[CBI.vars] as Dict;
+    const vars = state[CBI.vars] as VarsTuple;
     if (mode === Mode.stop) {
-        clearInterval(vars.id);
+        clearInterval(vars[ID]);
     }
 }
 
 const sf = (state: CB) => (mode: Mode, sink: any) => {
-    const period = state[CBI.args] as number;
     if (mode !== Mode.start) return;
-    const instance: CB = [...state]
-    instance[CBI.vars] = {
-        sink,
-        i: 0,
-    } as Dict;
-    (instance[CBI.vars] as Dict).id = setInterval(callback(instance), period);
+    const period = state[CBI.args] as number;
+    const instance: CB = [...state];
+    const vars = [sink, 0, undefined, undefined] as VarsTuple;
+    instance[CBI.vars] = vars;
+    vars[ID] = setInterval(callback(instance), period);
     const tb = closure(instance, talkback);
     cbExec(sink)(Mode.start, tb);
 }

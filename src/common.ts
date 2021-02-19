@@ -10,13 +10,9 @@ export enum Role {
     sink = 2,
 }
 
-export type Dict = {
-    [key: string]: any;
-};
-
-export type Scalar = number;
-export type Tuple = [];
-export type Elem = Scalar | Tuple | CB | Function | Dict;
+export type Scalar = number | boolean;
+export type Tuple = [Elem, Elem, Elem, Elem];
+export type Elem = Scalar | Tuple | CB | Function;
 
 export type CBArgs = any;
 export type CBVars = any;
@@ -29,12 +25,6 @@ export enum CBI {
     source = 2,
     proc = 3,
 } 
-// export interface CB {
-//     args: CBArgs,
-//     vars?: CBVars,
-//     source?: CB,
-//     proc: CBProc | CBSProc;
-// }
 
 export type CBProc = (state: CB) => (mode: Mode, d?: any) => CB | void;
 export type CBSProc = (state: CB) => (source: CB) => CB;

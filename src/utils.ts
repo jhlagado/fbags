@@ -1,4 +1,7 @@
-import { CBProc, Role, Mode, Vars, VarsFunction, CBSProc, CBArgs, CB, Dict, CBI, Tuple } from "./common";
+import { CBProc, Role, Mode, Vars, VarsFunction, CBSProc, CBArgs, CB, CBI } from "./common";
+
+type VarsTuple = [CB, undefined, undefined, undefined]
+const SINK = 0;
 
 export const closure = (state: CB, cbf: CBProc | CBSProc): CB => {
     const instance: CB = [...state];
@@ -40,7 +43,7 @@ export const cbFactory = (tbf: CBProc, role: Role, vars: Vars): CBProc =>
         if (mode !== Mode.start) return;
         const instance: CB = [...state];
         instance[CBI.vars] = isVarsFunction(vars) ? vars(state[CBI.args]) : vars,
-            (instance[CBI.vars] as Dict).sink = sink;
+            (instance[CBI.vars] as VarsTuple)[SINK] = sink;
         const tb = closure(instance, tbf);
         switch (role) {
             case Role.source:

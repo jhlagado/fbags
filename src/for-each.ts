@@ -9,11 +9,11 @@ const forEachTB = (state: CB) => (mode: Mode, d: any) => {
     switch (mode) {
         case Mode.start:
             state[CBI.source] = d;
-            cbExec(d)(Mode.run);
+            cbExec(d)(Mode.run, true);
             break;
         case Mode.run:
             effect(d);
-            cbExec(state[CBI.source] as CB)(Mode.run);
+            cbExec(state[CBI.source] as CB)(Mode.run, false);
             break;
     }
 }

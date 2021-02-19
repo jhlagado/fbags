@@ -1,14 +1,16 @@
-import { CB, CBI, Dict, Role } from "./common";
-import { Mode } from "./common";
+import { CB, CBI, Role, Mode } from "./common";
 import { argsFactory, cbExec, cbFactory } from "./utils";
 
+type VarsTuple = [CB, undefined, undefined, undefined]
+const SINK = 0;
+
 const fromConstantTB = (state: CB) => (mode: Mode, d: any) => {
-    const constant = state[CBI.args] as Dict;
-    const vars = state[CBI.vars] as Dict;
-    cbExec(vars.sink)(mode, mode === Mode.run ? constant : d)
+    const constant = state[CBI.args] as number;
+    const vars = state[CBI.vars] as VarsTuple;
+    cbExec(vars[SINK])(mode, mode === Mode.run ? constant : d)
 }
 
-const sf = cbFactory(fromConstantTB, Role.source, {});
+const sf = cbFactory(fromConstantTB, Role.source, [undefined, undefined, undefined, undefined]);
 
 export const fromConstant = argsFactory(sf);
 

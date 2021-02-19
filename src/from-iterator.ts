@@ -1,45 +1,56 @@
-import { Role, Mode, CB, Dict, CBI } from "./common";
+import { Role, Mode, CB, CBI } from "./common";
 import { cbFactory, argsFactory, cbExec } from "./utils";
 
+type VarsTuple = [CB | boolean, boolean, boolean, boolean]
+const SINK = 0;
+const INLOOP = 0;
+const GOT1 = 1;
+const COMPLETED = 2;
+const DONE = 3;
+
+const SINK2 = CBI.source;
+
 const loop = (state: CB) => {
-    const iterator = state[CBI.args] as Iterator<any>;
-    const vars = state[CBI.vars] as Dict;
-    vars.inloop = true;
-    while (vars.got1 && !vars.completed) {
-        vars.got1 = false;
+    const iterator = state[CBI.args] as any;
+    const vars = state[CBI.vars] as VarsTuple;
+    vars[INLOOP] = true;
+    while (vars[GOT1] && !vars[COMPLETED]) {
+        vars[GOT1] = false;
         const res = iterator.next();
         if (res.done) {
-            vars.done = true;
-            cbExec(vars.sink)(Mode.stop);
+            vars[DONE] = true;
+            cbExec(state[SINK2] as CB)(Mode.stop);
             break;
         }
         else {
-            cbExec(vars.sink)(1, res.value);
+            cbExec(state[SINK2] as CB)(1, res.value);
         }
     }
-    vars.inloop = false;
+    vars[INLOOP] = false;
 }
 
-const fromIteratorSinkCB = (state: CB) => (mode: Mode) => {
-    const vars = state[CBI.vars] as Dict;
-    if (vars.completed) return
+const fromIteratorSinkCB = (state: CB) => (mode: Mode, first: boolean) => {
+    const vars = state[CBI.vars] as VarsTuple;
+    if (vars[COMPLETED]) return
     switch (mode) {
         case Mode.run:
-            vars.got1 = true;
-            if (!vars.inloop && !(vars.done)) loop(state);
+            if (first) {
+                // move SINK from vars[SINK] to state[CBI.source]
+                // refer to as state[SINK2]
+                // reuse SINK as INLOOP  
+                state[SINK2] = vars[SINK];
+                vars[INLOOP] = false;
+            }
+            vars[GOT1] = true;
+            if (!vars[INLOOP] && !(vars[DONE])) loop(state);
             break;
         case Mode.stop:
-            vars.completed = true;
+            vars[COMPLETED] = true;
             break;
     }
 }
 
-const sf = cbFactory(fromIteratorSinkCB, Role.source, {
-    inloop: false,
-    got1: false,
-    completed: false,
-    done: false
-});
+const sf = cbFactory(fromIteratorSinkCB, Role.source, [undefined, false, false, false]);
 
 export const fromIterator = argsFactory(sf);
 
