@@ -1,10 +1,10 @@
-import { Role, Mode, CB, Dict, } from "./common";
+import { Role, Mode, CB, Dict, CBI, } from "./common";
 import { argsFactory, cbExec, cbFactory, sinkFactory } from "./utils";
 
 const mapTB = (state: CB) => (mode: Mode, d: any) => {
-    const mapper = state.args as Function;
-    const vars = state.vars as Dict;
-    cbExec(vars?.sink)(mode, mode === Mode.run ? mapper(d) : d)
+    const mapper = state[CBI.args] as Function;
+    const vars = state[CBI.vars] as Dict;
+    cbExec(vars.sink)(mode, mode === Mode.run ? mapper(d) : d)
 }
 
 const cbf = cbFactory(mapTB, Role.sink, {});

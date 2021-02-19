@@ -1,10 +1,10 @@
-import { CB, Dict, Role } from "./common";
+import { CB, CBI, Dict, Role } from "./common";
 import { Mode } from "./common";
 import { argsFactory, cbExec, cbFactory } from "./utils";
 
 const fromConstantTB = (state: CB) => (mode: Mode, d: any) => {
-    const constant = state.args as Dict;
-    const vars = state.vars as Dict;
+    const constant = state[CBI.args] as Dict;
+    const vars = state[CBI.vars] as Dict;
     cbExec(vars.sink)(mode, mode === Mode.run ? constant : d)
 }
 

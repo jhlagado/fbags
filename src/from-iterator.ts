@@ -1,9 +1,9 @@
-import { Role, Mode, CB, Dict } from "./common";
+import { Role, Mode, CB, Dict, CBI } from "./common";
 import { cbFactory, argsFactory, cbExec } from "./utils";
 
 const loop = (state: CB) => {
-    const iterator = state.args as Iterator<any>;
-    const vars = state.vars as Dict;
+    const iterator = state[CBI.args] as Iterator<any>;
+    const vars = state[CBI.vars] as Dict;
     vars.inloop = true;
     while (vars.got1 && !vars.completed) {
         vars.got1 = false;
@@ -21,7 +21,7 @@ const loop = (state: CB) => {
 }
 
 const fromIteratorSinkCB = (state: CB) => (mode: Mode) => {
-    const vars = state.vars as Dict;
+    const vars = state[CBI.vars] as Dict;
     if (vars.completed) return
     switch (mode) {
         case Mode.run:

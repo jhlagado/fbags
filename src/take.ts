@@ -1,10 +1,10 @@
-import { CBProc, Role, Mode, Dict } from "./common";
+import { CBProc, Role, Mode, Dict, CBI } from "./common";
 import { closure, cbFactory, sinkFactory, argsFactory, cbExec } from "./utils";
 
 const tbf: CBProc = (state) => (mode, d) => {
-    const max = state.args as number;
-    const vars = state.vars as Dict;
-    const source = state.source!;
+    const max = state[CBI.args] as number;
+    const vars = state[CBI.vars] as Dict;
+    const source = state[CBI.source];
     if (mode === Mode.stop) {
         vars.end = true;
         cbExec(source)(mode, d);
@@ -14,21 +14,21 @@ const tbf: CBProc = (state) => (mode, d) => {
 }
 
 const sourceTBF: CBProc = (state) => (mode, d) => {
-    const max = state.args as number;
-    const vars = state.vars as Dict;
+    const max = state[CBI.args] as number;
+    const vars = state[CBI.vars] as Dict;
     const sink = vars.sink!;
     switch (mode) {
         case Mode.start:
-            state.source = d;
+            state[CBI.source] = d;
             cbExec(sink)(0, closure(state, tbf));
             break;
         case Mode.run:
             if (vars.taken < max) {
                 vars.taken++;
                 cbExec(sink)(Mode.run, d);
-                if (vars.taken ===max && !vars.end) {
+                if (vars.taken === max && !vars.end) {
                     vars.end = true
-                    if (state.source) cbExec(state.source)(Mode.stop);
+                    if (state[CBI.source]) cbExec(state[CBI.source])(Mode.stop);
                     cbExec(sink)(Mode.stop);
                 }
             }
