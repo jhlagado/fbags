@@ -14,7 +14,7 @@ test('accumulate the total', () => {
     const iterator = [1, 2, 3, 4][Symbol.iterator]();
     pipe(
         fromIterator(iterator),
-        scan([reducer, 0]),
+        scan([reducer, 0, undefined, undefined]),
         forEach(crossCheck)
     );
     expect(crossCheck).toHaveBeenCalledTimes(expectedLength);

@@ -1,4 +1,4 @@
-import { Role, Mode, CB, CBI } from "./common";
+import { Role, Mode, CB, ARGS, VARS, SINK2 } from "./common";
 import { cbFactory, argsFactory, cbExec } from "./utils";
 
 type VarsTuple = [CB | boolean, boolean, boolean, boolean]
@@ -8,11 +8,9 @@ const GOT1 = 1;
 const COMPLETED = 2;
 const DONE = 3;
 
-const SINK2 = CBI.source;
-
 const loop = (state: CB) => {
-    const iterator = state[CBI.args] as any;
-    const vars = state[CBI.vars] as VarsTuple;
+    const iterator = state[ARGS] as any;
+    const vars = state[VARS] as VarsTuple;
     vars[INLOOP] = true;
     while (vars[GOT1] && !vars[COMPLETED]) {
         vars[GOT1] = false;
@@ -30,16 +28,20 @@ const loop = (state: CB) => {
 }
 
 const fromIteratorSinkCB = (state: CB) => (mode: Mode, first: boolean) => {
-    const vars = state[CBI.vars] as VarsTuple;
+    const vars = state[VARS] as VarsTuple;
     if (vars[COMPLETED]) return
     switch (mode) {
         case Mode.run:
             if (first) {
-                // move SINK from vars[SINK] to state[CBI.source]
+                // move SINK from vars[SINK] to state[SOURCE]
                 // refer to as state[SINK2]
                 // reuse SINK as INLOOP  
                 state[SINK2] = vars[SINK];
                 vars[INLOOP] = false;
+                vars[GOT1] = false;
+                vars[COMPLETED] = false;
+                vars[DONE] = false;;
+
             }
             vars[GOT1] = true;
             if (!vars[INLOOP] && !(vars[DONE])) loop(state);
@@ -50,7 +52,7 @@ const fromIteratorSinkCB = (state: CB) => (mode: Mode, first: boolean) => {
     }
 }
 
-const sf = cbFactory(fromIteratorSinkCB, Role.source, [undefined, false, false, false]);
+const sf = cbFactory(fromIteratorSinkCB, Role.source, undefined);
 
 export const fromIterator = argsFactory(sf);
 

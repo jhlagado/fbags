@@ -1,4 +1,4 @@
-import { CB, CBI, Role } from "./common";
+import { ARGS, CB, Role, VARS } from "./common";
 import { Mode } from "./common";
 import { argsFactory, cbExec, cbFactory, sinkFactory } from "./utils";
 
@@ -6,13 +6,13 @@ type ArgsTuple = [Function, number, undefined, undefined]
 const REDUCER = 0;
 const SEED = 1;
 
-type VarsTuple = [CB, undefined, undefined, undefined]
+type VarsTuple = [CB, any, undefined, undefined]
 const SINK = 0;
 const ACC = 1;
 
 const scanTB = (state: CB) => (mode: Mode, d: any) => {
-    const args = state[CBI.args] as ArgsTuple;
-    const vars = state[CBI.vars] as VarsTuple;
+    const args = state[ARGS] as ArgsTuple;
+    const vars = state[VARS] as VarsTuple;
     if (mode === Mode.run) {
         vars[ACC] = args[REDUCER](vars[ACC], d);
         cbExec(vars[SINK])(Mode.run, vars[ACC]);

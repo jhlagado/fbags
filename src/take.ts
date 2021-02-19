@@ -1,4 +1,4 @@
-import { CBProc, Role, Mode, CBI, CB } from "./common";
+import { CBProc, Role, Mode, CB, ARGS, SOURCE, VARS } from "./common";
 import { closure, cbFactory, sinkFactory, argsFactory, cbExec } from "./utils";
 
 type VarsTuple = [CB, number, boolean, undefined]
@@ -7,9 +7,9 @@ const TAKEN = 1;
 const END = 2;
 
 const tbf: CBProc = (state) => (mode, d) => {
-    const max = state[CBI.args] as number;
-    const vars = state[CBI.vars] as VarsTuple;
-    const source = state[CBI.source];
+    const max = state[ARGS] as number;
+    const vars = state[VARS] as VarsTuple;
+    const source = state[SOURCE];
     if (mode === Mode.stop) {
         vars[END] = true;
         cbExec(source as CB)(mode, d);
@@ -19,12 +19,12 @@ const tbf: CBProc = (state) => (mode, d) => {
 }
 
 const sourceTBF: CBProc = (state) => (mode, d) => {
-    const max = state[CBI.args] as number;
-    const vars = state[CBI.vars] as VarsTuple;
+    const max = state[ARGS] as number;
+    const vars = state[VARS] as VarsTuple;
     const sink = vars[SINK] as CB;
     switch (mode) {
         case Mode.start:
-            state[CBI.source] = d;
+            state[SOURCE] = d;
             cbExec(sink)(0, closure(state, tbf));
             break;
         case Mode.run:
@@ -33,7 +33,7 @@ const sourceTBF: CBProc = (state) => (mode, d) => {
                 cbExec(sink)(Mode.run, d);
                 if (vars[TAKEN] === max && !vars[END]) {
                     vars[END] = true
-                    if (state[CBI.source]) cbExec(state[CBI.source] as CB)(Mode.stop);
+                    if (state[SOURCE]) cbExec(state[SOURCE] as CB)(Mode.stop);
                     cbExec(sink)(Mode.stop);
                 }
             }
@@ -45,7 +45,7 @@ const sourceTBF: CBProc = (state) => (mode, d) => {
     }
 }
 
-const cbf = cbFactory(sourceTBF, Role.sink, [ undefined, 0, false ]);
+const cbf = cbFactory(sourceTBF, Role.sink, [undefined, 0, false]);
 
 const sf = sinkFactory(cbf, Role.none);
 
