@@ -1,14 +1,13 @@
-import { Role, Mode, CB } from "./common";
+import { Role, Mode, CB, Dict } from "./common";
 import { cbFactory, argsFactory, cbExec } from "./utils";
 
-// binding simulates forth closure
-
 const loop = (state: CB) => {
-    const vars = state.vars!;
+    const args = state.args as Dict;
+    const vars = state.vars as Dict;
     vars.inloop = true;
     while (vars.got1 && !vars.completed) {
         vars.got1 = false;
-        const res = state.args.iterator.next();
+        const res = args.iterator.next();
         if (res.done) {
             vars.done = true;
             cbExec(vars.sink)(Mode.stop);
@@ -22,7 +21,7 @@ const loop = (state: CB) => {
 }
 
 const fromIteratorSinkCB = (state: CB) => (mode: Mode) => {
-    const vars = state.vars!;
+    const vars = state.vars as Dict;
     if (vars.completed) return
     switch (mode) {
         case Mode.run:

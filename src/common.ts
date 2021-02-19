@@ -10,23 +10,22 @@ export enum Role {
     sink = 2,
 }
 
-export interface Closure {
+export interface CB {
     args: CBArgs,
     vars?: CBVars,
     source?: CB,
     proc: CBProc | CBSProc;
 }
 
-export type CB = Closure;
-
-export interface CBArgs {
+export type Dict = {
     [key: string]: any;
-}
+};
 
-export interface CBVars {
+export type CBArgs = Dict | number;
+
+export type CBVars = Dict & {
     sink?: CB;
-    [key: string]: any;
-}
+} | number;
 
 export type CBProc = (state: CB) => (mode: Mode, d?: any) => CB | void;
 export type CBSProc = (state: CB) => (source: CB) => CB;
@@ -38,3 +37,4 @@ export type Effect = (value: string) => void;
 export type Mapper = (value: any) => any;
 export type Reducer = (acc: any, value: any) => any;
 
+export type Tuple = [CBArgs, CBVars, CB, CBProc | CBSProc];

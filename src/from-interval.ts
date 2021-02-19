@@ -1,26 +1,29 @@
-import { CB, Mode } from "./common";
+import { CB, Dict, Mode } from "./common";
 import { closure, argsFactory, cbExec } from "./utils";
 
-const callback = (state: CB) => () => {
-    cbExec(state.vars?.sink)(1, state.vars!.i++);
+const callback = (state: Dict) => () => {
+    const vars = state.vars as Dict;
+    cbExec(vars.sink)(1, vars.i++);
 }
 
 const talkback = (state: CB) => (mode: Mode) => {
+    const vars = state.vars as Dict;
     if (mode === Mode.stop) {
-        clearInterval(state.vars!.id);
+        clearInterval(vars.id);
     }
 }
 
 const sf = (state: CB) => (mode: Mode, sink: any) => {
+    const args = state.args as Dict;
     if (mode !== Mode.start) return;
-    const instance: CB = {
+    const instance: Dict = {
         ...state,
         vars: {
             sink,
             i: 0,
         },
     }
-    instance.vars!.id = setInterval(callback(instance), state.args.period);
+    instance.vars.id = setInterval(callback(instance), args.period);
     const tb = closure(instance, talkback);
     cbExec(sink)(Mode.start, tb);
 }

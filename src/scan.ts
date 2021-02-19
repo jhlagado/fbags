@@ -1,18 +1,21 @@
-import { CB, Role } from "./common";
+import { CB, Dict, Role } from "./common";
 import { Mode } from "./common";
 import { argsFactory, cbExec, cbFactory, sinkFactory } from "./utils";
 
-const scanTB = (state: CB) => (mode: Mode, d: any) =>{
-    const vars = state.vars!;
+const scanTB = (state: CB) => (mode: Mode, d: any) => {
+    const args = state.args as Dict;
+    const vars = state.vars as Dict;
     if (mode === Mode.run) {
-        vars.acc = state.args.reducer(vars.acc, d);
+        vars.acc = args.reducer(vars.acc, d);
         cbExec(vars.sink)(Mode.run, vars.acc);
     } else {
         cbExec(vars.sink)(mode, d);
     }
 }
 
-const cbf = cbFactory(scanTB,  Role.sink, (args)=>({ acc: args.seed }), );
+const cbf = cbFactory(scanTB, Role.sink, (args:Dict) => { 
+    return ({ acc: args.seed }) 
+});
 
 const sf = sinkFactory(cbf, Role.none);
 
