@@ -11,10 +11,10 @@ export enum Role {
 }
 
 export type Scalar = number | boolean;
-export type Tuple = [any, any, any, any];
-export type Elem = Scalar | Tuple | Closure | Function | Iterator<any> | undefined;
+export type Elem = Scalar | Tuple;
+export type Tuple = [Elem, Elem, Elem, Elem];
 
-export type Closure = [Elem, Elem, Elem, Function?];
+export type Closure = Tuple;
 export const TUPLE_SIZE = 4;
 export const ARGS = 0;
 export const VARS = 1;
@@ -33,4 +33,4 @@ export type Effect = (value: string) => void;
 export type Mapper = (value: any) => any;
 export type Reducer = (acc: any, value: any) => any;
 
-export const EMPTY_TUPLE = [undefined, undefined, undefined, undefined];
+export const EMPTY_TUPLE = [0, 0, 0, 0];

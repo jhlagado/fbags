@@ -2,10 +2,11 @@ import {
     CProc, Role, Mode, Vars, VarsFunction, CSProc, Closure, Elem,
     EMPTY_TUPLE, Tuple, VARS, ARGS, PROC, SOURCE
 } from "./common";
+import { lookupObject, registerObject } from "./objects";
 
 export const closure = (state: Closure, cproc: CProc | CSProc): Closure => {
     const instance: Closure = [...state];
-    instance[PROC] = cproc;
+    instance[PROC] = registerObject(cproc);
     return instance;
 }
 
@@ -15,7 +16,7 @@ export const isVarsFunction = (x: any): x is VarsFunction => {
 
 export const execClosure = (closure?: Closure) => {
     if (!closure) return (..._args: any) => { }
-    const proc = closure[PROC] as CProc;
+    const proc = lookupObject(closure[PROC] as number) as CProc;
     return proc(closure);
 }
 
@@ -38,7 +39,7 @@ export const sinkFactory = (cproc: CProc, role: Role): CSProc =>
         return tb;
     }
 
-type VarsTuple = [Closure, undefined, undefined, undefined]
+type VarsTuple = [Closure, 0, 0, 0]
 const SINK = 0;
 
 export const closureFactory = (cproc: CProc, role: Role, vars: Vars = [...EMPTY_TUPLE] as Tuple): CProc =>

@@ -1,5 +1,6 @@
 import { forEach } from "./for-each";
 import { fromConstant } from "./from-constant";
+import { registerObject } from "./objects";
 import { pipe } from "./pipe";
 import { take } from "./take";
 
@@ -15,7 +16,7 @@ test('emit 3 numbers', () => {
     pipe(
         fromConstant(1000),
         take(times),
-        forEach(printOp)
+        forEach(registerObject(printOp)),
     );
     expect(printOp).toHaveBeenCalledTimes(expectedLength);
 })

@@ -1,12 +1,13 @@
-import { ARGS, Closure, Role, VARS } from "./common";
+import { ARGS, Closure, Role, Tuple, VARS } from "./common";
 import { Mode } from "./common";
+import { lookupObject } from "./objects";
 import { argsFactory, execClosure, closureFactory, sinkFactory } from "./utils";
 
-type ArgsTuple = [Function, number, undefined, undefined]
+type ArgsTuple = Tuple;
 const REDUCER = 0;
 const SEED = 1;
 
-type VarsTuple = [Closure, any, undefined, undefined]
+type VarsTuple = Tuple;
 const SINK = 0;
 const ACC = 1;
 
@@ -14,15 +15,15 @@ const scanTB = (state: Closure) => (mode: Mode, d: any) => {
     const args = state[ARGS] as ArgsTuple;
     const vars = state[VARS] as VarsTuple;
     if (mode === Mode.run) {
-        vars[ACC] = args[REDUCER](vars[ACC], d);
-        execClosure(vars[SINK])(Mode.run, vars[ACC]);
+        vars[ACC] = lookupObject(args[REDUCER] as number)(vars[ACC], d);
+        execClosure(vars[SINK] as Tuple)(Mode.run, vars[ACC]);
     } else {
-        execClosure(vars[SINK])(mode, d);
+        execClosure(vars[SINK] as Tuple)(mode, d);
     }
 }
 
-const cproc = closureFactory(scanTB, Role.sink, (args: ArgsTuple) => {
-    return [undefined, args[SEED]]
+const cproc = closureFactory(scanTB, Role.sink, (args: any) => {
+    return [0, args[SEED] as number, 0, 0] 
 });
 
 const sf = sinkFactory(cproc, Role.none);

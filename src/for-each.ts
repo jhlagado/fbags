@@ -1,11 +1,12 @@
 import { Role, Mode, Closure, ARGS, SOURCE } from "./common";
+import { lookupObject } from "./objects";
 import { sinkFactory, argsFactory, execClosure } from "./utils";
 
 // for the sake of simplicity this closure 
 // does not allocate a vars object instead it mutates 
 // the (normally immutable) source field instead
 const forEachTB = (state: Closure) => (mode: Mode, d: any) => {
-    const effect = state[ARGS] as Function;
+    const effect = lookupObject(state[ARGS] as number) as Function;
     switch (mode) {
         case Mode.start:
             state[SOURCE] = d;

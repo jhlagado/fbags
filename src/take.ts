@@ -1,7 +1,7 @@
 import { CProc, Role, Mode, Closure, ARGS, SOURCE, VARS } from "./common";
 import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "./utils";
 
-type VarsTuple = [Closure, number, boolean, undefined]
+type VarsTuple = [Closure, number, boolean, 0]
 const SINK = 0;
 const TAKEN = 1;
 const END = 2;
@@ -45,7 +45,7 @@ const sourceTBF: CProc = (state) => (mode, d) => {
     }
 }
 
-const cproc = closureFactory(sourceTBF, Role.sink, [undefined, 0, false]);
+const cproc = closureFactory(sourceTBF, Role.sink, [0, 0, false, 0]);
 
 const sf = sinkFactory(cproc, Role.none);
 

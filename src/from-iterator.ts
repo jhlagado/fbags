@@ -1,4 +1,5 @@
 import { Role, Mode, Closure, ARGS, VARS, SINK2 } from "./common";
+import { lookupObject } from "./objects";
 import { closureFactory, argsFactory, execClosure } from "./utils";
 
 type VarsTuple = [Closure | boolean, boolean, boolean, boolean]
@@ -9,7 +10,7 @@ const COMPLETED = 2;
 const DONE = 3;
 
 const loop = (state: Closure) => {
-    const iterator = state[ARGS] as any;
+    const iterator = lookupObject(state[ARGS] as number) as any;
     const vars = state[VARS] as VarsTuple;
     vars[INLOOP] = true;
     while (vars[GOT1] && !vars[COMPLETED]) {
