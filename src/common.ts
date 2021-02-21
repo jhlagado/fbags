@@ -11,15 +11,17 @@ export enum Role {
 }
 
 export type Scalar = number | boolean;
-export type Tuple = [Elem, Elem, Elem, Elem];
+export type Tuple = [any, any, any, any];
 export type Elem = Scalar | Tuple | Closure | Function | Iterator<any> | undefined;
 
 export type Closure = [Elem, Elem, Elem, Function?];
+export const TUPLE_SIZE = 4;
 export const ARGS = 0;
 export const VARS = 1;
 export const SOURCE = 2;
 export const SINK2 = 2;
 export const PROC = 3;
+export const LAST = 3;
 
 export type CProc = (state: Closure) => (mode: Mode, d?: any) => Closure | void;
 export type CSProc = (state: Closure) => (source: Closure) => Closure;

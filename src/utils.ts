@@ -3,9 +3,6 @@ import {
     EMPTY_TUPLE, Tuple, VARS, ARGS, PROC, SOURCE
 } from "./common";
 
-type VarsTuple = [Closure, undefined, undefined, undefined]
-const SINK = 0;
-
 export const closure = (state: Closure, cproc: CProc | CSProc): Closure => {
     const instance: Closure = [...state];
     instance[PROC] = cproc;
@@ -40,6 +37,9 @@ export const sinkFactory = (cproc: CProc, role: Role): CSProc =>
         }
         return tb;
     }
+
+type VarsTuple = [Closure, undefined, undefined, undefined]
+const SINK = 0;
 
 export const closureFactory = (cproc: CProc, role: Role, vars: Vars = [...EMPTY_TUPLE] as Tuple): CProc =>
     (state) => (mode, sink: Closure) => {
