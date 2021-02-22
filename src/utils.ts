@@ -23,7 +23,17 @@ export const execClosure = (closure?: Closure) => {
 
 export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
     const instance = [...EMPTY_TUPLE] as Closure;
-    instance[ARGS] = [...args, 0, 0, 0, 0].slice(0, 4) as Tuple;
+    switch (args.length) {
+        case 0:
+            instance[ARGS] = 0;
+            break;
+        case 1:
+            instance[ARGS] = args[0];
+            break;
+        default:
+            instance[ARGS] = [...args, 0, 0, 0, 0].slice(0, 4) as Tuple;
+
+    }
     return closure(instance, cproc);
 }
 

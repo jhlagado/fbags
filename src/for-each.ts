@@ -1,5 +1,5 @@
 import { ARGS, SOURCE } from "./constants";
-import { Role, Mode, Closure, Tuple } from "./common";
+import { Role, Mode, Closure } from "./common";
 import { lookup } from "./registry";
 import { sinkFactory, argsFactory, execClosure } from "./utils";
 
@@ -7,7 +7,7 @@ import { sinkFactory, argsFactory, execClosure } from "./utils";
 // does not allocate a vars object instead it mutates 
 // the (normally immutable) source field instead
 const forEachTB = (state: Closure) => (mode: Mode, d: any) => {
-    const effect = lookup((state[ARGS] as Tuple)[0] as number) as Function;
+    const effect = lookup((state[ARGS]) as number) as Function;
     switch (mode) {
         case Mode.start:
             state[SOURCE] = d;
