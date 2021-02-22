@@ -3,11 +3,11 @@ import {
     Tuple,
 } from "./common";
 import { ARGS, EMPTY_TUPLE, PROC, SOURCE, VARS } from "./constants";
-import { lookupObject, registerObject } from "./objects";
+import { lookup, register } from "./registry";
 
 export const closure = (state: Closure, cproc: CProc | CSProc): Closure => {
     const instance: Closure = [...state];
-    instance[PROC] = registerObject(cproc);
+    instance[PROC] = register(cproc);
     return instance;
 }
 
@@ -17,13 +17,13 @@ export const isVarsFunction = (x: any): x is VarsFunction => {
 
 export const execClosure = (closure?: Closure) => {
     if (!closure) return (..._args: any) => { }
-    const proc = lookupObject(closure[PROC] as number) as CProc;
+    const proc = lookup(closure[PROC] as number) as CProc;
     return proc(closure);
 }
 
-export const argsFactory = (cproc: CProc | CSProc) => (args: Elem) => {
+export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
     const instance = [...EMPTY_TUPLE] as Closure;
-    instance[ARGS] = args;
+    instance[ARGS] = [...args, 0, 0, 0, 0].slice(0, 4) as Tuple;
     return closure(instance, cproc);
 }
 

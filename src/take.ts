@@ -1,5 +1,5 @@
 import { ARGS, FALSE, SOURCE, TRUE, VARS } from "./constants";
-import { Role, Mode, Closure, CProc } from "./common";
+import { Role, Mode, Closure, CProc, Tuple } from "./common";
 import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "./utils";
 
 type VarsTuple = [Closure, number, number, number]
@@ -8,7 +8,7 @@ const TAKEN = 1;
 const END = 2;
 
 const tbf: CProc = (state) => (mode, d) => {
-    const max = state[ARGS] as number;
+    const max = (state[ARGS] as Tuple)[0] as number;
     const vars = state[VARS] as VarsTuple;
     const source = state[SOURCE];
     if (mode === Mode.stop) {
@@ -20,7 +20,7 @@ const tbf: CProc = (state) => (mode, d) => {
 }
 
 const sourceTBF: CProc = (state) => (mode, d) => {
-    const max = state[ARGS] as number;
+    const max = (state[ARGS] as Tuple)[0] as number;
     const vars = state[VARS] as VarsTuple;
     const sink = vars[SINK] as Closure;
     switch (mode) {

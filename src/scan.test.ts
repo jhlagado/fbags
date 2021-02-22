@@ -1,6 +1,6 @@
 import { forEach } from "./for-each";
 import { fromIterator } from "./from-iterator";
-import { registerObject } from "./objects";
+import { register } from "./registry";
 import { pipe } from "./pipe";
 import { scan } from "./scan";
 
@@ -11,13 +11,13 @@ test('accumulate the total', () => {
         console.log(value);
         expect(value).toBe(expected.shift());
     }));
-    const reducer = registerObject((acc: number, value: number) => acc + value);
-    const iterator = registerObject([1, 2, 3, 4][Symbol.iterator]());
+    const reducer = register((acc: number, value: number) => acc + value);
+    const iterator = register([1, 2, 3, 4][Symbol.iterator]());
 
     pipe(
         fromIterator(iterator),
-        scan([reducer, 0, 0, 0]),
-        forEach(registerObject(crossCheck)),
+        scan(reducer, 0),
+        forEach(register(crossCheck)),
     );
     expect(crossCheck).toHaveBeenCalledTimes(expectedLength);
 })

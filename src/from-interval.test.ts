@@ -1,6 +1,6 @@
 import { forEach } from "./for-each";
 import { fromInterval } from "./from-interval";
-import { registerObject } from "./objects";
+import { register } from "./registry";
 import { pipe } from "./pipe";
 import { take } from "./take";
 
@@ -18,7 +18,7 @@ test('interval(100) sends 5 times then we dispose it', (done) => {
     pipe(
         fi,
         take(5),
-        forEach(registerObject(printOp)),
+        forEach(register(printOp)),
     );
 
 })

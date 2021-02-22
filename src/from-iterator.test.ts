@@ -1,6 +1,6 @@
 import { forEach } from "./for-each";
 import { fromIterator } from "./from-iterator";
-import { registerObject } from "./objects";
+import { register } from "./registry";
 import { pipe } from "./pipe";
 
 test('count up to 40 in 10s and compare each number', () => {
@@ -11,11 +11,11 @@ test('count up to 40 in 10s and compare each number', () => {
         expect(value).toBe(expected.shift());
     }));
 
-    const iterator = registerObject([10, 20, 30, 40][Symbol.iterator]());
+    const iterator = register([10, 20, 30, 40][Symbol.iterator]());
 
     pipe(
         fromIterator(iterator),
-        forEach(registerObject(crossCheck)),
+        forEach(register(crossCheck)),
     );
 
     expect(crossCheck).toHaveBeenCalledTimes(expectedLength);

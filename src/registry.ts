@@ -1,10 +1,10 @@
 export const objects:any[] = [];
 
-export const registerObject = (object:any) => {
+export const register = (object:any) => {
     objects.push(object);
     return objects.length - 1;
 }
 
-export const lookupObject = (id:number) => {
+export const lookup = (id:number) => {
     return objects[id];
 }

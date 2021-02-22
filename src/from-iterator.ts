@@ -1,6 +1,6 @@
 import { ARGS, FALSE, SINK2, TRUE, VARS } from "./constants";
-import { Role, Mode, Closure } from "./common";
-import { lookupObject } from "./objects";
+import { Role, Mode, Closure, Tuple } from "./common";
+import { lookup } from "./registry";
 import { closureFactory, argsFactory, execClosure } from "./utils";
 
 type VarsTuple = [Closure | number, number, number, number]
@@ -11,7 +11,7 @@ const COMPLETED = 2;
 const DONE = 3;
 
 const loop = (state: Closure) => {
-    const iterator = lookupObject(state[ARGS] as number) as any;
+    const iterator = lookup((state[ARGS] as Tuple)[0] as number) as any;
     const vars = state[VARS] as VarsTuple;
     vars[INLOOP] = TRUE;
     while (vars[GOT1] && !vars[COMPLETED]) {

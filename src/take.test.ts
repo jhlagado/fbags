@@ -1,7 +1,7 @@
 import { forEach } from "./for-each";
 import { fromIterator } from "./from-iterator";
 import { map } from "./map";
-import { registerObject } from "./objects";
+import { register } from "./registry";
 import { pipe } from "./pipe";
 import { take } from "./take";
 
@@ -13,13 +13,13 @@ test('make count up to 40 and print each number', () => {
         expect(value).toBe(expected.shift());
     }));
 
-    const iterator = registerObject([10, 20, 30, 40][Symbol.iterator]());
+    const iterator = register([10, 20, 30, 40][Symbol.iterator]());
 
     pipe(
         fromIterator(iterator),
         take(2),
-        map(registerObject((value: any) => value + 1)),
-        forEach(registerObject(crossCheck)),
+        map(register((value: any) => value + 1)),
+        forEach(register(crossCheck)),
     );
     expect(crossCheck).toHaveBeenCalledTimes(expectedLength);
 })
