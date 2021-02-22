@@ -1,9 +1,9 @@
-import { ARGS, SINK2, VARS } from "./constants";
+import { ARGS, FALSE, SINK2, TRUE, VARS } from "./constants";
 import { Role, Mode, Closure } from "./common";
 import { lookupObject } from "./objects";
 import { closureFactory, argsFactory, execClosure } from "./utils";
 
-type VarsTuple = [Closure | boolean, boolean, boolean, boolean]
+type VarsTuple = [Closure | number, number, number, number]
 const SINK = 0;
 const INLOOP = 0;
 const GOT1 = 1;
@@ -13,12 +13,12 @@ const DONE = 3;
 const loop = (state: Closure) => {
     const iterator = lookupObject(state[ARGS] as number) as any;
     const vars = state[VARS] as VarsTuple;
-    vars[INLOOP] = true;
+    vars[INLOOP] = TRUE;
     while (vars[GOT1] && !vars[COMPLETED]) {
-        vars[GOT1] = false;
+        vars[GOT1] = FALSE;
         const res = iterator.next();
         if (res.done) {
-            vars[DONE] = true;
+            vars[DONE] = TRUE;
             execClosure(state[SINK2] as Closure)(Mode.stop);
             break;
         }
@@ -26,7 +26,7 @@ const loop = (state: Closure) => {
             execClosure(state[SINK2] as Closure)(1, res.value);
         }
     }
-    vars[INLOOP] = false;
+    vars[INLOOP] = FALSE;
 }
 
 const fromIteratorSinkCB = (state: Closure) => (mode: Mode, first: boolean) => {
@@ -39,17 +39,17 @@ const fromIteratorSinkCB = (state: Closure) => (mode: Mode, first: boolean) => {
                 // refer to as state[SINK2]
                 // reuse SINK as INLOOP  
                 state[SINK2] = vars[SINK];
-                vars[INLOOP] = false;
-                vars[GOT1] = false;
-                vars[COMPLETED] = false;
-                vars[DONE] = false;;
+                vars[INLOOP] = FALSE;
+                vars[GOT1] = FALSE;
+                vars[COMPLETED] = FALSE;
+                vars[DONE] = FALSE;
 
             }
-            vars[GOT1] = true;
+            vars[GOT1] = TRUE;
             if (!vars[INLOOP] && !(vars[DONE])) loop(state);
             break;
         case Mode.stop:
-            vars[COMPLETED] = true;
+            vars[COMPLETED] = TRUE;
             break;
     }
 }

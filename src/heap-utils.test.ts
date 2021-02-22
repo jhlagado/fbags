@@ -1,8 +1,9 @@
-import { heapEnd, heapInit, heapIsFull, heapStart, heapNew, tuples, heapFree, heapGetTuple } from "./heap-utils";
+import { TUPLE_BYTES } from "./constants";
+import { heapEnd, heapInit, heapIsFull, heapStart, heapNew, heapFree, heapGetTuple } from "./heap-utils";
 
 test('heap-utils', () => {
     heapInit(2);
-    expect(heapEnd - heapStart).toBe(tuples(2));
+    expect(heapEnd).toBe(TUPLE_BYTES * (2) + heapStart);
     expect(heapIsFull()).toBe(false);
     const t1 = heapNew(0,1,2,3);
     expect(heapIsFull()).toBe(false);

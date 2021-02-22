@@ -6,3 +6,10 @@ export const SINK2 = 2;
 export const PROC = 3;
 export const LAST = 3;
 export const EMPTY_TUPLE = [0, 0, 0, 0];
+
+export const MEM_SIZE = 100000;
+export const CELL_BYTES = 4;                        // size in bytes of a CELL
+export const TUPLE_BYTES = TUPLE_SIZE * CELL_BYTES; // size in bytes of a tuple
+export const NIL = -1; // needed because 0 is a valid address
+export const FALSE = 0;
+export const TRUE = -1;

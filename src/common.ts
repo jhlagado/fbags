@@ -10,7 +10,7 @@ export enum Role {
     sink = 2,
 }
 
-export type Scalar = number | boolean;
+export type Scalar = number;
 export type Elem = Scalar | Tuple;
 export type Tuple = [Elem, Elem, Elem, Elem];
 

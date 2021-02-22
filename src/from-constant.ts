@@ -2,7 +2,7 @@ import { ARGS, VARS } from "./constants";
 import { Role, Mode, Closure } from "./common";
 import { argsFactory, execClosure, closureFactory } from "./utils";
 
-type VarsTuple = [Closure, 0, 0, 0]
+type VarsTuple = [Closure, number, number, number]
 const SINK = 0;
 
 const fromConstantTB = (state: Closure) => (mode: Mode, d: any) => {

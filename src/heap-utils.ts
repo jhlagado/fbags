@@ -1,10 +1,6 @@
 import { Tuple } from "./common";
-import { LAST, TUPLE_SIZE } from "./constants";
-
-export const MEM_SIZE = 100000;
-export const CELL_SIZE = 4;
-export const TUPLE_CELLS = TUPLE_SIZE * CELL_SIZE;
-export const NIL = -1; // needed because 0 is a valid address
+import { CELL_BYTES, LAST, MEM_SIZE, NIL, TUPLE_BYTES } from "./constants";
+import { headersInit } from "./header-utils";
 
 export const buffer = new ArrayBuffer(MEM_SIZE);
 export const mem = new DataView(buffer);
@@ -20,30 +16,19 @@ export const allot = (size: number) => {
 }
 
 export const here = () => herePtr;
-export const cells = (value: number) => value << 2;
-export const tuples = (value: number) => value << 2 << 2;
 
 export const arrayNew = (size: number) => {
     const h = herePtr;
-    allot(cells(size));
+    allot(size);
     return h;
-}
-
-const tupleSet = (ptr: number, a: number, b: number, c: number, d: number) => {
-    mem.setInt32(ptr, a);
-    ptr += CELL_SIZE;
-    mem.setInt32(ptr, b);
-    ptr += CELL_SIZE;
-    mem.setInt32(ptr, c);
-    ptr += CELL_SIZE;
-    mem.setInt32(ptr, d);
 }
 
 export const heapInit = (size: number) => {
     heapPtr = 0;
     freePtr = NIL;
-    heapStart = arrayNew(size * TUPLE_SIZE);
+    heapStart = arrayNew(TUPLE_BYTES * (size));
     heapEnd = herePtr;
+    headersInit(size);
 }
 
 export const heapIsFull = () => {
@@ -56,26 +41,35 @@ export const heapNew = (a: number, b: number, c: number, d: number): number => {
     let tuplePtr: number;
     if (freePtr !== NIL) {
         tuplePtr = freePtr;
-        freePtr = mem.getInt32(tuplePtr + cells(LAST));
+        freePtr = mem.getInt32(tuplePtr + CELL_BYTES * (LAST));
     }
     else {
         tuplePtr = heapPtr;
-        heapPtr += TUPLE_CELLS;
+        heapPtr += TUPLE_BYTES;
     }
-    tupleSet(tuplePtr, a, b, c, d);
+    heapSetTuple(tuplePtr, a, b, c, d);
     return tuplePtr;
 };
 
 export const heapFree = (tuplePtr: number) => {
-    mem.setInt32(tuplePtr + cells(LAST), freePtr);
+    mem.setInt32(tuplePtr + CELL_BYTES * (LAST), freePtr);
     freePtr = tuplePtr;
 }
 
-export const heapGetTuple = (tuplePtr: number): Tuple => {
-    return [
-        mem.getInt32(tuplePtr),
-        mem.getInt32(tuplePtr + cells(1)),
-        mem.getInt32(tuplePtr + cells(2)),
-        mem.getInt32(tuplePtr + cells(3)),
-    ]
+export const heapGetTuple = (ptr: number): Tuple => {
+    const tuple = [];
+    tuple.push(mem.getInt32(ptr)); ptr += CELL_BYTES;
+    tuple.push(mem.getInt32(ptr)); ptr += CELL_BYTES;
+    tuple.push(mem.getInt32(ptr)); ptr += CELL_BYTES;
+    tuple.push(mem.getInt32(ptr)); 
+    return tuple as Tuple;
 }
+
+export const heapSetTuple = (ptr: number, a: number, b: number, c: number, d: number) => {
+    mem.setInt32(ptr, a); ptr += CELL_BYTES;
+    mem.setInt32(ptr, b); ptr += CELL_BYTES;
+    mem.setInt32(ptr, c); ptr += CELL_BYTES;
+    mem.setInt32(ptr, d); 
+}
+
+export const heapGetTupleIndex = (ptr: number) => (ptr - heapStart) / TUPLE_BYTES;

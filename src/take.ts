@@ -1,8 +1,8 @@
-import { ARGS, SOURCE, VARS } from "./constants";
+import { ARGS, FALSE, SOURCE, TRUE, VARS } from "./constants";
 import { Role, Mode, Closure, CProc } from "./common";
 import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "./utils";
 
-type VarsTuple = [Closure, number, boolean, 0]
+type VarsTuple = [Closure, number, number, number]
 const SINK = 0;
 const TAKEN = 1;
 const END = 2;
@@ -12,7 +12,7 @@ const tbf: CProc = (state) => (mode, d) => {
     const vars = state[VARS] as VarsTuple;
     const source = state[SOURCE];
     if (mode === Mode.stop) {
-        vars[END] = true;
+        vars[END] = TRUE;
         execClosure(source as Closure)(mode, d);
     } else if (vars[TAKEN] < max) {
         execClosure(source as Closure)(mode, d);
@@ -33,7 +33,7 @@ const sourceTBF: CProc = (state) => (mode, d) => {
                 vars[TAKEN]++;
                 execClosure(sink)(Mode.run, d);
                 if (vars[TAKEN] === max && !vars[END]) {
-                    vars[END] = true
+                    vars[END] = TRUE
                     if (state[SOURCE]) execClosure(state[SOURCE] as Closure)(Mode.stop);
                     execClosure(sink)(Mode.stop);
                 }
@@ -46,7 +46,7 @@ const sourceTBF: CProc = (state) => (mode, d) => {
     }
 }
 
-const cproc = closureFactory(sourceTBF, Role.sink, [0, 0, false, 0]);
+const cproc = closureFactory(sourceTBF, Role.sink, [0, 0, FALSE, 0]);
 
 const sf = sinkFactory(cproc, Role.none);
 

@@ -3,7 +3,6 @@ import { Role, Mode, Closure, Tuple } from "./common";
 import { lookupObject } from "./objects";
 import { argsFactory, execClosure, closureFactory, sinkFactory } from "./utils";
 
-type ArgsTuple = Tuple;
 const REDUCER = 0;
 const SEED = 1;
 
@@ -12,7 +11,7 @@ const SINK = 0;
 const ACC = 1;
 
 const scanTB = (state: Closure) => (mode: Mode, d: any) => {
-    const args = state[ARGS] as ArgsTuple;
+    const args = state[ARGS] as Tuple;
     const vars = state[VARS] as VarsTuple;
     if (mode === Mode.run) {
         vars[ACC] = lookupObject(args[REDUCER] as number)(vars[ACC], d);
