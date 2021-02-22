@@ -15,13 +15,6 @@ export type Elem = Scalar | Tuple;
 export type Tuple = [Elem, Elem, Elem, Elem];
 
 export type Closure = Tuple;
-export const TUPLE_SIZE = 4;
-export const ARGS = 0;
-export const VARS = 1;
-export const SOURCE = 2;
-export const SINK2 = 2;
-export const PROC = 3;
-export const LAST = 3;
 
 export type CProc = (state: Closure) => (mode: Mode, d?: any) => Closure | void;
 export type CSProc = (state: Closure) => (source: Closure) => Closure;
@@ -32,5 +25,3 @@ export type Vars = Elem | VarsFunction;
 export type Effect = (value: string) => void;
 export type Mapper = (value: any) => any;
 export type Reducer = (acc: any, value: any) => any;
-
-export const EMPTY_TUPLE = [0, 0, 0, 0];

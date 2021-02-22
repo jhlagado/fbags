@@ -1,20 +1,25 @@
-import { heapEnd, heapInit, heapIsFull, heapStart, heapNew, tuples, heap_free } from "./heap-utils";
+import { heapEnd, heapInit, heapIsFull, heapStart, heapNew, tuples, heapFree, heapGetTuple } from "./heap-utils";
 
 test('heap-utils', () => {
     heapInit(2);
     expect(heapEnd - heapStart).toBe(tuples(2));
     expect(heapIsFull()).toBe(false);
-    const t1 = heapNew(0,0,0,0);
+    const t1 = heapNew(0,1,2,3);
     expect(heapIsFull()).toBe(false);
-    const t2 = heapNew(0,0,0,0);
+    const t2 = heapNew(4,5,6,7);
     expect(heapIsFull()).toBe(true);
-    heap_free(t1);
+    expect(heapGetTuple(t1)).toEqual([0,1,2,3]);
+    expect(heapGetTuple(t2)).toEqual([4,5,6,7]);
+    heapFree(t1);
     expect(heapIsFull()).toBe(false);
-    const t3 = heapNew(0,0,0,0);
+    const t3 = heapNew(8,9,10,11);
     expect(t3 === t1).toBeTruthy();
-    heap_free(t2);
-    const t4 = heapNew(0,0,0,0);
+    expect(heapGetTuple(t2)).toEqual([4,5,6,7]);
+    heapFree(t2);
+    const t4 = heapNew(12,13,14,15);
     expect(t4 === t2).toBeTruthy();
+    expect(heapGetTuple(t3)).toEqual([8,9,10,11]);
+    expect(heapGetTuple(t4)).toEqual([12,13,14,15]);
 })
 
 /*

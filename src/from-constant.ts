@@ -1,4 +1,5 @@
-import { Closure, Role, Mode, ARGS, VARS } from "./common";
+import { ARGS, VARS } from "./constants";
+import { Role, Mode, Closure } from "./common";
 import { argsFactory, execClosure, closureFactory } from "./utils";
 
 type VarsTuple = [Closure, 0, 0, 0]

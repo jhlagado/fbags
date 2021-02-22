@@ -1,4 +1,5 @@
-import { CProc, Role, Mode, Closure, ARGS, SOURCE, VARS } from "./common";
+import { ARGS, SOURCE, VARS } from "./constants";
+import { Role, Mode, Closure, CProc } from "./common";
 import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "./utils";
 
 type VarsTuple = [Closure, number, boolean, 0]

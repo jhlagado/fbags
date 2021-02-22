@@ -1,7 +1,8 @@
 import {
     CProc, Role, Mode, Vars, VarsFunction, CSProc, Closure, Elem,
-    EMPTY_TUPLE, Tuple, VARS, ARGS, PROC, SOURCE
+    Tuple,
 } from "./common";
+import { ARGS, EMPTY_TUPLE, PROC, SOURCE, VARS } from "./constants";
 import { lookupObject, registerObject } from "./objects";
 
 export const closure = (state: Closure, cproc: CProc | CSProc): Closure => {

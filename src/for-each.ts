@@ -1,4 +1,5 @@
-import { Role, Mode, Closure, ARGS, SOURCE } from "./common";
+import { ARGS, SOURCE } from "./constants";
+import { Role, Mode, Closure } from "./common";
 import { lookupObject } from "./objects";
 import { sinkFactory, argsFactory, execClosure } from "./utils";
 

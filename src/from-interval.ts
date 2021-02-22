@@ -1,4 +1,5 @@
-import { ARGS, Closure, Mode, VARS } from "./common";
+import { ARGS, VARS } from "./constants";
+import { Mode, Closure } from "./common";
 import { lookupObject, registerObject } from "./objects";
 import { closure, argsFactory, execClosure } from "./utils";
 

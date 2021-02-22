@@ -1,9 +1,10 @@
-import { LAST, TUPLE_SIZE } from "./common";
+import { Tuple } from "./common";
+import { LAST, TUPLE_SIZE } from "./constants";
 
-const MEM_SIZE = 100000;
-const CELL_SIZE = 4;
-const TUPLE_CELLS = TUPLE_SIZE * CELL_SIZE;
-const NIL = -1; // needed because 0 is a valid address
+export const MEM_SIZE = 100000;
+export const CELL_SIZE = 4;
+export const TUPLE_CELLS = TUPLE_SIZE * CELL_SIZE;
+export const NIL = -1; // needed because 0 is a valid address
 
 export const buffer = new ArrayBuffer(MEM_SIZE);
 export const mem = new DataView(buffer);
@@ -18,6 +19,7 @@ export const allot = (size: number) => {
     herePtr += size;
 }
 
+export const here = () => herePtr;
 export const cells = (value: number) => value << 2;
 export const tuples = (value: number) => value << 2 << 2;
 
@@ -64,7 +66,16 @@ export const heapNew = (a: number, b: number, c: number, d: number): number => {
     return tuplePtr;
 };
 
-export const heap_free = (tuplePtr: number) => {
+export const heapFree = (tuplePtr: number) => {
     mem.setInt32(tuplePtr + cells(LAST), freePtr);
     freePtr = tuplePtr;
+}
+
+export const heapGetTuple = (tuplePtr: number): Tuple => {
+    return [
+        mem.getInt32(tuplePtr),
+        mem.getInt32(tuplePtr + cells(1)),
+        mem.getInt32(tuplePtr + cells(2)),
+        mem.getInt32(tuplePtr + cells(3)),
+    ]
 }

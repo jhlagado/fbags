@@ -1,4 +1,5 @@
-import { Closure, CSProc, PROC } from "./common";
+import { Closure, CSProc } from "./common";
+import { PROC } from "./constants";
 import { lookupObject } from "./objects";
 
 export const pipe = (source: Closure, ...sinks: Closure[]) => {
