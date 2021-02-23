@@ -12,12 +12,11 @@ export enum Role {
 
 export type Scalar = number;
 export type Elem = Scalar | Tuple;
-export type Tuple = [Elem, Elem, Elem, Elem];
+export type Tuple = [Elem, Elem, Elem, Elem] & { owner?: Owner, mask?: number };
 
-export type Closure = Tuple;
 
-export type CProc = (state: Closure) => (mode: Mode, d?: any) => Closure | void;
-export type CSProc = (state: Closure) => (source: Closure) => Closure;
+export type CProc = (state: Tuple) => (mode: Mode, d?: any) => Tuple | void;
+export type CSProc = (state: Tuple) => (source: Tuple) => Tuple;
 
 export type VarsFunction = (args: Elem) => Elem;
 export type Vars = Elem | VarsFunction;
@@ -25,3 +24,9 @@ export type Vars = Elem | VarsFunction;
 export type Effect = (value: string) => void;
 export type Mapper = (value: any) => any;
 export type Reducer = (acc: any, value: any) => any;
+
+export type Owner = {
+    container: Tuple;
+    offset: number;
+}
+

@@ -1,5 +1,5 @@
 import { ARGS, VARS } from "./constants";
-import { Role, Mode, Closure, Tuple } from "./common";
+import { Role, Mode, Tuple } from "./common";
 import { lookup } from "./registry";
 import { argsFactory, execClosure, closureFactory, sinkFactory } from "./utils";
 
@@ -10,7 +10,7 @@ type VarsTuple = Tuple;
 const SINK = 0;
 const ACC = 1;
 
-const scanTB = (state: Closure) => (mode: Mode, d: any) => {
+const scanTB = (state: Tuple) => (mode: Mode, d: any) => {
     const args = state[ARGS] as Tuple;
     const vars = state[VARS] as VarsTuple;
     if (mode === Mode.run) {

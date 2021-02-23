@@ -1,12 +1,12 @@
 import { ARGS, VARS } from "./constants";
-import { Role, Mode, Closure } from "./common";
+import { Role, Mode, Tuple } from "./common";
 import { lookup } from "./registry";
 import { argsFactory, execClosure, closureFactory, sinkFactory } from "./utils";
 
-type VarsTuple = [Closure, 0, 0, 0]
+type VarsTuple = [Tuple, 0, 0, 0]
 const SINK = 0;
 
-const mapTB = (state: Closure) => (mode: Mode, d: any) => {
+const mapTB = (state: Tuple) => (mode: Mode, d: any) => {
     const mapper = lookup(state[ARGS] as number) as Function;
     const vars = state[VARS] as VarsTuple;
     execClosure(vars[SINK])(mode, mode === Mode.run ? mapper(d) : d)

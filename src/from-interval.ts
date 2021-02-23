@@ -1,29 +1,29 @@
 import { ARGS, VARS } from "./constants";
-import { Mode, Closure, Tuple } from "./common";
+import { Mode, Tuple } from "./common";
 import { lookup, register } from "./registry";
 import { closure, argsFactory, execClosure } from "./utils";
 
-type VarsTuple = [Closure, number, number, number]
+type VarsTuple = [Tuple, number, number, number]
 const SINK = 0;
 const I = 1;
 const ID = 2;
 
-const callback = (state: Closure) => () => {
+const callback = (state: Tuple) => () => {
     const vars = state[VARS] as VarsTuple;
     execClosure(vars[SINK])(1, vars[I]!++);
 }
 
-const talkback = (state: Closure) => (mode: Mode) => {
+const talkback = (state: Tuple) => (mode: Mode) => {
     const vars = state[VARS] as VarsTuple;
     if (mode === Mode.stop) {
         clearInterval(lookup(vars[ID]));
     }
 }
 
-const sf = (state: Closure) => (mode: Mode, sink: any) => {
+const sf = (state: Tuple) => (mode: Mode, sink: any) => {
     if (mode !== Mode.start) return;
     const period = (state[ARGS] as Tuple)[0] as number;
-    const instance: Closure = [...state];
+    const instance: Tuple = [...state] as Tuple;
     const vars = [sink, 0, 0, 0] as VarsTuple;
     instance[VARS] = vars;
     vars[ID] = register(setInterval(callback(instance), period));

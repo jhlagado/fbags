@@ -1,11 +1,11 @@
 import { ARGS, VARS } from "./constants";
-import { Role, Mode, Closure } from "./common";
+import { Role, Mode, Tuple } from "./common";
 import { argsFactory, execClosure, closureFactory } from "./utils";
 
-type VarsTuple = [Closure, number, number, number]
+type VarsTuple = [Tuple, number, number, number]
 const SINK = 0;
 
-const fromConstantTB = (state: Closure) => (mode: Mode, d: any) => {
+const fromConstantTB = (state: Tuple) => (mode: Mode, d: any) => {
     const constant = state[ARGS] as number;
     const vars = state[VARS] as VarsTuple;
     execClosure(vars[SINK])(mode, mode === Mode.run ? constant : d)

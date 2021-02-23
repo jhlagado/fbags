@@ -1,16 +1,16 @@
 import { ARGS, FALSE, SINK2, TRUE, VARS } from "./constants";
-import { Role, Mode, Closure } from "./common";
+import { Role, Mode, Tuple } from "./common";
 import { lookup } from "./registry";
 import { closureFactory, argsFactory, execClosure } from "./utils";
 
-type VarsTuple = [Closure | number, number, number, number]
+type VarsTuple = [Tuple | number, number, number, number]
 const SINK = 0;
 const INLOOP = 0;
 const GOT1 = 1;
 const COMPLETED = 2;
 const DONE = 3;
 
-const loop = (state: Closure) => {
+const loop = (state: Tuple) => {
     const iterator = lookup(state[ARGS] as number) as any;
     const vars = state[VARS] as VarsTuple;
     vars[INLOOP] = TRUE;
@@ -19,17 +19,17 @@ const loop = (state: Closure) => {
         const res = iterator.next();
         if (res.done) {
             vars[DONE] = TRUE;
-            execClosure(state[SINK2] as Closure)(Mode.stop);
+            execClosure(state[SINK2] as Tuple)(Mode.stop);
             break;
         }
         else {
-            execClosure(state[SINK2] as Closure)(1, res.value);
+            execClosure(state[SINK2] as Tuple)(1, res.value);
         }
     }
     vars[INLOOP] = FALSE;
 }
 
-const fromIteratorSinkCB = (state: Closure) => (mode: Mode, first: boolean) => {
+const fromIteratorSinkCB = (state: Tuple) => (mode: Mode, first: boolean) => {
     const vars = state[VARS] as VarsTuple;
     if (vars[COMPLETED]) return
     switch (mode) {
