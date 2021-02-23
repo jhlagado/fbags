@@ -1,6 +1,7 @@
 import { ARGS, FALSE, SOURCE, TRUE, VARS } from "../utils/constants";
 import { Role, Mode, Tuple, CProc } from "../utils/common";
 import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "../utils/utils";
+import { tupleGet, tupleSet } from "../utils/tuple-utils";
 
 type VarsTuple = [Tuple, number, number, number]
 const SINK = 0;
@@ -8,11 +9,11 @@ const TAKEN = 1;
 const END = 2;
 
 const tbf: CProc = (state) => (mode, d) => {
-    const max = state[ARGS] as number;
+    const max = tupleGet(state, ARGS) as number;
     const vars = state[VARS] as VarsTuple;
     const source = state[SOURCE];
     if (mode === Mode.stop) {
-        vars[END] = TRUE;
+        tupleSet(vars, END, TRUE, false);
         execClosure(source as Tuple)(mode, d);
     } else if (vars[TAKEN] < max) {
         execClosure(source as Tuple)(mode, d);
@@ -20,12 +21,12 @@ const tbf: CProc = (state) => (mode, d) => {
 }
 
 const sourceTBF: CProc = (state) => (mode, d) => {
-    const max = state[ARGS] as number;
+    const max = tupleGet(state, ARGS) as number;
     const vars = state[VARS] as VarsTuple;
     const sink = vars[SINK] as Tuple;
     switch (mode) {
         case Mode.start:
-            state[SOURCE] = d;
+            tupleSet(state, SOURCE, d, false);
             execClosure(sink)(0, closure(state, tbf));
             break;
         case Mode.run:
@@ -33,7 +34,7 @@ const sourceTBF: CProc = (state) => (mode, d) => {
                 vars[TAKEN]++;
                 execClosure(sink)(Mode.run, d);
                 if (vars[TAKEN] === max && !vars[END]) {
-                    vars[END] = TRUE
+                    tupleSet(vars, END, TRUE, false);
                     if (state[SOURCE]) execClosure(state[SOURCE] as Tuple)(Mode.stop);
                     execClosure(sink)(Mode.stop);
                 }

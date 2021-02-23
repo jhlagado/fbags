@@ -2,6 +2,7 @@ import { ARGS, FALSE, SINK2, TRUE, VARS } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
 import { lookup } from "../utils/registry";
 import { closureFactory, argsFactory, execClosure } from "../utils/utils";
+import { tupleGet, tupleSet } from "../utils/tuple-utils";
 
 type VarsTuple = [Tuple | number, number, number, number]
 const SINK = 0;
@@ -11,14 +12,14 @@ const COMPLETED = 2;
 const DONE = 3;
 
 const loop = (state: Tuple) => {
-    const iterator = lookup(state[ARGS] as number) as any;
+    const iterator = lookup(tupleGet(state, ARGS) as number) as any;
     const vars = state[VARS] as VarsTuple;
-    vars[INLOOP] = TRUE;
-    while (vars[GOT1] && !vars[COMPLETED]) {
-        vars[GOT1] = FALSE;
+    tupleSet(vars, INLOOP, TRUE, false);
+    while (tupleGet(vars, GOT1) && !tupleGet(vars, COMPLETED)) {
+        tupleSet(vars, GOT1, FALSE, false);
         const res = iterator.next();
         if (res.done) {
-            vars[DONE] = TRUE;
+            tupleSet(vars, DONE, TRUE, true);
             execClosure(state[SINK2] as Tuple)(Mode.stop);
             break;
         }
@@ -26,7 +27,7 @@ const loop = (state: Tuple) => {
             execClosure(state[SINK2] as Tuple)(1, res.value);
         }
     }
-    vars[INLOOP] = FALSE;
+    tupleSet(vars, INLOOP, FALSE, false);
 }
 
 const fromIteratorSinkCB = (state: Tuple) => (mode: Mode, first: boolean) => {
@@ -38,18 +39,17 @@ const fromIteratorSinkCB = (state: Tuple) => (mode: Mode, first: boolean) => {
                 // move SINK from vars[SINK] to state[SOURCE]
                 // refer to as state[SINK2]
                 // reuse SINK as INLOOP  
-                state[SINK2] = vars[SINK];
-                vars[INLOOP] = FALSE;
-                vars[GOT1] = FALSE;
-                vars[COMPLETED] = FALSE;
-                vars[DONE] = FALSE;
-
+                tupleSet(state, SINK2, vars[SINK], false);
+                tupleSet(vars, INLOOP, FALSE, false);
+                tupleSet(vars, GOT1, FALSE, false);
+                tupleSet(vars, COMPLETED, FALSE, false);
+                tupleSet(vars, DONE, FALSE, false);
             }
-            vars[GOT1] = TRUE;
+            tupleSet(vars, GOT1, TRUE, false);
             if (!vars[INLOOP] && !(vars[DONE])) loop(state);
             break;
         case Mode.stop:
-            vars[COMPLETED] = TRUE;
+            tupleSet(vars, COMPLETED, TRUE, false);
             break;
     }
 }

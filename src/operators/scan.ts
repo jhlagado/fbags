@@ -2,6 +2,7 @@ import { ARGS, VARS } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
 import { lookup } from "../utils/registry";
 import { argsFactory, execClosure, closureFactory, sinkFactory } from "../utils/utils";
+import { tupleGet, tupleSet } from "../utils/tuple-utils";
 
 const REDUCER = 0;
 const SEED = 1;
@@ -11,18 +12,18 @@ const SINK = 0;
 const ACC = 1;
 
 const scanTB = (state: Tuple) => (mode: Mode, d: any) => {
-    const args = state[ARGS] as Tuple;
+    const args = tupleGet(state, ARGS) as Tuple;
     const vars = state[VARS] as VarsTuple;
     if (mode === Mode.run) {
-        vars[ACC] = lookup(args[REDUCER] as number)(vars[ACC], d);
-        execClosure(vars[SINK] as Tuple)(Mode.run, vars[ACC]);
+        tupleSet(vars, ACC, lookup(args[REDUCER] as number)(vars[ACC], d), false);
+        execClosure(tupleGet(vars, SINK) as Tuple)(Mode.run, vars[ACC]);
     } else {
-        execClosure(vars[SINK] as Tuple)(mode, d);
+        execClosure(tupleGet(vars, SINK) as Tuple)(mode, d);
     }
 }
 
 const cproc = closureFactory(scanTB, Role.sink, (args: any) => {
-    return [0, args[SEED] as number, 0, 0] 
+    return [0, args[SEED] as number, 0, 0]
 });
 
 const sf = sinkFactory(cproc, Role.none);

@@ -2,21 +2,22 @@ import { ARGS, SOURCE } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
 import { lookup } from "../utils/registry";
 import { sinkFactory, argsFactory, execClosure } from "../utils/utils";
+import { tupleGet, tupleSet } from "../utils/tuple-utils";
 
 // for the sake of simplicity this closure 
 // does not allocate a vars object instead it mutates 
 // the (normally immutable) source field instead
 const forEachTB = (state: Tuple) => (mode: Mode, d: any) => {
-    const effect = lookup((state[ARGS]) as number) as Function;
+    const effect = lookup(tupleGet(state, ARGS) as number) as Function;
     switch (mode) {
         case Mode.start:
-            state[SOURCE] = d;
+            tupleSet(state, SOURCE, d, false);
             execClosure(d)(Mode.run, true);  // first = true is needed for soures that need initialisation
             // see fromIterator 
             break;
         case Mode.run:
             effect(d);
-            execClosure(state[SOURCE] as Tuple)(Mode.run, false);
+            execClosure(tupleGet(state,SOURCE) as Tuple)(Mode.run, false);
             break;
     }
 }

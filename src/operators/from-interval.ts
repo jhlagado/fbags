@@ -2,31 +2,33 @@ import { ARGS, VARS } from "../utils/constants";
 import { Mode, Tuple } from "../utils/common";
 import { lookup, register } from "../utils/registry";
 import { closure, argsFactory, execClosure } from "../utils/utils";
+import { tupleGet, tupleNew, tupleSet } from "../utils/tuple-utils";
 
-type VarsTuple = [Tuple, number, number, number]
 const SINK = 0;
 const I = 1;
 const ID = 2;
 
 const callback = (state: Tuple) => () => {
-    const vars = state[VARS] as VarsTuple;
-    execClosure(vars[SINK])(1, vars[I]!++);
+    const vars = state[VARS] as Tuple;
+    const i = tupleGet(vars, I) as number;
+    execClosure(tupleGet(vars, SINK) as Tuple)(1, i);
+    tupleSet(vars, I, i + 1, false)
 }
 
 const talkback = (state: Tuple) => (mode: Mode) => {
-    const vars = state[VARS] as VarsTuple;
+    const vars = state[VARS] as Tuple;
     if (mode === Mode.stop) {
-        clearInterval(lookup(vars[ID]));
+        clearInterval(lookup(vars[ID] as number));
     }
 }
 
 const sf = (state: Tuple) => (mode: Mode, sink: any) => {
     if (mode !== Mode.start) return;
-    const period = (state[ARGS] as Tuple)[0] as number;
-    const instance: Tuple = [...state] as Tuple;
-    const vars = [sink, 0, 0, 0] as VarsTuple;
-    instance[VARS] = vars;
-    vars[ID] = register(setInterval(callback(instance), period));
+    const period = tupleGet(tupleGet(state, ARGS) as Tuple, 0) as number;
+    const instance: Tuple = tupleNew(...state);
+    const vars = tupleNew(sink, 0, 0, 0);
+    tupleSet(instance, VARS, vars, false);
+    tupleSet(vars,ID, register(setInterval(callback(instance), period)), false);
     const tb = closure(instance, talkback);
     execClosure(sink)(Mode.start, tb);
 }
