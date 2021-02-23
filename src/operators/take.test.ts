@@ -1,10 +1,12 @@
 import { forEach } from "./for-each";
 import { fromIterator } from "./from-iterator";
-import { register } from "./registry";
+import { map } from "./map";
+import { register } from "../utils/registry";
 import { pipe } from "./pipe";
+import { take } from "./take";
 
-test('count up to 40 in 10s and compare each number', () => {
-    const expected = [10, 20, 30, 40];
+test('make count up to 40 and print each number', () => {
+    const expected = [11, 21];
     const expectedLength = expected.length;
     const crossCheck = (jest.fn((value: string) => {
         console.log(value);
@@ -15,8 +17,9 @@ test('count up to 40 in 10s and compare each number', () => {
 
     pipe(
         fromIterator(iterator),
+        take(2),
+        map(register((value: any) => value + 1)),
         forEach(register(crossCheck)),
     );
-
     expect(crossCheck).toHaveBeenCalledTimes(expectedLength);
 })

@@ -1,6 +1,6 @@
-import { Tuple, CSProc } from "./common";
-import { PROC } from "./constants";
-import { lookup } from "./registry";
+import { Tuple, CSProc } from "../utils/common";
+import { PROC } from "../utils/constants";
+import { lookup } from "../utils/registry";
 
 export const pipe = (source: Tuple, ...sinks: Tuple[]) => {
     let res: Tuple | void = source;

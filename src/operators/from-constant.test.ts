@@ -1,6 +1,6 @@
 import { forEach } from "./for-each";
 import { fromConstant } from "./from-constant";
-import { register } from "./registry";
+import { register } from "../utils/registry";
 import { pipe } from "./pipe";
 import { take } from "./take";
 

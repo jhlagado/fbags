@@ -1,7 +1,7 @@
-import { ARGS, VARS } from "./constants";
-import { Role, Mode, Tuple } from "./common";
-import { lookup } from "./registry";
-import { argsFactory, execClosure, closureFactory, sinkFactory } from "./utils";
+import { ARGS, VARS } from "../utils/constants";
+import { Role, Mode, Tuple } from "../utils/common";
+import { lookup } from "../utils/registry";
+import { argsFactory, execClosure, closureFactory, sinkFactory } from "../utils/utils";
 
 type VarsTuple = [Tuple, 0, 0, 0]
 const SINK = 0;

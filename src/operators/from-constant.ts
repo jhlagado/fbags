@@ -1,6 +1,6 @@
-import { ARGS, VARS } from "./constants";
-import { Role, Mode, Tuple } from "./common";
-import { argsFactory, execClosure, closureFactory } from "./utils";
+import { ARGS, VARS } from "../utils/constants";
+import { Role, Mode, Tuple } from "../utils/common";
+import { argsFactory, execClosure, closureFactory } from "../utils/utils";
 
 type VarsTuple = [Tuple, number, number, number]
 const SINK = 0;

@@ -1,7 +1,7 @@
 import { forEach } from "./for-each";
 import { fromIterator } from "./from-iterator";
 import { map } from "./map";
-import { register } from "./registry";
+import { register } from "../utils/registry";
 import { pipe } from "./pipe";
 
 test('make count up to 40 and print each number', () => {

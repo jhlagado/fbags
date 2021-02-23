@@ -1,6 +1,6 @@
 import { forEach } from "./for-each";
 import { fromIterator } from "./from-iterator";
-import { register } from "./registry";
+import { register } from "../utils/registry";
 import { pipe } from "./pipe";
 import { scan } from "./scan";
 

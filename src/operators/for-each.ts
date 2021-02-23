@@ -1,7 +1,7 @@
-import { ARGS, SOURCE } from "./constants";
-import { Role, Mode, Tuple } from "./common";
-import { lookup } from "./registry";
-import { sinkFactory, argsFactory, execClosure } from "./utils";
+import { ARGS, SOURCE } from "../utils/constants";
+import { Role, Mode, Tuple } from "../utils/common";
+import { lookup } from "../utils/registry";
+import { sinkFactory, argsFactory, execClosure } from "../utils/utils";
 
 // for the sake of simplicity this closure 
 // does not allocate a vars object instead it mutates 
