@@ -1,5 +1,5 @@
-import { ARGS, Mode, Role, SOURCE, TPolicy } from "../utils/constants";
-import { Tuple,  } from "../utils/types";
+import { ARGS, Mode, Role, SOURCE } from "../utils/constants";
+import { Tuple, } from "../utils/types";
 import { lookup } from "../utils/registry";
 import { sinkFactory, argsFactory, execClosure } from "../utils/closure-utils";
 import { tgett, tgetv, tsett } from "../utils/tuple-utils";
@@ -8,8 +8,8 @@ const forEachTB = (state: Tuple) => (mode: Mode, d: any) => {
     const effect = lookup(tgetv(state, ARGS)) as Function;
     switch (mode) {
         case Mode.start:
-            tsett(state, SOURCE, d, TPolicy.ref);
-            execClosure(d)(Mode.run);  
+            tsett(state, SOURCE, d, false);
+            execClosure(d)(Mode.run);
             break;
         case Mode.run:
             effect(d);

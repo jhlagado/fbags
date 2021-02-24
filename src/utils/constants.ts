@@ -24,8 +24,3 @@ export enum Role {
     sink = 2,
 }
 
-export enum TPolicy {
-    ref = 0,
-    move = 1,
-}
-

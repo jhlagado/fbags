@@ -1,5 +1,5 @@
-import { ARGS, Mode, Role, SINK, SOURCE, TPolicy, TRUE, VARS } from "../utils/constants";
-import { CProc,  } from "../utils/types";
+import { ARGS, Mode, Role, SINK, SOURCE, TRUE, VARS } from "../utils/constants";
+import { CProc, } from "../utils/types";
 import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "../utils/closure-utils";
 import { tgett, tgetv, tsett, tsetv, tupleNew } from "../utils/tuple-utils";
 
@@ -24,12 +24,12 @@ const sourceTBF: CProc = (state) => (mode, d) => {
     let vars = tgett(state, VARS);
     if (!vars) {
         vars = tupleNew(0, 0, 0, 0);
-        tsett(state, VARS, vars, TPolicy.ref)
+        tsett(state, VARS, vars, false)
     }
     const sink = tgett(state, SINK);
     switch (mode) {
         case Mode.start:
-            tsett(state, SOURCE, d, TPolicy.ref);
+            tsett(state, SOURCE, d, false);
             execClosure(sink)(0, closure(state, tbf));
             break;
         case Mode.run:

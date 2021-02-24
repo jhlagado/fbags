@@ -1,5 +1,5 @@
-import { ARGS, Mode, Role, SINK, TPolicy, VARS } from "../utils/constants";
-import {  Tuple,  } from "../utils/types";
+import { ARGS, Mode, Role, SINK, VARS } from "../utils/constants";
+import { Tuple, } from "../utils/types";
 import { lookup } from "../utils/registry";
 import { argsFactory, execClosure, closureFactory, sinkFactory } from "../utils/closure-utils";
 import { tgetv, tupleNew, tsett, tgett, tget } from "../utils/tuple-utils";
@@ -14,11 +14,11 @@ const scanTB = (state: Tuple) => (mode: Mode, d: any) => {
     const args = tgett(state, ARGS);
     let vars = tgett(state, VARS);
     if (!vars) {
-        vars = tupleNew(tgetv(args,SEED), 0, 0, 0);
-        tsett(state, VARS, vars, TPolicy.ref)
+        vars = tupleNew(tgetv(args, SEED), 0, 0, 0);
+        tsett(state, VARS, vars, false)
     }
     if (mode === Mode.run) {
-        tsett(vars, ACC, lookup(tgetv(args, REDUCER))(tget(vars, ACC), d), TPolicy.ref);
+        tsett(vars, ACC, lookup(tgetv(args, REDUCER))(tget(vars, ACC), d), false);
         execClosure(tgett(state, SINK))(Mode.run, tget(vars, ACC));
     } else {
         execClosure(tgett(state, SINK))(mode, d);

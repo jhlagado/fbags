@@ -1,5 +1,5 @@
-import { ARGS, FALSE, Mode, Role, SINK, TPolicy, TRUE, VARS } from "../utils/constants";
-import {  Tuple,  } from "../utils/types";
+import { ARGS, FALSE, Mode, Role, SINK, TRUE, VARS } from "../utils/constants";
+import { Tuple, } from "../utils/types";
 import { lookup } from "../utils/registry";
 import { closureFactory, argsFactory, execClosure } from "../utils/closure-utils";
 import { tgett, tgetv, tsett, tsetv, tupleNew } from "../utils/tuple-utils";
@@ -33,7 +33,7 @@ const fromIteratorSinkCB = (state: Tuple) => (mode: Mode, first: boolean) => {
     let vars = tgett(state, VARS);
     if (!vars) {
         vars = tupleNew(FALSE, FALSE, FALSE, FALSE);
-        tsett(state, VARS, vars, TPolicy.ref)
+        tsett(state, VARS, vars, false)
     }
     if (tgetv(vars, COMPLETED)) return
     switch (mode) {

@@ -1,12 +1,11 @@
 import { Elem, Owner, Tuple } from "./types";
 import { isTuple } from "./closure-utils";
-import { TPolicy } from "./constants";
 
-export const tupleNew = (...args: Elem[]) => { 
+export const tupleNew = (...args: Elem[]) => {
     const tuple = args.concat([0, 0, 0, 0]).slice(0, 4) as Tuple;
-    // console.log('args',JSON.stringify(args));
     return tuple;
 };
+
 export const ownerNew = (container: Tuple, offset: number) => ({ container, offset });
 
 export const hasOwner = (elem: Elem): boolean => {
@@ -79,7 +78,7 @@ export const tsetv = (tuple: Tuple, offset: number, value: number) => {
     maskSet(tuple, offset, false)
 }
 
-export const tset = (tuple: Tuple, offset: number, elem: Elem, policy: TPolicy) => {
+export const tset = (tuple: Tuple, offset: number, elem: Elem, move: boolean) => {
     if (maskGet(tuple, offset)) {
         const elem0 = tgett(tuple, offset);
         if (isOwned(elem0)) {
@@ -91,13 +90,13 @@ export const tset = (tuple: Tuple, offset: number, elem: Elem, policy: TPolicy) 
     tuple[offset] = elem;
     maskSet(tuple, offset, t)
     if (!t) return;
-    if (!hasOwner(elem) || policy === TPolicy.move) {
+    if (!hasOwner(elem) || move) {
         setOwner(elem, { container: tuple, offset });
     }
 }
 
-export const tsett = (tuple: Tuple, offset: number, elem: Tuple, policy: TPolicy) =>
-    tset(tuple, offset, elem, policy);
+export const tsett = (tuple: Tuple, offset: number, elem: Tuple, move: boolean) =>
+    tset(tuple, offset, elem, move);
 
 export const tupleDestroy = (tuple: Tuple) => {
     console.log('DESTROY!')
@@ -115,14 +114,14 @@ export const tupleDestroy = (tuple: Tuple) => {
     console.log('FREE');
 }
 
-export const tupleClone = (tuple: Tuple, deep: boolean):Tuple => {
+export const tupleClone = (tuple: Tuple, deep: boolean): Tuple => {
     const tuple1 = tupleNew(0, 0, 0, 0);
     tuple1.proc = tuple.proc;
     for (let i = 0; i < 4; i++) {
         if (maskGet(tuple, i)) {
             const child = tgett(tuple, i);
             const child1 = deep ? tupleClone(child, deep) : child;
-            tsett(tuple1, i, child1, TPolicy.ref);
+            tsett(tuple1, i, child1, false);
         } else {
             const child = tgetv(tuple, i);
             tsetv(tuple1, i, child);
@@ -131,7 +130,7 @@ export const tupleClone = (tuple: Tuple, deep: boolean):Tuple => {
     return tuple1;
 }
 
-export const elemClone = (elem: Elem, deep: boolean):Elem => {
+export const elemClone = (elem: Elem, deep: boolean): Elem => {
     if (!isTuple(elem)) return elem;
     return tupleClone(elem, deep);
 }
