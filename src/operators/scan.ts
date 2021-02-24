@@ -1,7 +1,7 @@
 import { ARGS, VARS } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
 import { lookup } from "../utils/registry";
-import { argsFactory, execClosure, closureFactory, sinkFactory } from "../utils/utils";
+import { argsFactory, execClosure, closureFactory, sinkFactory } from "../utils/closure-utils";
 import { tgetv, tupleNew, tsett, tgett, tget } from "../utils/tuple-utils";
 
 const REDUCER = 0;

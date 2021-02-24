@@ -1,5 +1,5 @@
 import { Elem, Owner, Tuple } from "./common";
-import { isTuple } from "./utils";
+import { isTuple } from "./closure-utils";
 
 export const tupleNew = (...args: Elem[]) => args.concat([0, 0, 0, 0]).slice(0, 4) as Tuple;
 export const ownerNew = (container: Tuple, offset: number) => ({ container, offset });

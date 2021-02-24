@@ -1,23 +1,18 @@
 import { CProc, Role, Mode, VarsFunction, CSProc, Tuple, Elem } from "./common";
-import { ARGS, PROC, SOURCE, VARS, SINK } from "./constants";
-import { lookup, register } from "./registry";
-import { tupleNew, tsett, tsetv, tgetv, tgett, tget, tset } from "./tuple-utils";
+import { ARGS, SOURCE, VARS, SINK } from "./constants";
+import { tupleNew, tsett, tgett, tget, tset } from "./tuple-utils";
 
 export const isTuple = (elem: Elem): elem is Tuple => Array.isArray(elem) && elem.length === 4;
 
 export const closure = (state: Tuple, cproc: CProc | CSProc): Tuple => {
     const instance: Tuple = tupleNew(...state);
-    tsetv(instance, PROC, register(cproc));
+    instance.proc = cproc;
     return instance;
-}
-
-export const isVarsFunction = (x: any): x is VarsFunction => {
-    return (typeof x === 'function') && (x.length === 1);
 }
 
 export const execClosure = (closure?: Tuple) => {
     if (!closure) return (..._args: any) => { }
-    const proc = lookup(tgetv(closure, PROC)) as CProc;
+    const proc = closure.proc as CProc;
     return proc(closure);
 }
 
@@ -55,7 +50,7 @@ export const closureFactory = (cproc: CProc, role: Role, varsFunc?: VarsFunction
     (state) => (mode, sink: Tuple) => {
         if (mode !== Mode.start) return;
         const instance: Tuple = tupleNew(...state);
-        const vars = isVarsFunction(varsFunc) ? varsFunc(tget(state, ARGS)) : tupleNew(0, 0, 0, 0);
+        const vars = varsFunc ? varsFunc(tget(state, ARGS)) : tupleNew(0, 0, 0, 0);
         tset(instance, VARS, vars, false);
         tsett(tgett(instance, VARS), SINK, sink, false);
         const tb = closure(instance, cproc);

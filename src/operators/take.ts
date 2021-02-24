@@ -1,6 +1,6 @@
 import { ARGS, SOURCE, TRUE, VARS } from "../utils/constants";
 import { Role, Mode, CProc } from "../utils/common";
-import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "../utils/utils";
+import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "../utils/closure-utils";
 import { tgett, tgetv, tsett, tsetv } from "../utils/tuple-utils";
 
 const SINK = 0;

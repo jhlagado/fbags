@@ -1,6 +1,6 @@
 import { ARGS, VARS } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
-import { argsFactory, execClosure, closureFactory } from "../utils/utils";
+import { argsFactory, execClosure, closureFactory } from "../utils/closure-utils";
 import { tgett, tgetv } from "../utils/tuple-utils";
 
 const SINK = 0;

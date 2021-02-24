@@ -1,7 +1,7 @@
 import { ARGS, FALSE, SINK2, TRUE, VARS } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
 import { lookup } from "../utils/registry";
-import { closureFactory, argsFactory, execClosure } from "../utils/utils";
+import { closureFactory, argsFactory, execClosure } from "../utils/closure-utils";
 import { tgett, tgetv, tsett, tsetv } from "../utils/tuple-utils";
 
 const SINK = 0;

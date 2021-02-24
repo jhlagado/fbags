@@ -1,7 +1,7 @@
 import { ARGS, VARS } from "../utils/constants";
 import { Mode, Tuple } from "../utils/common";
 import { lookup, register } from "../utils/registry";
-import { closure, argsFactory, execClosure } from "../utils/utils";
+import { closure, argsFactory, execClosure } from "../utils/closure-utils";
 import { tupleNew, tsett, tsetv, tgetv, tgett } from "../utils/tuple-utils";
 
 const SINK = 0;

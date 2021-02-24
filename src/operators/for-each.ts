@@ -1,7 +1,7 @@
 import { ARGS, SOURCE } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
 import { lookup } from "../utils/registry";
-import { sinkFactory, argsFactory, execClosure } from "../utils/utils";
+import { sinkFactory, argsFactory, execClosure } from "../utils/closure-utils";
 import { tgett, tgetv, tsett } from "../utils/tuple-utils";
 
 // for the sake of simplicity this closure 
