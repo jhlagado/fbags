@@ -8,7 +8,7 @@ export const hasOwner = (elem: Elem): boolean => {
     const owner = getOwner(elem);
     if (!owner) return false;
     const { container, offset } = owner;
-    const self = tget(container, offset);
+    const self = tgett(container, offset);
     return elem === self;
 }
 
@@ -28,10 +28,10 @@ export const isOwned = (elem: Elem): elem is Tuple => {
     return isOwnedBy(elem, owner);
 };
 
-export const isOwnedBy = (elem: Elem, owner: Owner | undefined): boolean => {
+export const isOwnedBy = (elem: Elem, owner: Owner | undefined): elem is Tuple => {
     if (!owner) return false;
     const { container, offset } = owner;
-    return tget(container, offset) === elem;
+    return tgett(container, offset) === elem;
 };
 
 export const maskGet = (tuple: Tuple, offset: number): boolean => {
@@ -54,11 +54,33 @@ export const tget = (tuple: Tuple, offset: number): Elem => {
     return tuple[offset];
 }
 
+export const tgett = (tuple: Tuple, offset: number): Tuple => {
+    return tuple[offset] as Tuple;
+}
+
+export const tgetv = (tuple: Tuple, offset: number): number => {
+    return tuple[offset] as number;
+}
+
+export const tsetv = (tuple: Tuple, offset: number, value: number) => {
+    if (maskGet(tuple, offset)) {
+        const elem0 = tgett(tuple, offset);
+        if (isOwned(elem0)) {
+            setOwner(elem0, undefined);
+            tupleDestroy(elem0);
+        }
+    }
+    tuple[offset] = value;
+    maskSet(tuple, offset, false)
+}
+
 export const tset = (tuple: Tuple, offset: number, elem: Elem, move: boolean) => {
-    const elem0 = tget(tuple, offset);
-    if (isOwned(elem0)) {
-        setOwner(elem0, undefined);
-        tupleDestroy(elem0);
+    if (maskGet(tuple, offset)) {
+        const elem0 = tgett(tuple, offset);
+        if (isOwned(elem0)) {
+            setOwner(elem0, undefined);
+            tupleDestroy(elem0);
+        }
     }
     tuple[offset] = elem;
     const t = isTuple(elem);
@@ -74,7 +96,7 @@ export const tupleDestroy = (tuple: Tuple) => {
     setOwner(tuple, undefined);
     for (let i = 0; i < 4; i++) {
         if (maskGet(tuple, i)) {
-            const child = tget(tuple, i) as Tuple;
+            const child = tgett(tuple, i);
             const owner = getOwner(child);
             if (owner && owner.container === tuple && isOwnedBy(child, owner)) {
                 tupleDestroy(child);

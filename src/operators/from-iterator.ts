@@ -2,7 +2,7 @@ import { ARGS, FALSE, SINK2, TRUE, VARS } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
 import { lookup } from "../utils/registry";
 import { closureFactory, argsFactory, execClosure } from "../utils/utils";
-import { tget, tset } from "../utils/tuple-utils";
+import { tgett, tgetv, tset, tsetv } from "../utils/tuple-utils";
 
 const SINK = 0;
 const INLOOP = 0;
@@ -11,44 +11,44 @@ const COMPLETED = 2;
 const DONE = 3;
 
 const loop = (state: Tuple) => {
-    const iterator = lookup(tget(state, ARGS) as number) as any;
-    const vars = tget(state, VARS) as Tuple;
-    tset(vars, INLOOP, TRUE, false);
-    while (tget(vars, GOT1) && !tget(vars, COMPLETED)) {
-        tset(vars, GOT1, FALSE, false);
+    const iterator = lookup(tgetv(state, ARGS)) as any;
+    const vars = tgett(state, VARS);
+    tsetv(vars, INLOOP, TRUE);
+    while (tgetv(vars, GOT1) && !tgetv(vars, COMPLETED)) {
+        tsetv(vars, GOT1, FALSE);
         const res = iterator.next();
         if (res.done) {
-            tset(vars, DONE, TRUE, true);
-            execClosure(tget(state, SINK2) as Tuple)(Mode.stop);
+            tsetv(vars, DONE, TRUE);
+            execClosure(tgett(state, SINK2))(Mode.stop);
             break;
         }
         else {
-            execClosure(tget(state, SINK2) as Tuple)(1, res.value);
+            execClosure(tgett(state, SINK2))(1, res.value);
         }
     }
-    tset(vars, INLOOP, FALSE, false);
+    tsetv(vars, INLOOP, FALSE);
 }
 
 const fromIteratorSinkCB = (state: Tuple) => (mode: Mode, first: boolean) => {
-    const vars = tget(state, VARS) as Tuple;
-    if (tget(vars, COMPLETED)) return
+    const vars = tgett(state, VARS);
+    if (tgetv(vars, COMPLETED)) return
     switch (mode) {
         case Mode.run:
             if (first) {
                 // move SINK from tget(vars,SINK) to tget(state,SOURCE)
                 // refer to as tget(state,SINK2)
                 // reuse SINK as INLOOP  
-                tset(state, SINK2, tget(vars, SINK), false);
-                tset(vars, INLOOP, FALSE, false);
-                tset(vars, GOT1, FALSE, false);
-                tset(vars, COMPLETED, FALSE, false);
-                tset(vars, DONE, FALSE, false);
+                tset(state, SINK2, tgett(vars, SINK), false);
+                tsetv(vars, INLOOP, FALSE);
+                tsetv(vars, GOT1, FALSE);
+                tsetv(vars, COMPLETED, FALSE);
+                tsetv(vars, DONE, FALSE);
             }
-            tset(vars, GOT1, TRUE, false);
-            if (!tget(vars, INLOOP) && !(tget(vars, DONE))) loop(state);
+            tsetv(vars, GOT1, TRUE);
+            if (!tgetv(vars, INLOOP) && !(tgetv(vars, DONE))) loop(state);
             break;
         case Mode.stop:
-            tset(vars, COMPLETED, TRUE, false);
+            tsetv(vars, COMPLETED, TRUE);
             break;
     }
 }

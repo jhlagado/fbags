@@ -2,13 +2,13 @@ import { ARGS, SOURCE } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
 import { lookup } from "../utils/registry";
 import { sinkFactory, argsFactory, execClosure } from "../utils/utils";
-import { tget, tset } from "../utils/tuple-utils";
+import { tgett, tgetv, tset } from "../utils/tuple-utils";
 
 // for the sake of simplicity this closure 
 // does not allocate a vars object instead it mutates 
 // the (normally immutable) source field instead
 const forEachTB = (state: Tuple) => (mode: Mode, d: any) => {
-    const effect = lookup(tget(state, ARGS) as number) as Function;
+    const effect = lookup(tgetv(state, ARGS)) as Function;
     switch (mode) {
         case Mode.start:
             tset(state, SOURCE, d, false);
@@ -17,7 +17,7 @@ const forEachTB = (state: Tuple) => (mode: Mode, d: any) => {
             break;
         case Mode.run:
             effect(d);
-            execClosure(tget(state, SOURCE) as Tuple)(Mode.run, false);
+            execClosure(tgett(state, SOURCE))(Mode.run, false);
             break;
     }
 }

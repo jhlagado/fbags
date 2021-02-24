@@ -2,14 +2,14 @@ import { ARGS, VARS } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
 import { lookup } from "../utils/registry";
 import { argsFactory, execClosure, closureFactory, sinkFactory } from "../utils/utils";
-import { tget } from "../utils/tuple-utils";
+import { tgett, tgetv } from "../utils/tuple-utils";
 
 const SINK = 0;
 
 const mapTB = (state: Tuple) => (mode: Mode, d: any) => {
-    const mapper = lookup(tget(state, ARGS) as number) as Function;
-    const vars = tget(state, VARS) as Tuple;
-    execClosure(tget(vars, SINK) as Tuple)(mode, mode === Mode.run ? mapper(d) : d)
+    const mapper = lookup(tgetv(state, ARGS)) as Function;
+    const vars = tgett(state, VARS);
+    execClosure(tgett(vars, SINK))(mode, mode === Mode.run ? mapper(d) : d)
 }
 
 const cproc = closureFactory(mapTB, Role.sink, undefined);

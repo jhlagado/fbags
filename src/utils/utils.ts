@@ -1,13 +1,13 @@
-import { CProc, Role, Mode, Vars, VarsFunction, CSProc, Tuple, Elem } from "./common";
-import { ARGS, PROC, SOURCE, VARS } from "./constants";
+import { CProc, Role, Mode, VarsFunction, CSProc, Tuple, Elem } from "./common";
+import { ARGS, PROC, SOURCE, VARS, SINK } from "./constants";
 import { lookup, register } from "./registry";
-import { tget, tupleNew, tset } from "./tuple-utils";
+import { tupleNew, tset, tsetv, tgetv, tgett, tget } from "./tuple-utils";
 
 export const isTuple = (elem: Elem): elem is Tuple => Array.isArray(elem) && elem.length === 4;
 
 export const closure = (state: Tuple, cproc: CProc | CSProc): Tuple => {
     const instance: Tuple = tupleNew(...state);
-    tset(instance, PROC, register(cproc), false);
+    tsetv(instance, PROC, register(cproc));
     return instance;
 }
 
@@ -17,7 +17,7 @@ export const isVarsFunction = (x: any): x is VarsFunction => {
 
 export const execClosure = (closure?: Tuple) => {
     if (!closure) return (..._args: any) => { }
-    const proc = lookup(tget(closure, PROC) as number) as CProc;
+    const proc = lookup(tgetv(closure, PROC)) as CProc;
     return proc(closure);
 }
 
@@ -33,7 +33,7 @@ export const getArgs = (args: Elem[]) => {
 }
 
 export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
-    const instance = tupleNew(0,0,0,0);
+    const instance = tupleNew(0, 0, 0, 0);
     tset(instance, ARGS, getArgs(args), false);
     return closure(instance, cproc);
 }
@@ -51,21 +51,20 @@ export const sinkFactory = (cproc: CProc, role: Role): CSProc =>
         return tb;
     }
 
-const SINK = 0;
-
-export const closureFactory = (cproc: CProc, role: Role, vars: Vars = tupleNew(0,0,0,0)): CProc =>
+export const closureFactory = (cproc: CProc, role: Role, varsFunc?: VarsFunction): CProc =>
     (state) => (mode, sink: Tuple) => {
         if (mode !== Mode.start) return;
         const instance: Tuple = tupleNew(...state);
-        tset(instance, VARS, isVarsFunction(vars) ? vars(tget(state, ARGS)) : vars, false);
-        tset(tget(instance, VARS) as Tuple, SINK, sink, false);
+        const vars = isVarsFunction(varsFunc) ? varsFunc(tget(state, ARGS)) : tupleNew(0, 0, 0, 0);
+        tset(instance, VARS, vars, false);
+        tset(tgett(instance, VARS), SINK, sink, false);
         const tb = closure(instance, cproc);
         switch (role) {
             case Role.source:
                 (execClosure(sink))(Mode.start, tb)
                 break;
             case Role.sink:
-                (execClosure(tget(instance, SOURCE) as Tuple))(Mode.start, tb);
+                (execClosure(tgett(instance, SOURCE)))(Mode.start, tb);
                 break;
         }
         return tb;

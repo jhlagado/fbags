@@ -19,7 +19,6 @@ export type CProc = (state: Tuple) => (mode: Mode, d?: any) => Tuple | void;
 export type CSProc = (state: Tuple) => (source: Tuple) => Tuple;
 
 export type VarsFunction = (args: Elem) => Elem;
-export type Vars = Elem | VarsFunction;
 
 export type Effect = (value: string) => void;
 export type Mapper = (value: any) => any;
