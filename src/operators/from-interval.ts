@@ -9,14 +9,14 @@ const I = 1;
 const ID = 2;
 
 const callback = (state: Tuple) => () => {
-    const vars = state[VARS] as Tuple;
+    const vars = tupleGet(state, VARS) as Tuple;
     const i = tupleGet(vars, I) as number;
     execClosure(tupleGet(vars, SINK) as Tuple)(1, i);
     tupleSet(vars, I, i + 1, false)
 }
 
 const talkback = (state: Tuple) => (mode: Mode) => {
-    const vars = state[VARS] as Tuple;
+    const vars = tupleGet(state, VARS) as Tuple;
     if (mode === Mode.stop) {
         clearInterval(lookup(tupleGet(vars, ID) as number));
     }

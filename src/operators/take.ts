@@ -10,7 +10,7 @@ const END = 2;
 const tbf: CProc = (state) => (mode, d) => {
     const max = tupleGet(state, ARGS) as number;
     const vars = tupleGet(state, VARS) as Tuple;
-    const source = state[SOURCE];
+    const source = tupleGet(state, SOURCE);
     if (mode === Mode.stop) {
         tupleSet(vars, END, TRUE, false);
         execClosure(source as Tuple)(mode, d);
@@ -35,7 +35,7 @@ const sourceTBF: CProc = (state) => (mode, d) => {
                 execClosure(sink)(Mode.run, d);
                 if (tupleGet(vars, TAKEN) === max && !tupleGet(vars, END)) {
                     tupleSet(vars, END, TRUE, false);
-                    if (state[SOURCE]) execClosure(state[SOURCE] as Tuple)(Mode.stop);
+                    if (tupleGet(state, SOURCE)) execClosure(tupleGet(state, SOURCE) as Tuple)(Mode.stop);
                     execClosure(sink)(Mode.stop);
                 }
             }

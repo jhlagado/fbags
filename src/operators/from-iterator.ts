@@ -19,11 +19,11 @@ const loop = (state: Tuple) => {
         const res = iterator.next();
         if (res.done) {
             tupleSet(vars, DONE, TRUE, true);
-            execClosure(state[SINK2] as Tuple)(Mode.stop);
+            execClosure(tupleGet(state, SINK2) as Tuple)(Mode.stop);
             break;
         }
         else {
-            execClosure(state[SINK2] as Tuple)(1, res.value);
+            execClosure(tupleGet(state, SINK2) as Tuple)(1, res.value);
         }
     }
     tupleSet(vars, INLOOP, FALSE, false);
@@ -35,8 +35,8 @@ const fromIteratorSinkCB = (state: Tuple) => (mode: Mode, first: boolean) => {
     switch (mode) {
         case Mode.run:
             if (first) {
-                // move SINK from tupleGet(vars,SINK) to state[SOURCE]
-                // refer to as state[SINK2]
+                // move SINK from tupleGet(vars,SINK) to tupleGet(state,SOURCE)
+                // refer to as tupleGet(state,SINK2)
                 // reuse SINK as INLOOP  
                 tupleSet(state, SINK2, tupleGet(vars, SINK), false);
                 tupleSet(vars, INLOOP, FALSE, false);
