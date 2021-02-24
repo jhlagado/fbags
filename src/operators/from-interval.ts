@@ -2,7 +2,7 @@ import { ARGS, VARS } from "../utils/constants";
 import { Mode, Tuple } from "../utils/common";
 import { lookup, register } from "../utils/registry";
 import { closure, argsFactory, execClosure } from "../utils/utils";
-import { tupleNew, tset, tsetv, tgetv, tgett } from "../utils/tuple-utils";
+import { tupleNew, tsett, tsetv, tgetv, tgett } from "../utils/tuple-utils";
 
 const SINK = 0;
 const I = 1;
@@ -27,7 +27,7 @@ const sf = (state: Tuple) => (mode: Mode, sink: any) => {
     const period = tgetv(tgett(state, ARGS), 0);
     const instance: Tuple = tupleNew(...state);
     const vars = tupleNew(sink, 0, 0, 0);
-    tset(instance, VARS, vars, false);
+    tsett(instance, VARS, vars, false);
     tsetv(vars, ID, register(setInterval(callback(instance), period)));
     const tb = closure(instance, talkback);
     execClosure(sink)(Mode.start, tb);

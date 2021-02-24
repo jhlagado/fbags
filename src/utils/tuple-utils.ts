@@ -91,6 +91,21 @@ export const tset = (tuple: Tuple, offset: number, elem: Elem, move: boolean) =>
     }
 }
 
+export const tsett = (tuple: Tuple, offset: number, elem: Tuple, move: boolean) => {
+    if (maskGet(tuple, offset)) {
+        const elem0 = tgett(tuple, offset);
+        if (isOwned(elem0)) {
+            setOwner(elem0, undefined);
+            tupleDestroy(elem0);
+        }
+    }
+    tuple[offset] = elem;
+    maskSet(tuple, offset, true)
+    if (!hasOwner(elem) || move) {
+        setOwner(elem, { container: tuple, offset });
+    }
+}
+
 export const tupleDestroy = (tuple: Tuple) => {
     console.log('DESTROY!')
     setOwner(tuple, undefined);

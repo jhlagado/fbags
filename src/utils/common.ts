@@ -10,10 +10,18 @@ export enum Role {
     sink = 2,
 }
 
-export type Scalar = number;
-export type Elem = Scalar | Tuple;
-export type Tuple = [Elem, Elem, Elem, Elem] & { owner?: Owner, mask?: number };
+export enum TPolicy {
+    borrow = 0,
+    move = 1,
+    clone = 2,
+}
 
+export type Elem = number | Tuple;
+export type Tuple = [Elem, Elem, Elem, Elem] & {
+    owner?: Owner, 
+    mask?: number,
+    proc: CProc | CSProc,
+};
 
 export type CProc = (state: Tuple) => (mode: Mode, d?: any) => Tuple | void;
 export type CSProc = (state: Tuple) => (source: Tuple) => Tuple;

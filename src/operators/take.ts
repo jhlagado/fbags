@@ -1,7 +1,7 @@
 import { ARGS, SOURCE, TRUE, VARS } from "../utils/constants";
 import { Role, Mode, CProc } from "../utils/common";
 import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "../utils/utils";
-import { tgett, tgetv, tset, tsetv } from "../utils/tuple-utils";
+import { tgett, tgetv, tsett, tsetv } from "../utils/tuple-utils";
 
 const SINK = 0;
 const TAKEN = 1;
@@ -25,7 +25,7 @@ const sourceTBF: CProc = (state) => (mode, d) => {
     const sink = tgett(vars, SINK);
     switch (mode) {
         case Mode.start:
-            tset(state, SOURCE, d, false);
+            tsett(state, SOURCE, d, false);
             execClosure(sink)(0, closure(state, tbf));
             break;
         case Mode.run:
