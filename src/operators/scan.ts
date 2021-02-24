@@ -2,7 +2,7 @@ import { ARGS, VARS } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
 import { lookup } from "../utils/registry";
 import { argsFactory, execClosure, closureFactory, sinkFactory } from "../utils/utils";
-import { tupleGet, tupleSet } from "../utils/tuple-utils";
+import { tget, tupleNew, tset } from "../utils/tuple-utils";
 
 const REDUCER = 0;
 const SEED = 1;
@@ -11,18 +11,18 @@ const SINK = 0;
 const ACC = 1;
 
 const scanTB = (state: Tuple) => (mode: Mode, d: any) => {
-    const args = tupleGet(state, ARGS) as Tuple;
-    const vars = tupleGet(state, VARS) as Tuple;
+    const args = tget(state, ARGS) as Tuple;
+    const vars = tget(state, VARS) as Tuple;
     if (mode === Mode.run) {
-        tupleSet(vars, ACC, lookup(tupleGet(args, REDUCER) as number)(vars[ACC], d), false);
-        execClosure(tupleGet(vars, SINK) as Tuple)(Mode.run, vars[ACC]);
+        tset(vars, ACC, lookup(tget(args, REDUCER) as number)(tget(vars, ACC), d), false);
+        execClosure(tget(vars, SINK) as Tuple)(Mode.run, tget(vars, ACC));
     } else {
-        execClosure(tupleGet(vars, SINK) as Tuple)(mode, d);
+        execClosure(tget(vars, SINK) as Tuple)(mode, d);
     }
 }
 
 const cproc = closureFactory(scanTB, Role.sink, (args: any) => {
-    return [0, tupleGet(args, SEED) as number, 0, 0]
+    return tupleNew(0, tget(args, SEED) as number, 0, 0);
 });
 
 const sf = sinkFactory(cproc, Role.none);

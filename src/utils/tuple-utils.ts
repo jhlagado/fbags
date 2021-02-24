@@ -50,11 +50,11 @@ export const setMask = (tuple: Tuple, offset: number, value: boolean) => {
     tuple.mask = mask;
 };
 
-export const tupleGet = (tuple: Tuple, offset: number): Elem => {
+export const tget = (tuple: Tuple, offset: number): Elem => {
     return tuple[offset];
 }
 
-export const tupleSet = (tuple: Tuple, offset: number, elem: Elem, move: boolean) => {
+export const tset = (tuple: Tuple, offset: number, elem: Elem, move: boolean) => {
     const elem0 = tuple[offset];
     if (isOwned(elem0)) {
         setOwner(elem0, undefined);
@@ -74,7 +74,7 @@ export const tupleDestroy = (tuple: Tuple) => {
     setOwner(tuple, undefined);
     for (let i = 0; i < 4; i++) {
         if (getMask(tuple, i)) {
-            const child = tupleGet(tuple, i) as Tuple;
+            const child = tget(tuple, i) as Tuple;
             const owner = getOwner(child);
             if (owner && owner.container === tuple && isOwnedBy(child, owner)) {
                 tupleDestroy(child);

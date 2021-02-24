@@ -2,7 +2,7 @@ import { ARGS, FALSE, SINK2, TRUE, VARS } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
 import { lookup } from "../utils/registry";
 import { closureFactory, argsFactory, execClosure } from "../utils/utils";
-import { tupleGet, tupleSet } from "../utils/tuple-utils";
+import { tget, tset } from "../utils/tuple-utils";
 
 const SINK = 0;
 const INLOOP = 0;
@@ -11,44 +11,44 @@ const COMPLETED = 2;
 const DONE = 3;
 
 const loop = (state: Tuple) => {
-    const iterator = lookup(tupleGet(state, ARGS) as number) as any;
-    const vars = tupleGet(state, VARS) as Tuple;
-    tupleSet(vars, INLOOP, TRUE, false);
-    while (tupleGet(vars, GOT1) && !tupleGet(vars, COMPLETED)) {
-        tupleSet(vars, GOT1, FALSE, false);
+    const iterator = lookup(tget(state, ARGS) as number) as any;
+    const vars = tget(state, VARS) as Tuple;
+    tset(vars, INLOOP, TRUE, false);
+    while (tget(vars, GOT1) && !tget(vars, COMPLETED)) {
+        tset(vars, GOT1, FALSE, false);
         const res = iterator.next();
         if (res.done) {
-            tupleSet(vars, DONE, TRUE, true);
-            execClosure(tupleGet(state, SINK2) as Tuple)(Mode.stop);
+            tset(vars, DONE, TRUE, true);
+            execClosure(tget(state, SINK2) as Tuple)(Mode.stop);
             break;
         }
         else {
-            execClosure(tupleGet(state, SINK2) as Tuple)(1, res.value);
+            execClosure(tget(state, SINK2) as Tuple)(1, res.value);
         }
     }
-    tupleSet(vars, INLOOP, FALSE, false);
+    tset(vars, INLOOP, FALSE, false);
 }
 
 const fromIteratorSinkCB = (state: Tuple) => (mode: Mode, first: boolean) => {
-    const vars = tupleGet(state, VARS) as Tuple;
-    if (tupleGet(vars, COMPLETED)) return
+    const vars = tget(state, VARS) as Tuple;
+    if (tget(vars, COMPLETED)) return
     switch (mode) {
         case Mode.run:
             if (first) {
-                // move SINK from tupleGet(vars,SINK) to tupleGet(state,SOURCE)
-                // refer to as tupleGet(state,SINK2)
+                // move SINK from tget(vars,SINK) to tget(state,SOURCE)
+                // refer to as tget(state,SINK2)
                 // reuse SINK as INLOOP  
-                tupleSet(state, SINK2, tupleGet(vars, SINK), false);
-                tupleSet(vars, INLOOP, FALSE, false);
-                tupleSet(vars, GOT1, FALSE, false);
-                tupleSet(vars, COMPLETED, FALSE, false);
-                tupleSet(vars, DONE, FALSE, false);
+                tset(state, SINK2, tget(vars, SINK), false);
+                tset(vars, INLOOP, FALSE, false);
+                tset(vars, GOT1, FALSE, false);
+                tset(vars, COMPLETED, FALSE, false);
+                tset(vars, DONE, FALSE, false);
             }
-            tupleSet(vars, GOT1, TRUE, false);
-            if (!tupleGet(vars, INLOOP) && !(tupleGet(vars, DONE))) loop(state);
+            tset(vars, GOT1, TRUE, false);
+            if (!tget(vars, INLOOP) && !(tget(vars, DONE))) loop(state);
             break;
         case Mode.stop:
-            tupleSet(vars, COMPLETED, TRUE, false);
+            tset(vars, COMPLETED, TRUE, false);
             break;
     }
 }
