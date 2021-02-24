@@ -1,5 +1,5 @@
-import { ARGS, SINK, SOURCE, TRUE, VARS } from "../utils/constants";
-import { Role, Mode, CProc, TPolicy } from "../utils/common";
+import { ARGS, Mode, Role, SINK, SOURCE, TPolicy, TRUE, VARS } from "../utils/constants";
+import { CProc,  } from "../utils/types";
 import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "../utils/closure-utils";
 import { tgett, tgetv, tsett, tsetv, tupleNew } from "../utils/tuple-utils";
 
@@ -51,7 +51,7 @@ const sourceTBF: CProc = (state) => (mode, d) => {
     }
 }
 
-const cproc = closureFactory(sourceTBF, Role.sink, undefined);
+const cproc = closureFactory(sourceTBF, Role.sink);
 
 const sf = sinkFactory(cproc, Role.none);
 

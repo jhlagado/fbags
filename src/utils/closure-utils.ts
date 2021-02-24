@@ -1,11 +1,11 @@
-import { CProc, Role, Mode, VarsFunction, CSProc, Tuple, Elem, TPolicy } from "./common";
-import { ARGS, SOURCE, SINK } from "./constants";
-import { tupleNew, tsett, tgett, tset, tupleClone } from "./tuple-utils";
+import { CProc, CSProc, Tuple, Elem, } from "./types";
+import { ARGS, SOURCE, SINK, TPolicy, Role, Mode } from "./constants";
+import { tupleNew, tsett, tgett, tset, elemClone, tupleClone } from "./tuple-utils";
 
 export const isTuple = (elem: Elem): elem is Tuple => Array.isArray(elem) && elem.length === 4;
 
 export const closure = (state: Tuple, cproc: CProc | CSProc): Tuple => {
-   const instance = tupleClone(state, false);
+    const instance = tupleClone(state, false);
     instance.proc = cproc;
     return instance;
 }
@@ -29,13 +29,14 @@ export const getArgs = (args: Elem[]) => {
 
 export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
     const instance = tupleNew(0, 0, 0, 0);
-    tset(instance, ARGS, getArgs(args), false);
+    tset(instance, ARGS, getArgs(args), TPolicy.ref);
     return closure(instance, cproc);
 }
 
 export const sinkFactory = (cproc: CProc, role: Role): CSProc =>
     (state) => (source) => {
-        const instance: Tuple = tupleNew(...state);
+        const instance: Tuple = tupleNew();
+        tset(instance, ARGS, elemClone(tgett(state, ARGS), false), TPolicy.ref);
         tsett(instance, SOURCE, source, TPolicy.ref);
         const tb = closure(instance, cproc);
         switch (role) {
@@ -46,7 +47,7 @@ export const sinkFactory = (cproc: CProc, role: Role): CSProc =>
         return tb;
     }
 
-export const closureFactory = (cproc: CProc, role: Role, varsFunc?: VarsFunction): CProc =>
+export const closureFactory = (cproc: CProc, role: Role): CProc =>
     (state) => (mode, sink: Tuple) => {
         if (mode !== Mode.start) return;
         const instance: Tuple = tupleNew(...state);

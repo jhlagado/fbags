@@ -1,5 +1,5 @@
-import { ARGS, SINK, VARS } from "../utils/constants";
-import { Mode, TPolicy, Tuple } from "../utils/common";
+import { ARGS, Mode, SINK, TPolicy, VARS } from "../utils/constants";
+import { Tuple } from "../utils/types";
 import { lookup, register } from "../utils/registry";
 import { closure, argsFactory, execClosure } from "../utils/closure-utils";
 import { tupleNew, tsett, tsetv, tgetv, tgett } from "../utils/tuple-utils";

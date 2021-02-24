@@ -11,3 +11,21 @@ export const TUPLE_BYTES = TUPLE_SIZE * CELL_BYTES; // size in bytes of a tuple
 export const NIL = -1; // needed because 0 is a valid address
 export const FALSE = 0;
 export const TRUE = -1;
+
+export enum Mode {
+    start = 0,
+    run = 1,
+    stop = 2,
+}
+
+export enum Role {
+    none = 0,
+    source = 1,
+    sink = 2,
+}
+
+export enum TPolicy {
+    ref = 0,
+    move = 1,
+}
+

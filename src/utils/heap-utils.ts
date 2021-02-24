@@ -1,4 +1,4 @@
-import { Tuple } from "./common";
+import { Tuple } from "./types";
 import { CELL_BYTES, LAST, MEM_SIZE, NIL, TUPLE_BYTES } from "./constants";
 import { headersInit } from "./header-utils";
 

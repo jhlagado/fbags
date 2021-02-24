@@ -1,4 +1,4 @@
-import { Tuple, CSProc } from "../utils/common";
+import { Tuple, CSProc } from "../utils/types";
 
 export const pipe = (source: Tuple, ...sinks: Tuple[]) => {
     let res: Tuple | void = source;

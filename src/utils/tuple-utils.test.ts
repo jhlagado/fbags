@@ -1,5 +1,6 @@
-import { TPolicy } from "./common";
+import {  } from "./types";
 import { maskGet, isOwnedBy, ownerNew, tupleNew, tsett, tgett, tsetv } from "./tuple-utils";
+import { TPolicy } from "./constants";
 
 test('owner and masks', () => {
   const t1 = tupleNew(0, 0, 0, 0);

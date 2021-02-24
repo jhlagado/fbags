@@ -1,5 +1,5 @@
-import { ARGS, SINK } from "../utils/constants";
-import { Role, Mode, Tuple } from "../utils/common";
+import { ARGS, Mode, Role, SINK } from "../utils/constants";
+import {  Tuple } from "../utils/types";
 import { lookup } from "../utils/registry";
 import { argsFactory, execClosure, closureFactory, sinkFactory } from "../utils/closure-utils";
 import { tgett, tgetv } from "../utils/tuple-utils";
@@ -9,7 +9,7 @@ const mapTB = (state: Tuple) => (mode: Mode, d: any) => {
     execClosure(tgett(state, SINK))(mode, mode === Mode.run ? mapper(d) : d)
 }
 
-const cproc = closureFactory(mapTB, Role.sink, undefined);
+const cproc = closureFactory(mapTB, Role.sink);
 
 const sf = sinkFactory(cproc, Role.none);
 

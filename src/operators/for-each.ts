@@ -1,5 +1,5 @@
-import { ARGS, SOURCE } from "../utils/constants";
-import { Role, Mode, Tuple, TPolicy } from "../utils/common";
+import { ARGS, Mode, Role, SOURCE, TPolicy } from "../utils/constants";
+import { Tuple,  } from "../utils/types";
 import { lookup } from "../utils/registry";
 import { sinkFactory, argsFactory, execClosure } from "../utils/closure-utils";
 import { tgett, tgetv, tsett } from "../utils/tuple-utils";

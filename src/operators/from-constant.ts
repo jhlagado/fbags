@@ -1,5 +1,5 @@
-import { ARGS, SINK } from "../utils/constants";
-import { Role, Mode, Tuple } from "../utils/common";
+import { ARGS, Mode, Role, SINK } from "../utils/constants";
+import { Tuple } from "../utils/types";
 import { argsFactory, execClosure, closureFactory } from "../utils/closure-utils";
 import { tgett, tgetv } from "../utils/tuple-utils";
 
@@ -9,7 +9,7 @@ const fromConstantTB = (state: Tuple) => (mode: Mode, d: any) => {
     execClosure(tgett(state, SINK))(mode, mode === Mode.run ? constant : d)
 }
 
-const sf = closureFactory(fromConstantTB, Role.source, undefined);
+const sf = closureFactory(fromConstantTB, Role.source);
 
 export const fromConstant = argsFactory(sf);
 
