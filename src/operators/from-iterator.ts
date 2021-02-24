@@ -1,10 +1,10 @@
-import { ARGS, FALSE, SINK2, TRUE, VARS } from "../utils/constants";
+import { ARGS, FALSE, SINK, TRUE, VARS } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
 import { lookup } from "../utils/registry";
 import { closureFactory, argsFactory, execClosure } from "../utils/closure-utils";
-import { tgett, tgetv, tsett, tsetv } from "../utils/tuple-utils";
+import { tgett, tgetv, tsetv } from "../utils/tuple-utils";
 
-const SINK = 0;
+
 const INLOOP = 0;
 const GOT1 = 1;
 const COMPLETED = 2;
@@ -19,11 +19,11 @@ const loop = (state: Tuple) => {
         const res = iterator.next();
         if (res.done) {
             tsetv(vars, DONE, TRUE);
-            execClosure(tgett(state, SINK2))(Mode.stop);
+            execClosure(tgett(state, SINK))(Mode.stop);
             break;
         }
         else {
-            execClosure(tgett(state, SINK2))(1, res.value);
+            execClosure(tgett(state, SINK))(1, res.value);
         }
     }
     tsetv(vars, INLOOP, FALSE);
@@ -35,10 +35,6 @@ const fromIteratorSinkCB = (state: Tuple) => (mode: Mode, first: boolean) => {
     switch (mode) {
         case Mode.run:
             if (first) {
-                // move SINK from tget(vars,SINK) to tget(state,SOURCE)
-                // refer to as tget(state,SINK2)
-                // reuse SINK as INLOOP  
-                tsett(state, SINK2, tgett(vars, SINK), false);
                 tsetv(vars, INLOOP, FALSE);
                 tsetv(vars, GOT1, FALSE);
                 tsetv(vars, COMPLETED, FALSE);

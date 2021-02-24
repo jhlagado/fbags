@@ -1,17 +1,16 @@
-import { ARGS, VARS } from "../utils/constants";
+import { ARGS, SINK, VARS } from "../utils/constants";
 import { Mode, Tuple } from "../utils/common";
 import { lookup, register } from "../utils/registry";
 import { closure, argsFactory, execClosure } from "../utils/closure-utils";
 import { tupleNew, tsett, tsetv, tgetv, tgett } from "../utils/tuple-utils";
 
-const SINK = 0;
 const I = 1;
 const ID = 2;
 
 const callback = (state: Tuple) => () => {
     const vars = tgett(state, VARS);
     const i = tgetv(vars, I);
-    execClosure(tgett(vars, SINK))(1, i);
+    execClosure(tgett(state, SINK))(1, i);
     tsetv(vars, I, i + 1)
 }
 
@@ -26,7 +25,8 @@ const sf = (state: Tuple) => (mode: Mode, sink: any) => {
     if (mode !== Mode.start) return;
     const period = tgetv(tgett(state, ARGS), 0);
     const instance: Tuple = tupleNew(...state);
-    const vars = tupleNew(sink, 0, 0, 0);
+    tsett(instance, SINK, sink, false);
+    const vars = tupleNew(0, 0, 0, 0);
     tsett(instance, VARS, vars, false);
     tsetv(vars, ID, register(setInterval(callback(instance), period)));
     const tb = closure(instance, talkback);

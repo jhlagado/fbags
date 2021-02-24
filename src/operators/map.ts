@@ -1,15 +1,14 @@
-import { ARGS, VARS } from "../utils/constants";
+import { ARGS, SINK } from "../utils/constants";
 import { Role, Mode, Tuple } from "../utils/common";
 import { lookup } from "../utils/registry";
 import { argsFactory, execClosure, closureFactory, sinkFactory } from "../utils/closure-utils";
 import { tgett, tgetv } from "../utils/tuple-utils";
 
-const SINK = 0;
+
 
 const mapTB = (state: Tuple) => (mode: Mode, d: any) => {
     const mapper = lookup(tgetv(state, ARGS)) as Function;
-    const vars = tgett(state, VARS);
-    execClosure(tgett(vars, SINK))(mode, mode === Mode.run ? mapper(d) : d)
+    execClosure(tgett(state, SINK))(mode, mode === Mode.run ? mapper(d) : d)
 }
 
 const cproc = closureFactory(mapTB, Role.sink, undefined);

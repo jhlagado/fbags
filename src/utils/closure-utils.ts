@@ -52,7 +52,7 @@ export const closureFactory = (cproc: CProc, role: Role, varsFunc?: VarsFunction
         const instance: Tuple = tupleNew(...state);
         const vars = varsFunc ? varsFunc(tget(state, ARGS)) : tupleNew(0, 0, 0, 0);
         tset(instance, VARS, vars, false);
-        tsett(tgett(instance, VARS), SINK, sink, false);
+        tsett(instance, SINK, sink, false);
         const tb = closure(instance, cproc);
         switch (role) {
             case Role.source:
