@@ -1,11 +1,11 @@
 import { CProc, Role, Mode, VarsFunction, CSProc, Tuple, Elem, TPolicy } from "./common";
 import { ARGS, SOURCE, SINK } from "./constants";
-import { tupleNew, tsett, tgett, tset } from "./tuple-utils";
+import { tupleNew, tsett, tgett, tset, tupleClone } from "./tuple-utils";
 
 export const isTuple = (elem: Elem): elem is Tuple => Array.isArray(elem) && elem.length === 4;
 
 export const closure = (state: Tuple, cproc: CProc | CSProc): Tuple => {
-    const instance: Tuple = tupleNew(...state);
+   const instance = tupleClone(state, false);
     instance.proc = cproc;
     return instance;
 }

@@ -14,7 +14,7 @@ const scanTB = (state: Tuple) => (mode: Mode, d: any) => {
     const args = tgett(state, ARGS);
     let vars = tgett(state, VARS);
     if (!vars) {
-        vars = tupleNew(0, 0, 0, 0);
+        vars = tupleNew(tgetv(args,SEED), 0, 0, 0);
         tsett(state, VARS, vars, TPolicy.ref)
     }
     if (mode === Mode.run) {

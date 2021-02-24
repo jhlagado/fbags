@@ -122,16 +122,15 @@ export const tupleDestroy = (tuple: Tuple) => {
     console.log('FREE');
 }
 
-export const tupleClone = (tuple: Tuple) => {
+export const tupleClone = (tuple: Tuple, deep: boolean) => {
     const tuple1 = tupleNew(0, 0, 0, 0);
+    tuple1.proc = tuple.proc;
     for (let i = 0; i < 4; i++) {
         if (maskGet(tuple, i)) {
             const child = tgett(tuple, i);
-            tsett(tuple1, i, tupleClone(child), TPolicy.clone);
-            const owner = getOwner(child);
-            if (owner && owner.container === tuple && isOwnedBy(child, owner)) {
-                tupleDestroy(child);
-            }
+            const child1 = deep ? tupleClone(child, deep) : child;
+            child1.proc = child.proc;
+            tsett(tuple1, i, child1, TPolicy.clone);
         } else {
             const child = tgetv(tuple, i);
             tsetv(tuple1, i, child);
