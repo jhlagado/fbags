@@ -4,7 +4,6 @@ import { lookup } from "../utils/registry";
 import { closureFactory, argsFactory, execClosure } from "../utils/utils";
 import { tupleGet, tupleSet } from "../utils/tuple-utils";
 
-type VarsTuple = [Tuple | number, number, number, number]
 const SINK = 0;
 const INLOOP = 0;
 const GOT1 = 1;
@@ -13,7 +12,7 @@ const DONE = 3;
 
 const loop = (state: Tuple) => {
     const iterator = lookup(tupleGet(state, ARGS) as number) as any;
-    const vars = state[VARS] as VarsTuple;
+    const vars = tupleGet(state, VARS) as Tuple;
     tupleSet(vars, INLOOP, TRUE, false);
     while (tupleGet(vars, GOT1) && !tupleGet(vars, COMPLETED)) {
         tupleSet(vars, GOT1, FALSE, false);
@@ -31,22 +30,22 @@ const loop = (state: Tuple) => {
 }
 
 const fromIteratorSinkCB = (state: Tuple) => (mode: Mode, first: boolean) => {
-    const vars = state[VARS] as VarsTuple;
-    if (vars[COMPLETED]) return
+    const vars = tupleGet(state, VARS) as Tuple;
+    if (tupleGet(vars, COMPLETED)) return
     switch (mode) {
         case Mode.run:
             if (first) {
-                // move SINK from vars[SINK] to state[SOURCE]
+                // move SINK from tupleGet(vars,SINK) to state[SOURCE]
                 // refer to as state[SINK2]
                 // reuse SINK as INLOOP  
-                tupleSet(state, SINK2, vars[SINK], false);
+                tupleSet(state, SINK2, tupleGet(vars, SINK), false);
                 tupleSet(vars, INLOOP, FALSE, false);
                 tupleSet(vars, GOT1, FALSE, false);
                 tupleSet(vars, COMPLETED, FALSE, false);
                 tupleSet(vars, DONE, FALSE, false);
             }
             tupleSet(vars, GOT1, TRUE, false);
-            if (!vars[INLOOP] && !(vars[DONE])) loop(state);
+            if (!tupleGet(vars, INLOOP) && !(tupleGet(vars, DONE))) loop(state);
             break;
         case Mode.stop:
             tupleSet(vars, COMPLETED, TRUE, false);

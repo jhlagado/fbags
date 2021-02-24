@@ -3,37 +3,37 @@ import { Role, Mode, Tuple, CProc } from "../utils/common";
 import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "../utils/utils";
 import { tupleGet, tupleSet } from "../utils/tuple-utils";
 
-type VarsTuple = [Tuple, number, number, number]
 const SINK = 0;
 const TAKEN = 1;
 const END = 2;
 
 const tbf: CProc = (state) => (mode, d) => {
     const max = tupleGet(state, ARGS) as number;
-    const vars = state[VARS] as VarsTuple;
+    const vars = tupleGet(state, VARS) as Tuple;
     const source = state[SOURCE];
     if (mode === Mode.stop) {
         tupleSet(vars, END, TRUE, false);
         execClosure(source as Tuple)(mode, d);
-    } else if (vars[TAKEN] < max) {
+    } else if (tupleGet(vars, TAKEN) < max) {
         execClosure(source as Tuple)(mode, d);
     }
 }
 
 const sourceTBF: CProc = (state) => (mode, d) => {
     const max = tupleGet(state, ARGS) as number;
-    const vars = state[VARS] as VarsTuple;
-    const sink = vars[SINK] as Tuple;
+    const vars = tupleGet(state, VARS) as Tuple;
+    const sink = tupleGet(vars, SINK) as Tuple;
     switch (mode) {
         case Mode.start:
             tupleSet(state, SOURCE, d, false);
             execClosure(sink)(0, closure(state, tbf));
             break;
         case Mode.run:
-            if (vars[TAKEN] < max) {
-                vars[TAKEN]++;
+            const taken = tupleGet(vars, TAKEN) as number;
+            if (taken < max) {
+                tupleSet(vars, TAKEN, taken + 1, false);
                 execClosure(sink)(Mode.run, d);
-                if (vars[TAKEN] === max && !vars[END]) {
+                if (tupleGet(vars, TAKEN) === max && !tupleGet(vars, END)) {
                     tupleSet(vars, END, TRUE, false);
                     if (state[SOURCE]) execClosure(state[SOURCE] as Tuple)(Mode.stop);
                     execClosure(sink)(Mode.stop);

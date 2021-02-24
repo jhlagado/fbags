@@ -18,7 +18,7 @@ const callback = (state: Tuple) => () => {
 const talkback = (state: Tuple) => (mode: Mode) => {
     const vars = state[VARS] as Tuple;
     if (mode === Mode.stop) {
-        clearInterval(lookup(vars[ID] as number));
+        clearInterval(lookup(tupleGet(vars, ID) as number));
     }
 }
 
@@ -28,7 +28,7 @@ const sf = (state: Tuple) => (mode: Mode, sink: any) => {
     const instance: Tuple = tupleNew(...state);
     const vars = tupleNew(sink, 0, 0, 0);
     tupleSet(instance, VARS, vars, false);
-    tupleSet(vars,ID, register(setInterval(callback(instance), period)), false);
+    tupleSet(vars, ID, register(setInterval(callback(instance), period)), false);
     const tb = closure(instance, talkback);
     execClosure(sink)(Mode.start, tb);
 }

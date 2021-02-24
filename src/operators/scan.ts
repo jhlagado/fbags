@@ -7,15 +7,14 @@ import { tupleGet, tupleSet } from "../utils/tuple-utils";
 const REDUCER = 0;
 const SEED = 1;
 
-type VarsTuple = Tuple;
 const SINK = 0;
 const ACC = 1;
 
 const scanTB = (state: Tuple) => (mode: Mode, d: any) => {
     const args = tupleGet(state, ARGS) as Tuple;
-    const vars = state[VARS] as VarsTuple;
+    const vars = tupleGet(state, VARS) as Tuple;
     if (mode === Mode.run) {
-        tupleSet(vars, ACC, lookup(args[REDUCER] as number)(vars[ACC], d), false);
+        tupleSet(vars, ACC, lookup(tupleGet(args, REDUCER) as number)(vars[ACC], d), false);
         execClosure(tupleGet(vars, SINK) as Tuple)(Mode.run, vars[ACC]);
     } else {
         execClosure(tupleGet(vars, SINK) as Tuple)(mode, d);
@@ -23,7 +22,7 @@ const scanTB = (state: Tuple) => (mode: Mode, d: any) => {
 }
 
 const cproc = closureFactory(scanTB, Role.sink, (args: any) => {
-    return [0, args[SEED] as number, 0, 0]
+    return [0, tupleGet(args, SEED) as number, 0, 0]
 });
 
 const sf = sinkFactory(cproc, Role.none);

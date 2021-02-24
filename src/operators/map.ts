@@ -4,12 +4,11 @@ import { lookup } from "../utils/registry";
 import { argsFactory, execClosure, closureFactory, sinkFactory } from "../utils/utils";
 import { tupleGet } from "../utils/tuple-utils";
 
-type VarsTuple = [Tuple, 0, 0, 0]
 const SINK = 0;
 
 const mapTB = (state: Tuple) => (mode: Mode, d: any) => {
     const mapper = lookup(tupleGet(state, ARGS) as number) as Function;
-    const vars = state[VARS] as VarsTuple;
+    const vars = tupleGet(state, VARS) as Tuple;
     execClosure(tupleGet(vars, SINK) as Tuple)(mode, mode === Mode.run ? mapper(d) : d)
 }
 
