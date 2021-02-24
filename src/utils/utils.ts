@@ -1,5 +1,5 @@
 import { CProc, Role, Mode, Vars, VarsFunction, CSProc, Tuple, Elem } from "./common";
-import { ARGS, EMPTY_TUPLE, PROC, SOURCE, VARS } from "./constants";
+import { ARGS, PROC, SOURCE, VARS } from "./constants";
 import { lookup, register } from "./registry";
 import { tget, tupleNew, tset } from "./tuple-utils";
 
@@ -33,7 +33,7 @@ export const getArgs = (args: Elem[]) => {
 }
 
 export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
-    const instance = tupleNew(...EMPTY_TUPLE);
+    const instance = tupleNew(0,0,0,0);
     tset(instance, ARGS, getArgs(args), false);
     return closure(instance, cproc);
 }
@@ -53,7 +53,7 @@ export const sinkFactory = (cproc: CProc, role: Role): CSProc =>
 
 const SINK = 0;
 
-export const closureFactory = (cproc: CProc, role: Role, vars: Vars = tupleNew(...EMPTY_TUPLE)): CProc =>
+export const closureFactory = (cproc: CProc, role: Role, vars: Vars = tupleNew(0,0,0,0)): CProc =>
     (state) => (mode, sink: Tuple) => {
         if (mode !== Mode.start) return;
         const instance: Tuple = tupleNew(...state);

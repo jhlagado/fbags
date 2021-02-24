@@ -8,7 +8,7 @@ export const hasOwner = (elem: Elem): boolean => {
     const owner = getOwner(elem);
     if (!owner) return false;
     const { container, offset } = owner;
-    const self = container[offset];
+    const self = tget(container, offset);
     return elem === self;
 }
 
@@ -31,17 +31,17 @@ export const isOwned = (elem: Elem): elem is Tuple => {
 export const isOwnedBy = (elem: Elem, owner: Owner | undefined): boolean => {
     if (!owner) return false;
     const { container, offset } = owner;
-    return container[offset] === elem;
+    return tget(container, offset) === elem;
 };
 
-export const getMask = (tuple: Tuple, offset: number): boolean => {
+export const maskGet = (tuple: Tuple, offset: number): boolean => {
     let mask = tuple.mask || 0;
     const m = 1 << offset;
     const v = mask & 0xF & m;
     return v !== 0;
 };
 
-export const setMask = (tuple: Tuple, offset: number, value: boolean) => {
+export const maskSet = (tuple: Tuple, offset: number, value: boolean) => {
     let mask = tuple.mask || 0;
     const m = ~(1 << offset)
     mask &= m;
@@ -55,14 +55,14 @@ export const tget = (tuple: Tuple, offset: number): Elem => {
 }
 
 export const tset = (tuple: Tuple, offset: number, elem: Elem, move: boolean) => {
-    const elem0 = tuple[offset];
+    const elem0 = tget(tuple, offset);
     if (isOwned(elem0)) {
         setOwner(elem0, undefined);
         tupleDestroy(elem0);
     }
     tuple[offset] = elem;
     const t = isTuple(elem);
-    setMask(tuple, offset, t)
+    maskSet(tuple, offset, t)
     if (!t) return;
     if (!hasOwner(elem) || move) {
         setOwner(elem, { container: tuple, offset });
@@ -73,7 +73,7 @@ export const tupleDestroy = (tuple: Tuple) => {
     console.log('DESTROY!')
     setOwner(tuple, undefined);
     for (let i = 0; i < 4; i++) {
-        if (getMask(tuple, i)) {
+        if (maskGet(tuple, i)) {
             const child = tget(tuple, i) as Tuple;
             const owner = getOwner(child);
             if (owner && owner.container === tuple && isOwnedBy(child, owner)) {
