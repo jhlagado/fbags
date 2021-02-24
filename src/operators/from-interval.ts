@@ -1,5 +1,5 @@
 import { ARGS, SINK, VARS } from "../utils/constants";
-import { Mode, Tuple } from "../utils/common";
+import { Mode, TPolicy, Tuple } from "../utils/common";
 import { lookup, register } from "../utils/registry";
 import { closure, argsFactory, execClosure } from "../utils/closure-utils";
 import { tupleNew, tsett, tsetv, tgetv, tgett } from "../utils/tuple-utils";
@@ -25,9 +25,9 @@ const sf = (state: Tuple) => (mode: Mode, sink: any) => {
     if (mode !== Mode.start) return;
     const period = tgetv(tgett(state, ARGS), 0);
     const instance: Tuple = tupleNew(...state);
-    tsett(instance, SINK, sink, false);
+    tsett(instance, SINK, sink, TPolicy.ref);
     const vars = tupleNew(0, 0, 0, 0);
-    tsett(instance, VARS, vars, false);
+    tsett(instance, VARS, vars, TPolicy.ref);
     tsetv(vars, ID, register(setInterval(callback(instance), period)));
     const tb = closure(instance, talkback);
     execClosure(sink)(Mode.start, tb);

@@ -1,6 +1,6 @@
-import { CProc, Role, Mode, VarsFunction, CSProc, Tuple, Elem } from "./common";
-import { ARGS, SOURCE, VARS, SINK } from "./constants";
-import { tupleNew, tsett, tgett, tget, tset } from "./tuple-utils";
+import { CProc, Role, Mode, VarsFunction, CSProc, Tuple, Elem, TPolicy } from "./common";
+import { ARGS, SOURCE, SINK } from "./constants";
+import { tupleNew, tsett, tgett, tset } from "./tuple-utils";
 
 export const isTuple = (elem: Elem): elem is Tuple => Array.isArray(elem) && elem.length === 4;
 
@@ -11,7 +11,7 @@ export const closure = (state: Tuple, cproc: CProc | CSProc): Tuple => {
 }
 
 export const execClosure = (closure?: Tuple) => {
-    if (!closure) return (..._args: any) => { }
+    if (!closure) return (..._args: any[]) => { }
     const proc = closure.proc as CProc;
     return proc(closure);
 }
@@ -36,7 +36,7 @@ export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
 export const sinkFactory = (cproc: CProc, role: Role): CSProc =>
     (state) => (source) => {
         const instance: Tuple = tupleNew(...state);
-        tsett(instance, SOURCE, source, false);
+        tsett(instance, SOURCE, source, TPolicy.ref);
         const tb = closure(instance, cproc);
         switch (role) {
             case Role.sink:
@@ -50,9 +50,7 @@ export const closureFactory = (cproc: CProc, role: Role, varsFunc?: VarsFunction
     (state) => (mode, sink: Tuple) => {
         if (mode !== Mode.start) return;
         const instance: Tuple = tupleNew(...state);
-        const vars = varsFunc ? varsFunc(tget(state, ARGS)) : tupleNew(0, 0, 0, 0);
-        tset(instance, VARS, vars, false);
-        tsett(instance, SINK, sink, false);
+        tsett(instance, SINK, sink, TPolicy.ref);
         const tb = closure(instance, cproc);
         switch (role) {
             case Role.source:

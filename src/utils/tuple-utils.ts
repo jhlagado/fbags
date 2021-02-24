@@ -1,4 +1,4 @@
-import { Elem, Owner, Tuple } from "./common";
+import { Elem, Owner, TPolicy, Tuple } from "./common";
 import { isTuple } from "./closure-utils";
 
 export const tupleNew = (...args: Elem[]) => args.concat([0, 0, 0, 0]).slice(0, 4) as Tuple;
@@ -91,7 +91,7 @@ export const tset = (tuple: Tuple, offset: number, elem: Elem, move: boolean) =>
     }
 }
 
-export const tsett = (tuple: Tuple, offset: number, elem: Tuple, move: boolean) => {
+export const tsett = (tuple: Tuple, offset: number, elem: Tuple, policy: TPolicy) => {
     if (maskGet(tuple, offset)) {
         const elem0 = tgett(tuple, offset);
         if (isOwned(elem0)) {
@@ -101,7 +101,7 @@ export const tsett = (tuple: Tuple, offset: number, elem: Tuple, move: boolean) 
     }
     tuple[offset] = elem;
     maskSet(tuple, offset, true)
-    if (!hasOwner(elem) || move) {
+    if (!hasOwner(elem) || policy === TPolicy.move) {
         setOwner(elem, { container: tuple, offset });
     }
 }
@@ -120,5 +120,23 @@ export const tupleDestroy = (tuple: Tuple) => {
         }
     }
     console.log('FREE');
+}
+
+export const tupleClone = (tuple: Tuple) => {
+    const tuple1 = tupleNew(0, 0, 0, 0);
+    for (let i = 0; i < 4; i++) {
+        if (maskGet(tuple, i)) {
+            const child = tgett(tuple, i);
+            tsett(tuple1, i, tupleClone(child), TPolicy.clone);
+            const owner = getOwner(child);
+            if (owner && owner.container === tuple && isOwnedBy(child, owner)) {
+                tupleDestroy(child);
+            }
+        } else {
+            const child = tgetv(tuple, i);
+            tsetv(tuple1, i, child);
+        }
+    }
+    return tuple1;
 }
 

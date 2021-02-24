@@ -1,8 +1,8 @@
 import { ARGS, FALSE, SINK, TRUE, VARS } from "../utils/constants";
-import { Role, Mode, Tuple } from "../utils/common";
+import { Role, Mode, Tuple, TPolicy } from "../utils/common";
 import { lookup } from "../utils/registry";
 import { closureFactory, argsFactory, execClosure } from "../utils/closure-utils";
-import { tgett, tgetv, tsetv } from "../utils/tuple-utils";
+import { tgett, tgetv, tsett, tsetv, tupleNew } from "../utils/tuple-utils";
 
 
 const INLOOP = 0;
@@ -30,16 +30,14 @@ const loop = (state: Tuple) => {
 }
 
 const fromIteratorSinkCB = (state: Tuple) => (mode: Mode, first: boolean) => {
-    const vars = tgett(state, VARS);
+    let vars = tgett(state, VARS);
+    if (!vars) {
+        vars = tupleNew(FALSE, FALSE, FALSE, FALSE);
+        tsett(state, VARS, vars, TPolicy.ref)
+    }
     if (tgetv(vars, COMPLETED)) return
     switch (mode) {
         case Mode.run:
-            if (first) {
-                tsetv(vars, INLOOP, FALSE);
-                tsetv(vars, GOT1, FALSE);
-                tsetv(vars, COMPLETED, FALSE);
-                tsetv(vars, DONE, FALSE);
-            }
             tsetv(vars, GOT1, TRUE);
             if (!tgetv(vars, INLOOP) && !(tgetv(vars, DONE))) loop(state);
             break;

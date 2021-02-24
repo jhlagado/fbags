@@ -11,7 +11,7 @@ export enum Role {
 }
 
 export enum TPolicy {
-    borrow = 0,
+    ref = 0,
     move = 1,
     clone = 2,
 }
