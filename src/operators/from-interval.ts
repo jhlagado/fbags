@@ -10,7 +10,7 @@ const ID = 2;
 const callback = (state: Tuple) => () => {
     const vars = tgett(state, VARS);
     const i = tgetv(vars, I);
-    execClosure(tgett(state, SINK))(1, i);
+    execClosure(tgett(state, SINK))(Mode.data, i);
     tsetv(vars, I, i + 1)
 }
 

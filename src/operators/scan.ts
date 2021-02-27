@@ -17,9 +17,9 @@ const scanTB = (state: Tuple) => (mode: Mode, d: any) => {
         vars = tupleNew(tgetv(args, SEED), 0, 0, 0);
         tsett(state, VARS, vars, false)
     }
-    if (mode === Mode.run) {
+    if (mode === Mode.data) {
         tsett(vars, ACC, lookup(tgetv(args, REDUCER))(tget(vars, ACC), d), false);
-        execClosure(tgett(state, SINK))(Mode.run, tget(vars, ACC));
+        execClosure(tgett(state, SINK))(Mode.data, tget(vars, ACC));
     } else {
         execClosure(tgett(state, SINK))(mode, d);
     }

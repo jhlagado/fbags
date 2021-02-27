@@ -9,11 +9,11 @@ const forEachTB = (state: Tuple) => (mode: Mode, d: any) => {
     switch (mode) {
         case Mode.start:
             tsett(state, SOURCE, d, false);
-            execClosure(d)(Mode.run);
+            execClosure(d)(Mode.data);
             break;
-        case Mode.run:
+        case Mode.data:
             effect(d);
-            execClosure(tgett(state, SOURCE))(Mode.run);
+            execClosure(tgett(state, SOURCE))(Mode.data);
             break;
     }
 }

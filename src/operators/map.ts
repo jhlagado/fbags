@@ -6,7 +6,7 @@ import { tgett, tgetv } from "../utils/tuple-utils";
 
 const mapTB = (state: Tuple) => (mode: Mode, d: any) => {
     const mapper = lookup(tgetv(state, ARGS)) as Function;
-    execClosure(tgett(state, SINK))(mode, mode === Mode.run ? mapper(d) : d)
+    execClosure(tgett(state, SINK))(mode, mode === Mode.data ? mapper(d) : d)
 }
 
 const cproc = closureFactory(mapTB, Role.sink);

@@ -6,7 +6,7 @@ import { tgett, tgetv } from "../utils/tuple-utils";
 const fromConstantTB = (state: Tuple) => (mode: Mode, d: any) => {
     const constant = tgetv(state, ARGS);
     // const vars = tgett(state, VARS);
-    execClosure(tgett(state, SINK))(mode, mode === Mode.run ? constant : d)
+    execClosure(tgett(state, SINK))(mode, mode === Mode.data ? constant : d)
 }
 
 const sf = closureFactory(fromConstantTB, Role.source);

@@ -14,7 +14,7 @@ export const TRUE = -1;
 
 export enum Mode {
     start = 0,
-    run = 1,
+    data = 1,
     stop = 2,
 }
 

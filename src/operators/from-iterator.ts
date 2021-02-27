@@ -17,19 +17,20 @@ const loop = (state: Tuple) => {
     while (tgetv(vars, GOT1) && !tgetv(vars, COMPLETED)) {
         tsetv(vars, GOT1, FALSE);
         const res = iterator.next();
+        const sink = tgett(state, SINK);
         if (res.done) {
             tsetv(vars, DONE, TRUE);
-            execClosure(tgett(state, SINK))(Mode.stop);
+            execClosure(sink)(Mode.stop);
             break;
         }
         else {
-            execClosure(tgett(state, SINK))(1, res.value);
+            execClosure(sink)(Mode.data, res.value);
         }
     }
     tsetv(vars, INLOOP, FALSE);
 }
 
-const fromIteratorSinkCB = (state: Tuple) => (mode: Mode, first: boolean) => {
+const fromIteratorSinkCB = (state: Tuple) => (mode: Mode) => {
     let vars = tgett(state, VARS);
     if (!vars) {
         vars = tupleNew(FALSE, FALSE, FALSE, FALSE);
@@ -37,7 +38,7 @@ const fromIteratorSinkCB = (state: Tuple) => (mode: Mode, first: boolean) => {
     }
     if (tgetv(vars, COMPLETED)) return
     switch (mode) {
-        case Mode.run:
+        case Mode.data:
             tsetv(vars, GOT1, TRUE);
             if (!tgetv(vars, INLOOP) && !(tgetv(vars, DONE))) loop(state);
             break;

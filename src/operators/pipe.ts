@@ -1,3 +1,4 @@
+// import { isOwned, tupleDestroy } from "../utils/tuple-utils";
 import { Tuple, CSProc } from "../utils/types";
 
 export const pipe = (source: Tuple, ...sinks: Tuple[]) => {
@@ -6,6 +7,7 @@ export const pipe = (source: Tuple, ...sinks: Tuple[]) => {
         const closure = sinks[i];
         const proc = closure.proc as CSProc;
         res = res ? (proc(closure))(res) : res;
+        // if (!isOwned(closure)) tupleDestroy(closure);
     }
     return res;
 }

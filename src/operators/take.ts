@@ -30,13 +30,13 @@ const sourceTBF: CProc = (state) => (mode, d) => {
     switch (mode) {
         case Mode.start:
             tsett(state, SOURCE, d, false);
-            execClosure(sink)(0, closure(state, tbf));
+            execClosure(sink)(Mode.start, closure(state, tbf));
             break;
-        case Mode.run:
+        case Mode.data:
             const taken = tgetv(vars, TAKEN);
             if (taken < max) {
                 tsetv(vars, TAKEN, taken + 1);
-                execClosure(sink)(Mode.run, d);
+                execClosure(sink)(Mode.data, d);
                 if (tgetv(vars, TAKEN) === max && !tgetv(vars, END)) {
                     tsetv(vars, END, TRUE);
                     if (tgett(state, SOURCE)) execClosure(tgett(state, SOURCE))(Mode.stop);
