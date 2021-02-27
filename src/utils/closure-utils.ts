@@ -63,7 +63,7 @@ export const closureFactoryGreet = (receiver: Tuple, tb: Tuple) => (execClosure(
 export const closureFactory = (cproc: CProc, role: Role): CProc => {
     const closureFactoryProc = (state: Tuple) => (mode: Mode, sink: Tuple) => {
         if (mode !== Mode.start) return;
-        const instance: Tuple = tupleNew(...state);
+        const instance: Tuple = tupleClone(state, false);
         instance.name = 'closure-factory';
         tsett(instance, SINK, sink, false);
         const tb = closure(instance, cproc);

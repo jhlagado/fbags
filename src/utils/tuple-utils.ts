@@ -62,7 +62,7 @@ export const maskSet = (tuple: Tuple, offset: number, value: boolean) => {
 };
 
 export const tget = (tuple: Tuple, offset: number): Elem => {
-    // if (tuple.destroy) throw new Error('Tried to get on destroyed tuple ' + formatTuple(tuple));
+//    if (tuple.destroy) throw new Error('Tried to get on destroyed tuple ' + formatTuple(tuple));
     return tuple[offset];
 }
 
@@ -77,7 +77,7 @@ export const tgetv = (tuple: Tuple, offset: number): number => {
 export const tsetv = (tuple: Tuple, offset: number, value: number) => {
     if (maskGet(tuple, offset)) {
         const elem0 = tgett(tuple, offset);
-        if (isOwned(elem0)) {
+        if (isOwnedBy(elem0, { container: tuple, offset })) {
             setOwner(elem0, undefined);
             tupleDestroy(elem0);
         }
@@ -90,7 +90,7 @@ export const tset = (tuple: Tuple, offset: number, elem: Elem, move: boolean) =>
     // if (tuple.destroy) throw new Error('Tried to set on destroyed tuple ' + formatTuple(tuple));
     if (maskGet(tuple, offset)) {
         const elem0 = tgett(tuple, offset);
-        if (isOwned(elem0)) {
+        if (isOwnedBy(elem0, { container: tuple, offset })) {
             setOwner(elem0, undefined);
             tupleDestroy(elem0);
         }

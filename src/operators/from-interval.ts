@@ -2,7 +2,7 @@ import { ARGS, Mode, SINK, VARS } from "../utils/constants";
 import { Tuple } from "../utils/types";
 import { lookup, register } from "../utils/registry";
 import { closure, argsFactory, execClosure } from "../utils/closure-utils";
-import { tupleNew, tsett, tsetv, tgetv, tgett } from "../utils/tuple-utils";
+import { tupleNew, tsett, tsetv, tgetv, tgett, tupleClone } from "../utils/tuple-utils";
 
 const I = 1;
 const ID = 2;
@@ -24,7 +24,7 @@ const talkback = (state: Tuple) => (mode: Mode) => {
 const sf = (state: Tuple) => (mode: Mode, sink: any) => {
     if (mode !== Mode.start) return;
     const period = tgetv(tgett(state, ARGS), 0);
-    const instance: Tuple = tupleNew(...state);
+    const instance: Tuple = tupleClone(state, false);
     tsett(instance, SINK, sink, false);
     const vars = tupleNew(0, 0, 0, 0);
     tsett(instance, VARS, vars, false);
