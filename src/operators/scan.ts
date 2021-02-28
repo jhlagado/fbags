@@ -29,7 +29,7 @@ const cproc = closureFactory(scanTB, Role.sink);
 
 const sf = sinkFactory(cproc, Role.none);
 
-export const scan = argsFactory(sf, false);
+export const scan = argsFactory(sf);
 
 // function scan(reducer, seed) {
 //     let hasAcc = arguments.length === 2;

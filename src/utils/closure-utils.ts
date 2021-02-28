@@ -30,12 +30,12 @@ export const getArgs = (args: Elem[]) => {
     }
 }
 
-export const argsFactory = (cproc: CProc | CSProc, destroy = false) => (...args: Elem[]) => {
+export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
     const instance = tupleNew(0, 0, 0, 0);
     instance.name = 'args-factory';
     tset(instance, ARGS, getArgs(args), false);
-    const af = closure(instance, cproc);
-    if (destroy) tupleDestroy(instance);
+    const af = closure(instance, cproc, true);
+    tupleDestroy(instance);
     return af;
 }
 
