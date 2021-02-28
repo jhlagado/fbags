@@ -1,5 +1,6 @@
 import { Elem, Owner, Tuple } from "./types";
 import { isTuple } from "./closure-utils";
+import { formatTuple } from "./format-utils";
 // import { formatTuple } from "./format-utils";
 
 export const tupleList: Tuple[] = [];
@@ -62,7 +63,7 @@ export const maskSet = (tuple: Tuple, offset: number, value: boolean) => {
 };
 
 export const tget = (tuple: Tuple, offset: number): Elem => {
-//    if (tuple.destroy) throw new Error('Tried to get on destroyed tuple ' + formatTuple(tuple));
+    if (tuple.destroy) throw new Error('Tried to get field ' + offset + ' of destroyed tuple ' + formatTuple(tuple));
     return tuple[offset];
 }
 
@@ -87,7 +88,7 @@ export const tsetv = (tuple: Tuple, offset: number, value: number) => {
 }
 
 export const tset = (tuple: Tuple, offset: number, elem: Elem, move: boolean) => {
-    // if (tuple.destroy) throw new Error('Tried to set on destroyed tuple ' + formatTuple(tuple));
+    // if (tuple.destroy) throw new Error('Tried to set field of destroyed tuple ' + formatTuple(tuple));
     if (maskGet(tuple, offset)) {
         const elem0 = tgett(tuple, offset);
         if (isOwnedBy(elem0, { container: tuple, offset })) {
@@ -110,7 +111,6 @@ export const tsett = (tuple: Tuple, offset: number, elem: Tuple, move: boolean) 
 export const tupleDestroy = (tuple: Tuple) => {
     console.log('DESTROY!')
     setOwner(tuple, undefined);
-    tuple.destroy = true;
     for (let i = 0; i < 4; i++) {
         if (maskGet(tuple, i)) {
             const child = tgett(tuple, i);
@@ -121,6 +121,7 @@ export const tupleDestroy = (tuple: Tuple) => {
             }
         }
     }
+    tuple.destroy = true;
     console.log('FREE');
 }
 
