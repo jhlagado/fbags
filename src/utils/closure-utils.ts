@@ -4,8 +4,8 @@ import { tupleNew, tsett, tgett, tset, elemClone, tupleClone, tupleDestroy } fro
 
 export const isTuple = (elem?: Elem): elem is Tuple => Array.isArray(elem) && elem.length === 4;
 
-export const closure = (state: Tuple, cproc: CProc | CSProc, t = false): Tuple => {
-    const closure = tupleClone(state, t);
+export const closure = (state: Tuple, cproc: CProc | CSProc, deep = false): Tuple => {
+    const closure = tupleClone(state, deep);
     closure.proc = cproc;
     closure.name = cproc.name;
     return closure;
@@ -30,12 +30,12 @@ export const getArgs = (args: Elem[]) => {
     }
 }
 
-export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
+export const argsFactory = (cproc: CProc | CSProc, destroy = false) => (...args: Elem[]) => {
     const instance = tupleNew(0, 0, 0, 0);
     instance.name = 'args-factory';
     tset(instance, ARGS, getArgs(args), false);
-    const af = closure(instance, cproc, true);
-    tupleDestroy(instance);
+    const af = closure(instance, cproc);
+    if (destroy) tupleDestroy(instance);
     return af;
 }
 
