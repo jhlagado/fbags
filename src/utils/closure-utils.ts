@@ -46,8 +46,8 @@ export const sinkFactory = (cproc: CProc, role: Role): CSProc => {
             instance.name = 'sink-factory';
             tset(instance, ARGS, elemClone(tgett(state, ARGS), false), false);
             tsett(instance, SOURCE, elemClone(source, false) as Tuple, false);
-            const tb = closure(instance, cproc);
-            // tupleDestroy(instance)
+            const tb = closure(instance, cproc, true);
+            tupleDestroy(instance)
             switch (role) {
                 case Role.sink:
                     (execClosure(source))(Mode.start, tb);
