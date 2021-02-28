@@ -1,11 +1,11 @@
 import { CProc, CSProc, Tuple, Elem, } from "./types";
 import { ARGS, SOURCE, SINK, Role, Mode } from "./constants";
-import { tupleNew, tsett, tgett, tset, elemClone, tupleClone } from "./tuple-utils";
+import { tupleNew, tsett, tgett, tset, elemClone, tupleClone, tupleDestroy } from "./tuple-utils";
 
 export const isTuple = (elem?: Elem): elem is Tuple => Array.isArray(elem) && elem.length === 4;
 
-export const closure = (state: Tuple, cproc: CProc | CSProc): Tuple => {
-    const closure = tupleClone(state, false);
+export const closure = (state: Tuple, cproc: CProc | CSProc, t = false): Tuple => {
+    const closure = tupleClone(state, t);
     closure.proc = cproc;
     closure.name = cproc.name;
     return closure;
@@ -34,8 +34,8 @@ export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
     const instance = tupleNew(0, 0, 0, 0);
     instance.name = 'args-factory';
     tset(instance, ARGS, getArgs(args), false);
-    const af = closure(instance, cproc);
-    // tupleDestroy(instance);
+    const af = closure(instance, cproc, true);
+    tupleDestroy(instance);
     return af;
 }
 

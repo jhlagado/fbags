@@ -88,7 +88,7 @@ export const tsetv = (tuple: Tuple, offset: number, value: number) => {
 }
 
 export const tset = (tuple: Tuple, offset: number, elem: Elem, move: boolean) => {
-    // if (tuple.destroy) throw new Error('Tried to set field of destroyed tuple ' + formatTuple(tuple));
+    if (tuple.destroy) throw new Error('Tried to set field of destroyed tuple ' + formatTuple(tuple));
     if (maskGet(tuple, offset)) {
         const elem0 = tgett(tuple, offset);
         if (isOwnedBy(elem0, { container: tuple, offset })) {
