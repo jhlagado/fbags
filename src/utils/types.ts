@@ -9,7 +9,8 @@ export type Tuple = [Elem, Elem, Elem, Elem] & {
     destroy?: boolean,
 };
 
-export type CProc = (state: Tuple) => (mode: Mode, d?: any) => Tuple | void;
+export type Proc = (mode: Mode, d?: any) => Tuple | void;
+export type CProc = (state: Tuple) => Proc;
 export type CSProc = (state: Tuple) => (source: Tuple) => Tuple;
 
 export type Effect = (value: string) => void;

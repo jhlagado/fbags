@@ -1,14 +1,13 @@
 import { ARGS, Mode, Role, SINK } from "../utils/constants";
-import {  Tuple } from "../utils/types";
+import { Tuple } from "../utils/types";
 import { lookup } from "../utils/registry";
-import { argsFactory, execClosure, closureFactory, sinkFactory } from "../utils/closure-utils";
-import { isOwned, tgett, tgetv, tupleDestroy } from "../utils/tuple-utils";
+import { argsFactory, closureFactory, sinkFactory, execClosure } from "../utils/closure-utils";
+import { tgett, tgetv } from "../utils/tuple-utils";
 
 const mapTB = (state: Tuple) => (mode: Mode, d: any) => {
     const mapper = lookup(tgetv(state, ARGS)) as Function;
     const sink = tgett(state, SINK);
-    execClosure(sink)(mode, mode === Mode.data ? mapper(d) : d)
-    if (!isOwned(sink)) tupleDestroy(sink);
+    execClosure(sink, mode, mode === Mode.data ? mapper(d) : d)
 }
 
 const cproc = closureFactory(mapTB, Role.sink);

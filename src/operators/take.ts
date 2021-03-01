@@ -1,7 +1,7 @@
 import { ARGS, Mode, Role, SINK, SOURCE, TRUE, VARS } from "../utils/constants";
 import { CProc, } from "../utils/types";
 import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "../utils/closure-utils";
-import { isOwned, tgett, tgetv, tsett, tsetv, tupleDestroy, tupleNew } from "../utils/tuple-utils";
+import { tgett, tgetv, tsett, tsetv, tupleNew } from "../utils/tuple-utils";
 
 
 const TAKEN = 1;
@@ -13,11 +13,9 @@ const tbf: CProc = (state) => (mode, d) => {
     const source = tgett(state, SOURCE);
     if (mode === Mode.stop) {
         tsetv(vars, END, TRUE);
-        execClosure(source)(mode, d);
-        if (!isOwned(source)) tupleDestroy(source);
+        execClosure(source,mode, d);
     } else if (tgetv(vars, TAKEN) < max) {
-        execClosure(source)(mode, d);
-        if (!isOwned(source)) tupleDestroy(source);
+        execClosure(source,mode, d);
     }
 }
 
@@ -32,29 +30,25 @@ const sourceTBF: CProc = (state) => (mode, d) => {
     switch (mode) {
         case Mode.start:
             tsett(state, SOURCE, d, false);
-            execClosure(sink)(Mode.start, closure(state, tbf));
-            if (!isOwned(sink)) tupleDestroy(sink);
+            execClosure(sink, Mode.start, closure(state, tbf));
             break;
         case Mode.data:
             const taken = tgetv(vars, TAKEN);
             if (taken < max) {
                 tsetv(vars, TAKEN, taken + 1);
-                execClosure(sink)(Mode.data, d);
-                execClosure(sink)(Mode.stop);
+                execClosure(sink, Mode.data, d);
+                execClosure(sink, Mode.stop);
                 if (tgetv(vars, TAKEN) === max && !tgetv(vars, END)) {
                     tsetv(vars, END, TRUE);
                     const source = tgett(state, SOURCE);
-                    if (source) execClosure(source)(Mode.stop);
-                    if (!isOwned(source)) tupleDestroy(source);
-                    execClosure(sink)(Mode.stop);
-                    if (!isOwned(sink)) tupleDestroy(sink);
+                    if (source) execClosure(source, Mode.stop);
+                    execClosure(sink, Mode.stop);
                 }
             }
 
             break;
         case Mode.stop:
-            execClosure(sink)(Mode.stop, d);
-            if (!isOwned(sink)) tupleDestroy(sink);
+            execClosure(sink,Mode.stop, d);
             break;
     }
 }

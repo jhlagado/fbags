@@ -2,7 +2,7 @@ import { ARGS, FALSE, Mode, Role, SINK, TRUE, VARS } from "../utils/constants";
 import { Tuple, } from "../utils/types";
 import { lookup } from "../utils/registry";
 import { closureFactory, argsFactory, execClosure } from "../utils/closure-utils";
-import { isOwned, tgett, tgetv, tsett, tsetv, tupleDestroy, tupleNew } from "../utils/tuple-utils";
+import { tgett, tgetv, tsett, tsetv, tupleNew } from "../utils/tuple-utils";
 
 
 const INLOOP = 0;
@@ -20,13 +20,11 @@ const loop = (state: Tuple) => {
         const sink = tgett(state, SINK);
         if (res.done) {
             tsetv(vars, DONE, TRUE);
-            execClosure(sink)(Mode.stop);
-            if (!isOwned(sink)) tupleDestroy(sink);
+            execClosure(sink, Mode.stop);
             break;
         }
         else {
-            execClosure(sink)(Mode.data, res.value);
-            if (!isOwned(sink)) tupleDestroy(sink);
+            execClosure(sink, Mode.data, res.value);
         }
     }
     tsetv(vars, INLOOP, FALSE);

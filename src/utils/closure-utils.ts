@@ -11,10 +11,10 @@ export const closure = (state: Tuple, cproc: CProc | CSProc, deep = false): Tupl
     return closure;
 }
 
-export const execClosure = (closure?: Tuple) => {
-    if (!closure) return (..._args: any[]) => { }
+export const execClosure = (closure: Tuple, mode: Mode, d?: any) => {
     const proc = closure.proc as CProc;
-    const result = proc(closure);
+    const result = proc(closure)(mode, d)
+    if (!isOwned(closure)) tupleDestroy(closure);
     return result;
 }
 
@@ -49,18 +49,18 @@ export const sinkFactory = (cproc: CProc, role: Role): CSProc => {
             tupleDestroy(instance)
             switch (role) {
                 case Role.sink:
-                    (execClosure(source))(Mode.start, tb);
+                    execClosure(source,Mode.start, tb);
                     break;
+                default:
+                    if (!isOwned(source)) tupleDestroy(source);
             }
-            if (!isOwned(source)) tupleDestroy(source);
             return tb;
         }
     return sinkFactoryProc;
 }
 
-export const closureFactoryGreet = (receiver: Tuple, tb: Tuple) => { 
-    (execClosure(receiver))(Mode.start, tb);
-    if (!isOwned(receiver)) tupleDestroy(receiver);
+export const closureFactoryGreet = (receiver: Tuple, tb: Tuple) => {
+    execClosure(receiver, Mode.start, tb);
 }
 
 export const closureFactory = (cproc: CProc, role: Role): CProc => {
