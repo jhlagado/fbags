@@ -1,7 +1,7 @@
 import { ARGS, Mode, Role, SINK, SOURCE, TRUE, VARS } from "../utils/constants";
 import { CProc, } from "../utils/types";
 import { closure, closureFactory1, sinkFactory, argsFactory, execClosure } from "../utils/closure-utils";
-import { tgett, tgetv, tsett, tsetv, tupleNew } from "../utils/tuple-utils";
+import { isOwned, tgett, tgetv, tsett, tsetv, tupleDestroy, tupleNew } from "../utils/tuple-utils";
 
 
 const TAKEN = 1;
@@ -17,6 +17,7 @@ const tbf: CProc = (state) => (mode, d) => {
     } else if (tgetv(vars, TAKEN) < max) {
         execClosure(source)(mode, d);
     }
+    if (!isOwned(source)) tupleDestroy(source);
 }
 
 const sourceTBF: CProc = (state) => (mode, d) => {
