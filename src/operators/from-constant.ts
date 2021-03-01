@@ -10,7 +10,7 @@ const fromConstantTB = (state: Tuple) => (mode: Mode, d: any) => {
     if (!isOwned(closure)) tupleDestroy(closure);
 }
 
-const sf = closureFactory(fromConstantTB, Role.source, 0);
+const sf = closureFactory(fromConstantTB, Role.source);
 
 export const fromConstant = argsFactory(sf);
 

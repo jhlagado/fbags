@@ -22,8 +22,6 @@ export const execClosure = (closure?: Tuple) => {
     if (!closure) return (..._args: any[]) => { }
     const proc = closure.proc as CProc;
     const result = proc(closure);
-    isOwned;
-    // if (!isOwned(closure)) tupleDestroy(closure);
     return result;
 }
 
@@ -72,13 +70,13 @@ export const closureFactoryGreet = (receiver: Tuple, tb: Tuple) => {
     if (!isOwned(receiver)) tupleDestroy(receiver);
 }
 
-export const closureFactory = (cproc: CProc, role: Role, deepMask = 0): CProc => {
+export const closureFactory = (cproc: CProc, role: Role): CProc => {
     const closureFactoryProc = (state: Tuple) => (mode: Mode, sink: Tuple) => {
         if (mode !== Mode.start) return;
         const instance: Tuple = tupleClone(state, true);
         instance.name = 'closure-factory';
         tsett(instance, SINK, sink, false);
-        const tb = closureMask(instance, cproc, 0b0111);
+        const tb = closureMask(instance, cproc, 0);
         switch (role) {
             case Role.source:
                 closureFactoryGreet(sink, tb)

@@ -115,7 +115,6 @@ export const tsett = (tuple: Tuple, offset: number, elem: Tuple, move: boolean) 
     tset(tuple, offset, elem, move);
 
 export const tupleDestroy = (tuple: Tuple) => {
-    console.log('DESTROY!')
     setOwner(tuple, undefined);
     for (let i = 0; i < 4; i++) {
         if (maskGet(tuple, i)) {
@@ -123,12 +122,10 @@ export const tupleDestroy = (tuple: Tuple) => {
             const owner = getOwner(child);
             if (owner && owner.container === tuple && isOwnedBy(child, owner)) {
                 tupleDestroy(child);
-                console.log('DESTROY CHILD', i)
             }
         }
     }
     tuple.destroy = true;
-    console.log('FREE');
 }
 
 export const tupleClone = (tuple: Tuple, deep: boolean): Tuple => {

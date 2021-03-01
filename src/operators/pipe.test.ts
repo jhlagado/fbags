@@ -3,6 +3,7 @@ import { fromIterator } from "./from-iterator";
 import { map } from "./map";
 import { register } from "../utils/registry";
 import { pipe } from "./pipe";
+import { printTuples } from "../utils/format-utils";
 
 test('make count up to 40 and print each number', () => {
     const expected = [11, 21, 31, 41];
@@ -20,4 +21,6 @@ test('make count up to 40 and print each number', () => {
         forEach(register(crossCheck)),
     );
     expect(crossCheck).toHaveBeenCalledTimes(expectedLength);
+    printTuples();
+
 })

@@ -50,7 +50,7 @@ const fromIteratorSinkCB = (state: Tuple) => (mode: Mode) => {
     }
 }
 
-const sf = closureFactory(fromIteratorSinkCB, Role.source, 0b0101);
+const sf = closureFactory(fromIteratorSinkCB, Role.source);
 
 export const fromIterator = argsFactory(sf);
 
