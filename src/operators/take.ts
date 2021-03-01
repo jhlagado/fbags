@@ -1,6 +1,6 @@
 import { ARGS, Mode, Role, SINK, SOURCE, TRUE, VARS } from "../utils/constants";
 import { CProc, } from "../utils/types";
-import { closure, closureFactory, sinkFactory, argsFactory, execClosure } from "../utils/closure-utils";
+import { closure, closureFactory1, sinkFactory, argsFactory, execClosure } from "../utils/closure-utils";
 import { tgett, tgetv, tsett, tsetv, tupleNew } from "../utils/tuple-utils";
 
 
@@ -51,7 +51,7 @@ const sourceTBF: CProc = (state) => (mode, d) => {
     }
 }
 
-const cproc = closureFactory(sourceTBF, Role.sink);
+const cproc = closureFactory1(sourceTBF, Role.sink);
 
 const sf = sinkFactory(cproc, Role.none);
 

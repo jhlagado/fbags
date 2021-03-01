@@ -2,7 +2,7 @@ import { ARGS, Mode, Role, SOURCE } from "../utils/constants";
 import { Tuple, } from "../utils/types";
 import { lookup } from "../utils/registry";
 import { sinkFactory, argsFactory, execClosure } from "../utils/closure-utils";
-import { tgett, tgetv, tsett } from "../utils/tuple-utils";
+import { isOwned, tgett, tgetv, tsett, tupleDestroy } from "../utils/tuple-utils";
 
 const forEachTB = (state: Tuple) => (mode: Mode, d: any) => {
     const effect = lookup(tgetv(state, ARGS)) as Function;
@@ -10,10 +10,13 @@ const forEachTB = (state: Tuple) => (mode: Mode, d: any) => {
         case Mode.start:
             tsett(state, SOURCE, d, false);
             execClosure(d)(Mode.data);
+            if (!isOwned(d)) tupleDestroy(d);
             break;
         case Mode.data:
             effect(d);
-            execClosure(tgett(state, SOURCE))(Mode.data);
+            const source = tgett(state, SOURCE);
+            execClosure(source)(Mode.data);
+            if (!isOwned(source)) tupleDestroy(source);
             break;
     }
 }

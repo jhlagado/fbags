@@ -3,6 +3,7 @@ import { fromConstant } from "./from-constant";
 import { register } from "../utils/registry";
 import { pipe } from "./pipe";
 import { take } from "./take";
+import { printTuples } from "../utils/format-utils";
 
 const times = 3;
 test('emit 3 numbers', () => {
@@ -19,4 +20,5 @@ test('emit 3 numbers', () => {
         forEach(register(printOp)),
     );
     expect(printOp).toHaveBeenCalledTimes(expectedLength);
+    printTuples();
 })

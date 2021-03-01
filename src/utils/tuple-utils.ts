@@ -53,6 +53,12 @@ export const maskGet = (tuple: Tuple, offset: number): boolean => {
     return v !== 0;
 };
 
+export const maskGet1 = (mask = 0, offset: number): boolean => {
+    const m = 1 << offset;
+    const v = mask & 0xF & m;
+    return v !== 0;
+};
+
 export const maskSet = (tuple: Tuple, offset: number, value: boolean) => {
     let mask = tuple.mask || 0;
     const m = ~(1 << offset)
@@ -132,6 +138,22 @@ export const tupleClone = (tuple: Tuple, deep: boolean): Tuple => {
         if (maskGet(tuple, i)) {
             const child = tgett(tuple, i);
             const child1 = deep ? tupleClone(child, deep) : child;
+            tsett(tuple1, i, child1, false);
+        } else {
+            const child = tgetv(tuple, i);
+            tsetv(tuple1, i, child);
+        }
+    }
+    return tuple1;
+}
+
+export const tupleCloneMask = (tuple: Tuple, deepMask: number): Tuple => {
+    const tuple1 = tupleNew(0, 0, 0, 0);
+    tuple1.proc = tuple.proc;
+    for (let i = 0; i < 4; i++) {
+        if (maskGet1(tuple.mask, i)) {
+            const child = tgett(tuple, i);
+            const child1 = maskGet1(deepMask, i) ? tupleClone(child, true) : child;
             tsett(tuple1, i, child1, false);
         } else {
             const child = tgetv(tuple, i);
