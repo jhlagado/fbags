@@ -17,7 +17,7 @@ export const formatTuple = (tuple: Tuple, depth = 0) => {
     if (tuple.name) {
         s += tupleName(tuple) + ' ';
     }
-    if (depth < 2) {
+    if (depth < 2 || !tuple.name) {
         const mask = tuple.mask || 0;
         const nested = mask > 0;
         s += '(';
@@ -44,7 +44,7 @@ export const tupleName = (tuple: Tuple) => {
     return tuple.name || 'anonymous'
 }
 
-export const printTuple = (tuple:Tuple) => {
+export const printTuple = (tuple: Tuple) => {
     console.log(format(tuple));
 }
 

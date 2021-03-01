@@ -1,7 +1,6 @@
 import { Elem, Owner, Tuple } from "./types";
 import { isTuple } from "./closure-utils";
 import { formatTuple } from "./format-utils";
-// import { formatTuple } from "./format-utils";
 
 export const tupleList: Tuple[] = [];
 
@@ -48,12 +47,6 @@ export const isOwnedBy = (elem: Elem, owner: Owner | undefined): elem is Tuple =
 
 export const maskGet = (tuple: Tuple, offset: number): boolean => {
     let mask = tuple.mask || 0;
-    const m = 1 << offset;
-    const v = mask & 0xF & m;
-    return v !== 0;
-};
-
-export const maskGet1 = (mask = 0, offset: number): boolean => {
     const m = 1 << offset;
     const v = mask & 0xF & m;
     return v !== 0;
@@ -135,22 +128,6 @@ export const tupleClone = (tuple: Tuple, deep: boolean): Tuple => {
         if (maskGet(tuple, i)) {
             const child = tgett(tuple, i);
             const child1 = deep ? tupleClone(child, deep) : child;
-            tsett(tuple1, i, child1, false);
-        } else {
-            const child = tgetv(tuple, i);
-            tsetv(tuple1, i, child);
-        }
-    }
-    return tuple1;
-}
-
-export const tupleCloneMask = (tuple: Tuple, deepMask: number): Tuple => {
-    const tuple1 = tupleNew(0, 0, 0, 0);
-    tuple1.proc = tuple.proc;
-    for (let i = 0; i < 4; i++) {
-        if (maskGet1(tuple.mask, i)) {
-            const child = tgett(tuple, i);
-            const child1 = maskGet1(deepMask, i) ? tupleClone(child, true) : child;
             tsett(tuple1, i, child1, false);
         } else {
             const child = tgetv(tuple, i);
