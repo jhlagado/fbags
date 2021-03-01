@@ -14,10 +14,11 @@ const tbf: CProc = (state) => (mode, d) => {
     if (mode === Mode.stop) {
         tsetv(vars, END, TRUE);
         execClosure(source)(mode, d);
+        if (!isOwned(source)) tupleDestroy(source);
     } else if (tgetv(vars, TAKEN) < max) {
         execClosure(source)(mode, d);
+        if (!isOwned(source)) tupleDestroy(source);
     }
-    if (!isOwned(source)) tupleDestroy(source);
 }
 
 const sourceTBF: CProc = (state) => (mode, d) => {
@@ -32,22 +33,28 @@ const sourceTBF: CProc = (state) => (mode, d) => {
         case Mode.start:
             tsett(state, SOURCE, d, false);
             execClosure(sink)(Mode.start, closure(state, tbf));
+            if (!isOwned(sink)) tupleDestroy(sink);
             break;
         case Mode.data:
             const taken = tgetv(vars, TAKEN);
             if (taken < max) {
                 tsetv(vars, TAKEN, taken + 1);
                 execClosure(sink)(Mode.data, d);
+                execClosure(sink)(Mode.stop);
                 if (tgetv(vars, TAKEN) === max && !tgetv(vars, END)) {
                     tsetv(vars, END, TRUE);
-                    if (tgett(state, SOURCE)) execClosure(tgett(state, SOURCE))(Mode.stop);
+                    const source = tgett(state, SOURCE);
+                    if (source) execClosure(source)(Mode.stop);
+                    if (!isOwned(source)) tupleDestroy(source);
                     execClosure(sink)(Mode.stop);
+                    if (!isOwned(sink)) tupleDestroy(sink);
                 }
             }
 
             break;
         case Mode.stop:
             execClosure(sink)(Mode.stop, d);
+            if (!isOwned(sink)) tupleDestroy(sink);
             break;
     }
 }

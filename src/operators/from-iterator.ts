@@ -21,12 +21,13 @@ const loop = (state: Tuple) => {
         if (res.done) {
             tsetv(vars, DONE, TRUE);
             execClosure(sink)(Mode.stop);
+            if (!isOwned(sink)) tupleDestroy(sink);
             break;
         }
         else {
             execClosure(sink)(Mode.data, res.value);
+            if (!isOwned(sink)) tupleDestroy(sink);
         }
-        if (!isOwned(sink)) tupleDestroy(sink);
     }
     tsetv(vars, INLOOP, FALSE);
 }

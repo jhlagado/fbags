@@ -21,10 +21,11 @@ const scanTB = (state: Tuple) => (mode: Mode, d: any) => {
     if (mode === Mode.data) {
         tsett(vars, ACC, lookup(tgetv(args, REDUCER))(tget(vars, ACC), d), false);
         execClosure(sink)(Mode.data, tget(vars, ACC));
+        if (!isOwned(sink)) tupleDestroy(sink);
     } else {
         execClosure(sink)(mode, d);
+        if (!isOwned(sink)) tupleDestroy(sink);
     }
-    if (!isOwned(sink)) tupleDestroy(sink);
 }
 
 const cproc = closureFactory(scanTB, Role.sink);
