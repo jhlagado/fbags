@@ -1,6 +1,6 @@
 import { ARGS, Mode, Role, SINK, SOURCE, TRUE, VARS } from '../utils/constants';
 import { CProc, Tuple } from '../utils/types';
-import { createClosure, closureFactory, sinkFactory, argsFactory, execClosure } from '../utils/closure-utils';
+import { createClosure1, closureFactory, sinkFactory, argsFactory, execClosure } from '../utils/closure-utils';
 import { tgetv, tset, tsetv, tupleNew } from '../utils/tuple-utils';
 
 const TAKEN = 1;
@@ -29,7 +29,7 @@ const sourceTBF: CProc = (state) => (mode, d) => {
     switch (mode) {
         case Mode.start:
             tset(state, SOURCE, d);
-            execClosure(sink, Mode.start, createClosure(state, tbf, false));
+            execClosure(sink, Mode.start, createClosure1(state[0], state[1], state[2], state[3], tbf));
             break;
         case Mode.data:
             const taken = tgetv(vars, TAKEN);
