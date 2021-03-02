@@ -60,8 +60,6 @@ export const closureFactory = (cproc: CProc, role: Role): CProc => {
         if (mode !== Mode.start) return;
 
         const instance = [0, 0, 0, 0] as Tuple;
-        console.log('sink0', sink.owner?.container === instance);
-
         tset(instance, ARGS, state[ARGS] as Tuple);
         tset(instance, VARS, state[VARS] as Tuple);
         tset(instance, SOURCE, state[SOURCE] as Tuple);
