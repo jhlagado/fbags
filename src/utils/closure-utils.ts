@@ -1,6 +1,6 @@
 import { CProc, CSProc, Tuple, Elem, } from "./types";
-import { ARGS, SOURCE, SINK, Role, Mode } from "./constants";
-import { tsett, tgett, elemClone, tupleClone, tupleDestroy, isOwned, tupleNew } from "./tuple-utils";
+import { ARGS, SOURCE, Role, Mode, VARS } from "./constants";
+import { tgett, elemClone, tupleClone, tupleDestroy, isOwned, tupleNew, tget } from "./tuple-utils";
 
 export const isTuple = (elem?: Elem): elem is Tuple => Array.isArray(elem) && elem.length === 4;
 
@@ -11,7 +11,7 @@ export const createClosure = (state: Tuple, cproc: CProc | CSProc, deep = false)
     return closure;
 }
 
-export const createClosure1 = (state: Tuple, cproc: CProc | CSProc, deep = false): Tuple => {
+export const createClosure1 = (state: Tuple, cproc: CProc | CSProc): Tuple => {
     const closure = state;
     closure.proc = cproc;
     closure.name = cproc.name;
@@ -41,7 +41,12 @@ export const getArgs = (args: Elem[]) => {
 }
 
 export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
-    const instance = tupleNew(getArgs(args), 0, 0, 0);
+    const instance = tupleNew(
+        getArgs(args), 
+        0, 
+        0, 
+        0
+    );
     instance.name = 'args-factory';
     const af = createClosure(instance, cproc, true);
     tupleDestroy(instance);
@@ -51,7 +56,12 @@ export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
 export const sinkFactory = (cproc: CProc, role: Role): CSProc => {
     const sinkFactoryProc =
         (state: Tuple) => (source: Tuple) => {
-            const instance: Tuple = tupleNew(tgett(state, ARGS), 0, elemClone(source, false), 0);
+            const instance: Tuple = tupleNew(
+                tgett(state, ARGS), 
+                0, 
+                elemClone(source, false), 
+                0
+            );
             instance.name = 'sink-factory';
             const tb = createClosure(instance, cproc, true);
             tupleDestroy(instance)
@@ -74,8 +84,12 @@ export const closureFactoryGreet = (receiver: Tuple, tb: Tuple) => {
 export const closureFactory = (cproc: CProc, role: Role): CProc => {
     const closureFactoryProc = (state: Tuple) => (mode: Mode, sink: Tuple) => {
         if (mode !== Mode.start) return;
-        const instance: Tuple = tupleClone(state, false);
-        tsett(instance, SINK, sink, false);
+        const instance: Tuple = tupleNew(
+            elemClone(tget(state, ARGS), false),
+            elemClone(tget(state, VARS), false), 
+            elemClone(tget(state, SOURCE), true),
+            sink, 
+        );
         instance.name = 'closure-factory';
         const tb = createClosure(instance, cproc, false);
         switch (role) {
