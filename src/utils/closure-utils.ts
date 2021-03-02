@@ -11,8 +11,8 @@ export const createClosure = (state: Tuple, cproc: CProc | CSProc, deep = false)
     return closure;
 };
 
-export const createClosure1 = (state: Tuple, cproc: CProc | CSProc): Tuple => {
-    const closure = state;
+export const createClosure1 = (a: Elem, b: Elem, c: Elem, d: Elem, cproc: CProc | CSProc): Tuple => {
+    const closure = tupleNew(a, b, c, d);
     closure.proc = cproc;
     closure.name = cproc.name;
     return closure;
@@ -40,20 +40,12 @@ export const getArgs = (args: Elem[]) => {
     }
 };
 
-export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
-    const instance = tupleNew(getArgs(args), 0, 0, 0);
-    instance.name = 'args-factory';
-    const af = createClosure(instance, cproc, true);
-    tupleDestroy(instance);
-    return af;
-};
+export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) =>
+    createClosure1(elemClone(getArgs(args), true), 0, 0, 0, cproc);
 
 export const sinkFactory = (cproc: CProc, role: Role): CSProc => {
     const sinkFactoryProc = (state: Tuple) => (source: Tuple) => {
-        const instance: Tuple = tupleNew(state[ARGS] as Tuple, 0, elemClone(source, false), 0);
-        instance.name = 'sink-factory';
-        const tb = createClosure(instance, cproc, true);
-        tupleDestroy(instance);
+        const tb = createClosure1(elemClone(state[ARGS], false), 0, elemClone(source, true), 0, cproc);
         switch (role) {
             case Role.sink:
                 execClosure(source, Mode.start, tb);
