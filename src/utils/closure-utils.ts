@@ -1,6 +1,6 @@
 import { CProc, CSProc, Tuple, Elem, } from "./types";
 import { ARGS, SOURCE, SINK, Role, Mode } from "./constants";
-import { tupleNew, tsett, tgett, elemClone, tupleClone, tupleDestroy, isOwned } from "./tuple-utils";
+import { tsett, tgett, elemClone, tupleClone, tupleDestroy, isOwned, tupleNew } from "./tuple-utils";
 
 export const isTuple = (elem?: Elem): elem is Tuple => Array.isArray(elem) && elem.length === 4;
 
@@ -36,7 +36,7 @@ export const getArgs = (args: Elem[]) => {
         case 1:
             return args[0];
         default:
-            return tupleNew(...args);
+            return tupleNew(args[0], args[1], args[2], args[3]);
     }
 }
 

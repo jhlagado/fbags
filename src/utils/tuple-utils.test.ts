@@ -1,5 +1,5 @@
 import {  } from "./types";
-import { maskGet, isOwnedBy, ownerNew, tupleNew, tsett, tgett, tsetv } from "./tuple-utils";
+import { maskGet, isOwnedBy, ownerNew, tsett, tgett, tsetv, tupleNew } from "./tuple-utils";
 
 test('owner and masks', () => {
   const t1 = tupleNew(0, 0, 0, 0);

@@ -4,11 +4,12 @@ import { formatTuple } from "./format-utils";
 
 export const tupleList: Tuple[] = [];
 
-export const tupleNew = (...args: Elem[]) => {
+export const tupleNew = (a: Elem, b: Elem, c: Elem, d: Elem, ) => {
     const tuple = [0, 0, 0, 0] as Tuple;
-    for (let i = 0; i < args.length; i++) {
-        tset(tuple, i, args[i], true)
-    }
+    tset(tuple, 0, a, true)
+    tset(tuple, 1, b, true)
+    tset(tuple, 2, c, true)
+    tset(tuple, 3, d, true)
     tupleList.push(tuple);
     return tuple;
 };
