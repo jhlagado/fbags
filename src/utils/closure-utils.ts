@@ -1,17 +1,10 @@
 import { CProc, CSProc, Tuple, Elem } from './types';
-import { ARGS, SOURCE, Role, Mode, VARS } from './constants';
-import { elemClone, tupleClone, tupleDestroy, isOwned, tupleNew, tget } from './tuple-utils';
+import { ARGS, SOURCE, Role, Mode, VARS, SINK } from './constants';
+import { elemClone, tupleClone, tupleDestroy, isOwned, tupleNew, tset } from './tuple-utils';
 
 export const isTuple = (elem?: Elem): elem is Tuple => Array.isArray(elem) && elem.length === 4;
 
-export const createClosure = (state: Tuple, cproc: CProc | CSProc, deep = false): Tuple => {
-    const closure = tupleClone(state, deep);
-    closure.proc = cproc;
-    closure.name = cproc.name;
-    return closure;
-};
-
-export const createClosure1 = (a: Elem, b: Elem, c: Elem, d: Elem, cproc: CProc | CSProc): Tuple => {
+export const createClosure = (a: Elem, b: Elem, c: Elem, d: Elem, cproc: CProc | CSProc): Tuple => {
     const closure = tupleNew(a, b, c, d);
     closure.proc = cproc;
     closure.name = cproc.name;
@@ -41,11 +34,11 @@ export const getArgs = (args: Elem[]) => {
 };
 
 export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) =>
-    createClosure1(elemClone(getArgs(args), true), 0, 0, 0, cproc);
+    createClosure(elemClone(getArgs(args), true), 0, 0, 0, cproc);
 
 export const sinkFactory = (cproc: CProc, role: Role): CSProc => {
     const sinkFactoryProc = (state: Tuple) => (source: Tuple) => {
-        const tb = createClosure1(elemClone(state[ARGS], false), 0, elemClone(source, true), 0, cproc);
+        const tb = createClosure(elemClone(state[ARGS], false), 0, elemClone(source, true), 0, cproc);
         switch (role) {
             case Role.sink:
                 execClosure(source, Mode.start, tb);
@@ -65,7 +58,16 @@ export const closureFactoryGreet = (receiver: Tuple, tb: Tuple) => {
 export const closureFactory = (cproc: CProc, role: Role): CProc => {
     const closureFactoryProc = (state: Tuple) => (mode: Mode, sink: Tuple) => {
         if (mode !== Mode.start) return;
-        const instance: Tuple = tupleNew(tget(state, ARGS), tget(state, VARS), tget(state, SOURCE), sink);
+        // const instance: Tuple = tupleNew(state[ARGS] as Tuple, state[VARS] as Tuple, state[SOURCE] as Tuple, sink);
+
+        const instance = [0, 0, 0, 0] as Tuple;
+        console.log('sink0', sink.owner?.container === instance);
+
+        tset(instance, ARGS, state[ARGS] as Tuple);
+        tset(instance, VARS, state[VARS] as Tuple);
+        tset(instance, SOURCE, state[SOURCE] as Tuple);
+        tset(instance, SINK, sink);
+
         const tb = tupleClone(instance, false);
         tb.proc = cproc;
         tb.name = cproc.name;
@@ -83,24 +85,3 @@ export const closureFactory = (cproc: CProc, role: Role): CProc => {
     };
     return closureFactoryProc;
 };
-
-// export const closureFactory1 = (cproc: CProc, role: Role): CProc => {
-//     const closureFactoryProc = (state: Tuple) => (mode: Mode, sink: Tuple) => {
-//         if (mode !== Mode.start) return;
-//         const instance: Tuple = tupleClone(state, true);
-//         instance.name = 'closure-factory';
-//         tsett(instance, SINK, sink, false);
-//         const tb = closure(instance, cproc);
-//         switch (role) {
-//             case Role.source:
-//                 closureFactoryGreet(sink, tb)
-//                 break;
-//             case Role.sink:
-//                 const source = tgett(instance, SOURCE);
-//                 closureFactoryGreet(source, tb)
-//                 break;
-//         }
-//         return tb;
-//     }
-//     return closureFactoryProc;
-// }

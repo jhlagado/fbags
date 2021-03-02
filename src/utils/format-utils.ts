@@ -9,10 +9,10 @@ export const format = (elem?: Elem) => isTuple(elem) ? formatTuple(elem) : Strin
 
 export const formatTuple = (tuple: Tuple, depth = 0) => {
     let s = '';
-    if (depth < 2) {
+    // if (depth < 2) {
         s += (tuple.owner) ? tupleName(tuple.owner.container) : 'unowned';
         s += ' => ';
-    }
+    // }
     s += tuple.destroy ? '*' : '';
     if (tuple.name) {
         s += tupleName(tuple) + ' ';
