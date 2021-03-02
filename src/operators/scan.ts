@@ -1,30 +1,29 @@
-import { ARGS, Mode, Role, SINK, VARS } from "../utils/constants";
-import { Tuple, } from "../utils/types";
-import { lookup } from "../utils/registry";
-import { argsFactory, closureFactory, sinkFactory, execClosure } from "../utils/closure-utils";
-import { tgetv, tupleNew, tsett, tgett, tget } from "../utils/tuple-utils";
+import { ARGS, Mode, Role, SINK, VARS } from '../utils/constants';
+import { Tuple } from '../utils/types';
+import { lookup } from '../utils/registry';
+import { argsFactory, closureFactory, sinkFactory, execClosure } from '../utils/closure-utils';
+import { tgetv, tupleNew, tset, tget } from '../utils/tuple-utils';
 
 const REDUCER = 0;
 const SEED = 1;
 
-
 const ACC = 1;
 
 const scanTB = (state: Tuple) => (mode: Mode, d: any) => {
-    const args = tgett(state, ARGS);
-    let vars = tgett(state, VARS);
+    const args = state[ARGS] as Tuple;
+    let vars = state[VARS] as Tuple;
     if (!vars) {
         vars = tupleNew(tgetv(args, SEED), 0, 0, 0);
-        tsett(state, VARS, vars, false)
+        tset(state, VARS, vars);
     }
-    const sink = tgett(state, SINK);
+    const sink = state[SINK] as Tuple;
     if (mode === Mode.data) {
-        tsett(vars, ACC, lookup(tgetv(args, REDUCER))(tget(vars, ACC), d), false);
+        tset(vars, ACC, lookup(tgetv(args, REDUCER))(tget(vars, ACC), d));
         execClosure(sink, Mode.data, tget(vars, ACC));
     } else {
         execClosure(sink, mode, d);
     }
-}
+};
 
 const cproc = closureFactory(scanTB, Role.sink);
 

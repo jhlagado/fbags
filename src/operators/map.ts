@@ -1,14 +1,13 @@
-import { ARGS, Mode, Role, SINK } from "../utils/constants";
-import { Tuple } from "../utils/types";
-import { lookup } from "../utils/registry";
-import { argsFactory, closureFactory, sinkFactory, execClosure } from "../utils/closure-utils";
-import { tgett, tgetv } from "../utils/tuple-utils";
+import { ARGS, Mode, Role, SINK } from '../utils/constants';
+import { Tuple } from '../utils/types';
+import { lookup } from '../utils/registry';
+import { argsFactory, closureFactory, sinkFactory, execClosure } from '../utils/closure-utils';
 
 const mapTB = (state: Tuple) => (mode: Mode, d: any) => {
-    const mapper = lookup(tgetv(state, ARGS)) as Function;
-    const sink = tgett(state, SINK);
-    execClosure(sink, mode, mode === Mode.data ? mapper(d) : d)
-}
+    const mapper = lookup(state[ARGS] as number) as Function;
+    const sink = state[SINK] as Tuple;
+    execClosure(sink, mode, mode === Mode.data ? mapper(d) : d);
+};
 
 const cproc = closureFactory(mapTB, Role.sink);
 
@@ -22,4 +21,3 @@ export const map = argsFactory(sf);
 //       sink(t, t === 1 ? f(d) : d)
 //     });
 //   };
-

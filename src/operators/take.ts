@@ -1,35 +1,34 @@
-import { ARGS, Mode, Role, SINK, SOURCE, TRUE, VARS } from "../utils/constants";
-import { CProc, } from "../utils/types";
-import { createClosure, closureFactory, sinkFactory, argsFactory, execClosure } from "../utils/closure-utils";
-import { tgett, tgetv, tsett, tsetv, tupleNew } from "../utils/tuple-utils";
-
+import { ARGS, Mode, Role, SINK, SOURCE, TRUE, VARS } from '../utils/constants';
+import { CProc, Tuple } from '../utils/types';
+import { createClosure, closureFactory, sinkFactory, argsFactory, execClosure } from '../utils/closure-utils';
+import { tgetv, tset, tsetv, tupleNew } from '../utils/tuple-utils';
 
 const TAKEN = 1;
 const END = 2;
 
 const tbf: CProc = (state) => (mode, d) => {
-    const max = tgetv(state, ARGS);
-    const vars = tgett(state, VARS);
-    const source = tgett(state, SOURCE);
+    const max = state[ARGS] as number;
+    const vars = state[VARS] as Tuple;
+    const source = state[SOURCE] as Tuple;
     if (mode === Mode.stop) {
         tsetv(vars, END, TRUE);
-        execClosure(source,mode, d);
+        execClosure(source, mode, d);
     } else if (tgetv(vars, TAKEN) < max) {
-        execClosure(source,mode, d);
+        execClosure(source, mode, d);
     }
-}
+};
 
 const sourceTBF: CProc = (state) => (mode, d) => {
-    const max = tgetv(state, ARGS);
-    let vars = tgett(state, VARS);
+    const max = state[ARGS] as number;
+    let vars = state[VARS] as Tuple;
     if (!vars) {
         vars = tupleNew(0, 0, 0, 0);
-        tsett(state, VARS, vars, false)
+        tset(state, VARS, vars);
     }
-    const sink = tgett(state, SINK);
+    const sink = state[SINK] as Tuple;
     switch (mode) {
         case Mode.start:
-            tsett(state, SOURCE, d, false);
+            tset(state, SOURCE, d);
             execClosure(sink, Mode.start, createClosure(state, tbf, false));
             break;
         case Mode.data:
@@ -40,7 +39,7 @@ const sourceTBF: CProc = (state) => (mode, d) => {
                 execClosure(sink, Mode.stop);
                 if (tgetv(vars, TAKEN) === max && !tgetv(vars, END)) {
                     tsetv(vars, END, TRUE);
-                    const source = tgett(state, SOURCE);
+                    const source = state[SOURCE] as Tuple;
                     if (source) execClosure(source, Mode.stop);
                     execClosure(sink, Mode.stop);
                 }
@@ -48,10 +47,10 @@ const sourceTBF: CProc = (state) => (mode, d) => {
 
             break;
         case Mode.stop:
-            execClosure(sink,Mode.stop, d);
+            execClosure(sink, Mode.stop, d);
             break;
     }
-}
+};
 
 const cproc = closureFactory(sourceTBF, Role.sink);
 
@@ -89,4 +88,3 @@ export const take = argsFactory(sf);
 //         }
 //     });
 // };
-

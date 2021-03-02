@@ -1,9 +1,8 @@
-import { ARGS, FALSE, Mode, Role, SINK, TRUE, VARS } from "../utils/constants";
-import { Tuple, } from "../utils/types";
-import { lookup } from "../utils/registry";
-import { closureFactory, argsFactory, execClosure } from "../utils/closure-utils";
-import { tgett, tgetv, tsett, tsetv, tupleNew } from "../utils/tuple-utils";
-
+import { ARGS, FALSE, Mode, Role, SINK, TRUE, VARS } from '../utils/constants';
+import { Tuple } from '../utils/types';
+import { lookup } from '../utils/registry';
+import { closureFactory, argsFactory, execClosure } from '../utils/closure-utils';
+import { tgetv, tset, tsetv, tupleNew } from '../utils/tuple-utils';
 
 const INLOOP = 0;
 const GOT1 = 1;
@@ -11,42 +10,41 @@ const COMPLETED = 2;
 const DONE = 3;
 
 const loop = (state: Tuple) => {
-    const iterator = lookup(tgetv(state, ARGS)) as any;
-    const vars = tgett(state, VARS);
+    const iterator = lookup(state[ARGS] as number) as any;
+    const vars = state[VARS] as Tuple;
     tsetv(vars, INLOOP, TRUE);
     while (tgetv(vars, GOT1) && !tgetv(vars, COMPLETED)) {
         tsetv(vars, GOT1, FALSE);
         const res = iterator.next();
-        const sink = tgett(state, SINK);
+        const sink = state[SINK] as Tuple;
         if (res.done) {
             tsetv(vars, DONE, TRUE);
             execClosure(sink, Mode.stop);
             break;
-        }
-        else {
+        } else {
             execClosure(sink, Mode.data, res.value);
         }
     }
     tsetv(vars, INLOOP, FALSE);
-}
+};
 
 const fromIteratorSinkCB = (state: Tuple) => (mode: Mode) => {
-    let vars = tgett(state, VARS);
+    let vars = state[VARS] as Tuple;
     if (!vars) {
         vars = tupleNew(FALSE, FALSE, FALSE, FALSE);
-        tsett(state, VARS, vars, false)
+        tset(state, VARS, vars);
     }
-    if (tgetv(vars, COMPLETED)) return
+    if (tgetv(vars, COMPLETED)) return;
     switch (mode) {
         case Mode.data:
             tsetv(vars, GOT1, TRUE);
-            if (!tgetv(vars, INLOOP) && !(tgetv(vars, DONE))) loop(state);
+            if (!tgetv(vars, INLOOP) && !tgetv(vars, DONE)) loop(state);
             break;
         case Mode.stop:
             tsetv(vars, COMPLETED, TRUE);
             break;
     }
-}
+};
 
 const sf = closureFactory(fromIteratorSinkCB, Role.source);
 
