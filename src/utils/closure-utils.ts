@@ -58,7 +58,6 @@ export const closureFactoryGreet = (receiver: Tuple, tb: Tuple) => {
 export const closureFactory = (cproc: CProc, role: Role): CProc => {
     const closureFactoryProc = (state: Tuple) => (mode: Mode, sink: Tuple) => {
         if (mode !== Mode.start) return;
-        // const instance: Tuple = tupleNew(state[ARGS] as Tuple, state[VARS] as Tuple, state[SOURCE] as Tuple, sink);
 
         const instance = [0, 0, 0, 0] as Tuple;
         console.log('sink0', sink.owner?.container === instance);
@@ -71,6 +70,7 @@ export const closureFactory = (cproc: CProc, role: Role): CProc => {
         const tb = tupleClone(instance, false);
         tb.proc = cproc;
         tb.name = cproc.name;
+
         switch (role) {
             case Role.source:
                 closureFactoryGreet(sink, tb);
