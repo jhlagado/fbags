@@ -1,20 +1,31 @@
 import { CProc, CSProc, Tuple, Elem, } from "./types";
 import { ARGS, SOURCE, SINK, Role, Mode } from "./constants";
-import { tupleNew, tsett, tgett, tset, elemClone, tupleClone, tupleDestroy, isOwned } from "./tuple-utils";
+import { tupleNew, tsett, tgett, elemClone, tupleClone, tupleDestroy, isOwned } from "./tuple-utils";
 
 export const isTuple = (elem?: Elem): elem is Tuple => Array.isArray(elem) && elem.length === 4;
 
-export const closure = (state: Tuple, cproc: CProc | CSProc, deep = false): Tuple => {
+export const createClosure = (state: Tuple, cproc: CProc | CSProc, deep = false): Tuple => {
     const closure = tupleClone(state, deep);
     closure.proc = cproc;
     closure.name = cproc.name;
     return closure;
 }
 
+export const createClosure1 = (state: Tuple, cproc: CProc | CSProc, deep = false): Tuple => {
+    const closure = state;
+    closure.proc = cproc;
+    closure.name = cproc.name;
+    return closure;
+}
+
+export const cleanupClosure = (closure: Tuple) => {
+    if (!isOwned(closure)) tupleDestroy(closure);
+}
+
 export const execClosure = (closure: Tuple, mode: Mode, d?: any) => {
     const proc = closure.proc as CProc;
     const result = proc(closure)(mode, d)
-    if (!isOwned(closure)) tupleDestroy(closure);
+    cleanupClosure(closure);
     return result;
 }
 
@@ -30,10 +41,9 @@ export const getArgs = (args: Elem[]) => {
 }
 
 export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
-    const instance = tupleNew(0, 0, 0, 0);
+    const instance = tupleNew(getArgs(args), 0, 0, 0);
     instance.name = 'args-factory';
-    tset(instance, ARGS, getArgs(args), false);
-    const af = closure(instance, cproc, true);
+    const af = createClosure(instance, cproc, true);
     tupleDestroy(instance);
     return af;
 }
@@ -41,18 +51,16 @@ export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) => {
 export const sinkFactory = (cproc: CProc, role: Role): CSProc => {
     const sinkFactoryProc =
         (state: Tuple) => (source: Tuple) => {
-            const instance: Tuple = tupleNew();
+            const instance: Tuple = tupleNew(tgett(state, ARGS), 0, elemClone(source, false), 0);
             instance.name = 'sink-factory';
-            tset(instance, ARGS, elemClone(tgett(state, ARGS), false), false);
-            tsett(instance, SOURCE, elemClone(source, false) as Tuple, false);
-            const tb = closure(instance, cproc, true);
+            const tb = createClosure(instance, cproc, true);
             tupleDestroy(instance)
             switch (role) {
                 case Role.sink:
-                    execClosure(source,Mode.start, tb);
+                    execClosure(source, Mode.start, tb);
                     break;
                 default:
-                    if (!isOwned(source)) tupleDestroy(source);
+                    cleanupClosure(source);
             }
             return tb;
         }
@@ -66,10 +74,10 @@ export const closureFactoryGreet = (receiver: Tuple, tb: Tuple) => {
 export const closureFactory = (cproc: CProc, role: Role): CProc => {
     const closureFactoryProc = (state: Tuple) => (mode: Mode, sink: Tuple) => {
         if (mode !== Mode.start) return;
-        const instance: Tuple = tupleClone(state, true);
-        instance.name = 'closure-factory';
+        const instance: Tuple = tupleClone(state, false);
         tsett(instance, SINK, sink, false);
-        const tb = closure(instance, cproc);
+        instance.name = 'closure-factory';
+        const tb = createClosure(instance, cproc, false);
         switch (role) {
             case Role.source:
                 closureFactoryGreet(sink, tb)
@@ -101,7 +109,6 @@ export const closureFactory = (cproc: CProc, role: Role): CProc => {
 //                 closureFactoryGreet(source, tb)
 //                 break;
 //         }
-//         // tupleDestroy(instance);
 //         return tb;
 //     }
 //     return closureFactoryProc;

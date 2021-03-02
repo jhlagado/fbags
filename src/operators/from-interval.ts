@@ -1,8 +1,8 @@
 import { ARGS, Mode, SINK, VARS } from "../utils/constants";
 import { Tuple } from "../utils/types";
 import { lookup, register } from "../utils/registry";
-import { closure, argsFactory, execClosureX, execClosure } from "../utils/closure-utils";
-import { tupleNew, tsett, tsetv, tgetv, tgett, tupleClone, isOwned, tupleDestroy } from "../utils/tuple-utils";
+import { createClosure, argsFactory, execClosure } from "../utils/closure-utils";
+import { tupleNew, tsett, tsetv, tgetv, tgett, tupleClone } from "../utils/tuple-utils";
 
 const I = 1;
 const ID = 2;
@@ -30,7 +30,7 @@ const sf = (state: Tuple) => (mode: Mode, sink: any) => {
     const vars = tupleNew(0, 0, 0, 0);
     tsett(instance, VARS, vars, false);
     tsetv(vars, ID, register(setInterval(callback(instance), period)));
-    const tb = closure(instance, talkback);
+    const tb = createClosure(instance, talkback, false);
     execClosure(sink, Mode.start, tb);
 }
 

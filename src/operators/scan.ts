@@ -2,7 +2,7 @@ import { ARGS, Mode, Role, SINK, VARS } from "../utils/constants";
 import { Tuple, } from "../utils/types";
 import { lookup } from "../utils/registry";
 import { argsFactory, closureFactory, sinkFactory, execClosure } from "../utils/closure-utils";
-import { tgetv, tupleNew, tsett, tgett, tget, isOwned, tupleDestroy } from "../utils/tuple-utils";
+import { tgetv, tupleNew, tsett, tgett, tget } from "../utils/tuple-utils";
 
 const REDUCER = 0;
 const SEED = 1;
@@ -20,11 +20,9 @@ const scanTB = (state: Tuple) => (mode: Mode, d: any) => {
     const sink = tgett(state, SINK);
     if (mode === Mode.data) {
         tsett(vars, ACC, lookup(tgetv(args, REDUCER))(tget(vars, ACC), d), false);
-        execClosure(sink,Mode.data, tget(vars, ACC));
-        if (!isOwned(sink)) tupleDestroy(sink);
+        execClosure(sink, Mode.data, tget(vars, ACC));
     } else {
-        execClosure(sink,mode, d);
-        if (!isOwned(sink)) tupleDestroy(sink);
+        execClosure(sink, mode, d);
     }
 }
 
