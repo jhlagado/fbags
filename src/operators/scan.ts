@@ -27,7 +27,7 @@ const scanTB = (state: Tuple) => (mode: Mode, d: any) => {
 
 const cproc = closureFactory(scanTB, Role.sink);
 
-const sf = sinkFactory(cproc, Role.none);
+const sf = sinkFactory(cproc);
 
 export const scan = argsFactory(sf);
 

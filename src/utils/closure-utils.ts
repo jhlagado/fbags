@@ -36,15 +36,13 @@ export const getArgs = (args: Elem[]) => {
 export const argsFactory = (cproc: CProc | CSProc) => (...args: Elem[]) =>
     createClosure(elemClone(getArgs(args), true), 0, 0, 0, cproc);
 
-export const sinkFactory = (cproc: CProc, role: Role): CSProc => {
+export const sinkFactory = (cproc: CProc, terminal = false): CSProc => {
     const sinkFactoryProc = (state: Tuple) => (source: Tuple) => {
         const tb = createClosure(elemClone(state[ARGS], false), 0, elemClone(source, true), 0, cproc);
-        switch (role) {
-            case Role.sink:
-                execClosure(source, Mode.start, tb);
-                break;
-            default:
-                cleanupClosure(source);
+        if (terminal) {
+            execClosure(source, Mode.start, tb);
+        } else {
+            cleanupClosure(source);
         }
         return tb;
     };

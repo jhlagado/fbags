@@ -11,7 +11,7 @@ const mapTB = (state: Tuple) => (mode: Mode, d: any) => {
 
 const cproc = closureFactory(mapTB, Role.sink);
 
-const sf = sinkFactory(cproc, Role.none);
+const sf = sinkFactory(cproc);
 
 export const map = argsFactory(sf);
 

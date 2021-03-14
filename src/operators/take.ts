@@ -54,7 +54,7 @@ const sourceTBF: CProc = (state) => (mode, d) => {
 
 const cproc = closureFactory(sourceTBF, Role.sink);
 
-const sf = sinkFactory(cproc, Role.none);
+const sf = sinkFactory(cproc);
 
 export const take = argsFactory(sf);
 

@@ -13,13 +13,13 @@ export const FALSE = 0;
 export const TRUE = -1;
 
 export enum Mode {
+    init = 3,
     start = 0,
     data = 1,
     stop = 2,
 }
 
 export enum Role {
-    none = 0,
     source = 1,
     sink = 2,
 }
