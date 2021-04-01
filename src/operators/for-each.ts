@@ -1,4 +1,4 @@
-import { ARGS, Mode, Role, SOURCE } from '../utils/constants';
+import { ARGS, Mode, SOURCE } from '../utils/constants';
 import { Tuple } from '../utils/types';
 import { lookup } from '../utils/registry';
 import { argsFactory, execClosure, sinkFactory } from '../utils/closure-utils';
