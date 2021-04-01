@@ -1,7 +1,7 @@
-import { ARGS, Mode, Role, SINK } from '../utils/constants';
+import { ARGS, Mode, SINK } from '../utils/constants';
 import { Tuple } from '../utils/types';
 import { lookup } from '../utils/registry';
-import { argsFactory, closureFactory, sinkFactory, execClosure } from '../utils/closure-utils';
+import { argsFactory, sinkFactory, execClosure, closureFactorySink } from '../utils/closure-utils';
 
 const mapTB = (state: Tuple) => (mode: Mode, d: any) => {
     const mapper = lookup(state[ARGS] as number) as Function;
@@ -9,7 +9,7 @@ const mapTB = (state: Tuple) => (mode: Mode, d: any) => {
     execClosure(sink, mode, mode === Mode.data ? mapper(d) : d);
 };
 
-const cproc = closureFactory(mapTB, Role.sink);
+const cproc = closureFactorySink(mapTB);
 
 const sf = sinkFactory(cproc);
 

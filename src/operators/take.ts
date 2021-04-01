@@ -1,6 +1,6 @@
-import { ARGS, Mode, Role, SINK, SOURCE, TRUE, VARS } from '../utils/constants';
+import { ARGS, Mode, SINK, SOURCE, TRUE, VARS } from '../utils/constants';
 import { CProc, Tuple } from '../utils/types';
-import { createClosure, closureFactory, sinkFactory, argsFactory, execClosure } from '../utils/closure-utils';
+import { createClosure, sinkFactory, argsFactory, execClosure, closureFactorySink } from '../utils/closure-utils';
 import { tgetv, tset, tsetv, tupleNew } from '../utils/tuple-utils';
 
 const TAKEN = 1;
@@ -52,7 +52,7 @@ const sourceTBF: CProc = (state) => (mode, d) => {
     }
 };
 
-const cproc = closureFactory(sourceTBF, Role.sink);
+const cproc = closureFactorySink(sourceTBF);
 
 const sf = sinkFactory(cproc);
 

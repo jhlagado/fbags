@@ -1,7 +1,7 @@
 import { ARGS, Mode, SOURCE } from '../utils/constants';
 import { Tuple } from '../utils/types';
 import { lookup } from '../utils/registry';
-import { argsFactory, execClosure, sinkFactory } from '../utils/closure-utils';
+import { argsFactory, execClosure, sinkFactoryTerminal } from '../utils/closure-utils';
 import { tset } from '../utils/tuple-utils';
 
 const forEachTB = (state: Tuple) => (mode: Mode, d: any) => {
@@ -19,7 +19,7 @@ const forEachTB = (state: Tuple) => (mode: Mode, d: any) => {
     }
 };
 
-const sf = sinkFactory(forEachTB, true);
+const sf = sinkFactoryTerminal(forEachTB);
 
 export const forEach = argsFactory(sf);
 

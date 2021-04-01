@@ -1,7 +1,7 @@
-import { ARGS, FALSE, Mode, Role, SINK, TRUE, VARS } from '../utils/constants';
+import { ARGS, FALSE, Mode, SINK, TRUE, VARS } from '../utils/constants';
 import { Tuple } from '../utils/types';
 import { lookup } from '../utils/registry';
-import { closureFactory, argsFactory, execClosure } from '../utils/closure-utils';
+import { argsFactory, execClosure, closureFactorySource } from '../utils/closure-utils';
 import { tgetv, tset, tsetv, tupleNew } from '../utils/tuple-utils';
 
 const INLOOP = 0;
@@ -46,7 +46,7 @@ const fromIteratorSinkCB = (state: Tuple) => (mode: Mode) => {
     }
 };
 
-const sf = closureFactory(fromIteratorSinkCB, Role.source);
+const sf = closureFactorySource(fromIteratorSinkCB);
 
 export const fromIterator = argsFactory(sf);
 

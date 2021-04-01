@@ -19,8 +19,3 @@ export enum Mode {
     stop = 2,
 }
 
-export enum Role {
-    source = 1,
-    sink = 2,
-}
-

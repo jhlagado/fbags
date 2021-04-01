@@ -1,7 +1,7 @@
-import { ARGS, Mode, Role, SINK, VARS } from '../utils/constants';
+import { ARGS, Mode, SINK, VARS } from '../utils/constants';
 import { Tuple } from '../utils/types';
 import { lookup } from '../utils/registry';
-import { argsFactory, closureFactory, sinkFactory, execClosure } from '../utils/closure-utils';
+import { argsFactory, sinkFactory, execClosure, closureFactorySink } from '../utils/closure-utils';
 import { tgetv, tupleNew, tset, tget } from '../utils/tuple-utils';
 
 const REDUCER = 0;
@@ -25,7 +25,7 @@ const scanTB = (state: Tuple) => (mode: Mode, d: any) => {
     }
 };
 
-const cproc = closureFactory(scanTB, Role.sink);
+const cproc = closureFactorySink(scanTB);
 
 const sf = sinkFactory(cproc);
 
