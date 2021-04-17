@@ -54,10 +54,6 @@ export const sinkFactoryTerminal = (cproc: CProc): CSProc => {
     return sinkFactoryProc;
 };
 
-export const closureFactoryGreet = (receiver: Tuple, tb: Tuple) => {
-    execClosure(receiver, Mode.start, tb);
-};
-
 export const getInstance = (state: Tuple, sink: Tuple) => {
     const instance = [0, 0, 0, 0] as Tuple;
     tset(instance, ARGS, state[ARGS] as Tuple);
@@ -87,13 +83,13 @@ export const closureFactory = (f: CFF) => (cproc: CProc): CProc => {
 };
 
 export const fSource = (instance: Tuple, tb: Tuple, sink: Tuple): void => {
-    closureFactoryGreet(sink, tb);
+    execClosure(sink, Mode.start, tb);
     tupleDestroy(instance);
 };
 
 export const fSink = (instance: Tuple, tb: Tuple, _sink: Tuple): void => {
     const source = tb[SOURCE] as Tuple;
-    closureFactoryGreet(source, tb);
+    execClosure(source, Mode.start, tb);
     tupleDestroy(instance);
 };
 
